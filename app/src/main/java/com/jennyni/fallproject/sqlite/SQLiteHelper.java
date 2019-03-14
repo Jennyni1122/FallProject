@@ -15,7 +15,7 @@ public class SQLiteHelper extends SQLiteOpenHelper {
     public static String DB_NAME = "fallguard.db";
     public static final String U_USERINFO = "userinfo";     //手机用户信息
     public static final String DEVICE_INFO= "deviceinfo";   //设备用户信息
-
+    public static final String FALLMSG_INFO= "fallmsginfo";
     public SQLiteHelper(Context context) {
         super(context, DB_NAME, null, DB_VRESION);
     }
@@ -50,16 +50,16 @@ public class SQLiteHelper extends SQLiteOpenHelper {
 //        /**
 //         * 创建跌倒信息表
 //         */
-//        db.execSQL("CREATE TABLE  IF NOT EXISTS " + FALLMSG_INFO + "( "
-//                + "_id INTEGER PRIMARY KEY AUTOINCREMENT, "
-//                + "id INTEGER, "            // id
-//                + "cardid VARCHAR, "        // cardid
-//                + "usrame VARCHAR, "        //用户名
-//                + "fall INTEGER,"           //跌倒报警
-//                + "alert INTEGER,"          //围栏报警
-//                + "time VARCHAR"            //时间
-//                + ")");
-//
+        db.execSQL("CREATE TABLE  IF NOT EXISTS " + FALLMSG_INFO + "( "
+                + "_id INTEGER PRIMARY KEY AUTOINCREMENT, "
+                + "id INTEGER, "            // id
+                + "cardid VARCHAR, "        // cardid
+                + "usrame VARCHAR, "        //用户名
+                + "fall INTEGER,"           //跌倒报警
+                + "alert INTEGER,"          //围栏报警
+                + "time VARCHAR"            //时间
+                + ")");
+
     }
 
     /**
@@ -69,7 +69,7 @@ public class SQLiteHelper extends SQLiteOpenHelper {
     public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
         db.execSQL("DROP TABLE IF EXISTS " + U_USERINFO);
         db.execSQL("DROP TABLE IF EXISTS " + DEVICE_INFO);
-     //   db.execSQL("DROP TABLE IF EXISTS " + FALLMSG_INFO);
+        db.execSQL("DROP TABLE IF EXISTS " + FALLMSG_INFO);
         onCreate(db);
     }
 }

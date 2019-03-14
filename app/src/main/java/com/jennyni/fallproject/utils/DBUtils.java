@@ -41,11 +41,11 @@ public class DBUtils {
      * 保存设备加载信息
      */
     public void saveUpdateDevInfo(List<UserUpdateBean.ResultBean> list) {
-        Cursor cursor = db.rawQuery("SELECT * FROM " + SQLiteHelper.U_DeviceInfo, null);
+        Cursor cursor = db.rawQuery("SELECT * FROM " + SQLiteHelper.DEVICE_INFO, null);
         if (cursor.getCount() != 0)//添加数据时，如果星座表中有数据，则在添加新数据之前需删除旧数据
         {
             //删除表中的数据
-            db.execSQL("DELETE FROM " + SQLiteHelper.U_DeviceInfo);
+            db.execSQL("DELETE FROM " + SQLiteHelper.DEVICE_INFO);
         }
         for (UserUpdateBean.ResultBean bean : list) {
             ContentValues cv = new ContentValues();
@@ -64,7 +64,7 @@ public class DBUtils {
             cv.put("geocenter", bean.getGeocenter());
             cv.put("georadius", bean.getGeoradius());
 
-            db.insert(SQLiteHelper.U_DeviceInfo, null, cv);
+            db.insert(SQLiteHelper.DEVICE_INFO, null, cv);
         }
     }
 
@@ -72,7 +72,7 @@ public class DBUtils {
      * 根据cardid获取设备用户信息
      */
     public UserUpdateBean.ResultBean getLoadDeviceInfo(int cardid) {
-        String sql = "SELECT * FROM " + SQLiteHelper.U_DeviceInfo + " WHERE cardid=?";
+        String sql = "SELECT * FROM " + SQLiteHelper.DEVICE_INFO + " WHERE cardid=?";
         Cursor cursor = db.rawQuery(sql, new String[]{cardid + ""});
         UserUpdateBean.ResultBean bean = null;
         while (cursor.moveToNext()) {
@@ -121,7 +121,7 @@ public class DBUtils {
      * 获取报警信息
      */
     public AskFallInfoBean.ResultBean getAskFallInfo(String account) {
-        String sql = "SELECT * FROM " + SQLiteHelper.FALL_Info + " WHERE id=? ";
+        String sql = "SELECT * FROM " + SQLiteHelper.FALLMSG_INFO + " WHERE id=? ";
         Cursor cursor = db.rawQuery(sql, new String[]{account+""});
         AskFallInfoBean.ResultBean bean = null;
         while (cursor.moveToNext()) {
