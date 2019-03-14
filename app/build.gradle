@@ -17,13 +17,13 @@ android {
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
         }
     }
-
     MobSDK {
         appKey "29eccc10778f2"
         appSecret "f30b2899ba7f7d20084c0dba9e6a74eb"
 
         SMSSDK {}
     }
+    buildToolsVersion '28.0.3'
 }
 
 dependencies {

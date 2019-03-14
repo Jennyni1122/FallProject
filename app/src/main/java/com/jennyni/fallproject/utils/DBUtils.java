@@ -7,9 +7,8 @@ import android.database.sqlite.SQLiteDatabase;
 
 import com.jennyni.fallproject.Bean.AskFallInfoBean;
 import com.jennyni.fallproject.Bean.UserUpdateBean;
-import com.jennyni.fallproject.db.SQLiteHelper;
+import com.jennyni.fallproject.sqlite.SQLiteHelper;
 
-import java.util.ArrayList;
 import java.util.List;
 
 /**
