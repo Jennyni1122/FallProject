@@ -115,7 +115,7 @@ public class DevUserDetailActivity extends PermissionsActivity implements AMapLo
         });
         tv_switch = (TextView) findViewById(R.id.tv_save);
         tv_switch.setVisibility(View.VISIBLE);
-        tv_switch.setText("编辑设备");
+        tv_switch.setText("编辑");
         tv_switch.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
