@@ -21,6 +21,7 @@ import android.widget.Toast;
 
 import com.jennyni.fallproject.Bean.UserChangePassBean;
 import com.jennyni.fallproject.R;
+import com.jennyni.fallproject.activity.welcome.LoginActivity;
 import com.jennyni.fallproject.utils.Constant;
 import com.jennyni.fallproject.utils.JsonParse;
 import com.jennyni.fallproject.utils.UtilsHelper;

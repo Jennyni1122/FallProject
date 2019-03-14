@@ -22,7 +22,7 @@ import com.jennyni.fallproject.activity.SettingActivity;
 import com.jennyni.fallproject.activity.UserInfoActivity;
 import com.jennyni.fallproject.receiver.UpdateUserInfoReceiver;
 import com.jennyni.fallproject.utils.UtilsHelper;
-import com.jennyni.fallproject.activity.LoginActivity;
+import com.jennyni.fallproject.activity.welcome.LoginActivity;
 
 import de.hdodenhof.circleimageview.CircleImageView;
 

@@ -1,4 +1,4 @@
-package com.jennyni.fallproject.activity;
+package com.jennyni.fallproject.activity.devicelocation;
 
 import android.annotation.SuppressLint;
 import android.graphics.BitmapFactory;

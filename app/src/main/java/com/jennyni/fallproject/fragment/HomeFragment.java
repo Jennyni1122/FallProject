@@ -49,7 +49,6 @@ public class HomeFragment extends Fragment {    //implements DeviceListAdapter.L
     private WrapRecyclerView recycleView;
     public static final int REFRESH_DELAY = 1000;
     public static final int MSG_DevUser_OK = 1; //加载设备，获取数据
-//    public static final int MSG_DevUser_FAIL = 2;
     public static final int MSG_DelDev_OK= 2; //解绑设备，获取数据
     private DeviceListAdapter adapter;
 

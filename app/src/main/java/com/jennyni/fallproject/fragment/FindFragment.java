@@ -22,7 +22,7 @@ import android.widget.Toast;
 import com.itheima.PullToRefreshView;
 import com.jennyni.fallproject.Bean.UserUpdateBean;
 import com.jennyni.fallproject.R;
-import com.jennyni.fallproject.activity.DevUserDetailActivity;
+import com.jennyni.fallproject.activity.devicelocation.DevUserDetailActivity;
 import com.jennyni.fallproject.adapter.WarningAdapter;
 import com.jennyni.fallproject.utils.Constant;
 import com.jennyni.fallproject.utils.DBUtils;
@@ -31,7 +31,6 @@ import com.jennyni.fallproject.utils.UtilsHelper;
 
 import java.io.IOException;
 import java.io.Serializable;
-import java.util.ArrayList;
 import java.util.List;
 
 import okhttp3.Call;
@@ -94,19 +93,19 @@ public class FindFragment extends Fragment implements WarningAdapter.IonSlidingV
         //下拉刷新
         mPullToRefreshView = (PullToRefreshView) view.findViewById(R.id.
                 pull_to_refresh);
-        mPullToRefreshView.setOnRefreshListener(new PullToRefreshView.
-                OnRefreshListener() {
-            @Override
-            public void onRefresh() {
-                mPullToRefreshView.postDelayed(new Runnable() {
-                    @Override
-                    public void run() {
-                        mPullToRefreshView.setRefreshing(false);
-                        sendrequest_initData();      //加载设备用户信息列表数据,获取报警信息
-                    }
-                }, REFRESH_DELAY);
-            }
-        });
+//        mPullToRefreshView.setOnRefreshListener(new PullToRefreshView.
+//                OnRefreshListener() {
+//            @Override
+//            public void onRefresh() {
+//                mPullToRefreshView.postDelayed(new Runnable() {
+//                    @Override
+//                    public void run() {
+//                        mPullToRefreshView.setRefreshing(false);
+//                        sendrequest_initData();      //加载设备用户信息列表数据,获取报警信息
+//                    }
+//                }, REFRESH_DELAY);
+//            }
+//        });
 
         return view;
     }

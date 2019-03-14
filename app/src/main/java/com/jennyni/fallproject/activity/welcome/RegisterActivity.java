@@ -1,4 +1,4 @@
-package com.jennyni.fallproject.activity;
+package com.jennyni.fallproject.activity.welcome;
 
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -42,7 +42,7 @@ import okhttp3.RequestBody;
 import okhttp3.Response;
 
 /**
- * 密码在注册的时候保存在本地
+ * 注册界面
  */
 public class RegisterActivity extends AppCompatActivity implements View.OnClickListener{
 
@@ -55,9 +55,6 @@ public class RegisterActivity extends AppCompatActivity implements View.OnClickL
     private boolean isShowPsw = false;
     private MHandler mHandler;
     public static final int MSG_REGISTER_OK = 1;    //获取注册数据
-
-
-    //private MHandler mHandler;
     private CountDownTimerUtils mCountDownTimerUtils;        //设置倒计时和变量
 
     @Override
@@ -73,12 +70,14 @@ public class RegisterActivity extends AppCompatActivity implements View.OnClickL
      * 初始化界面
      */
     private void initView() {
+        //标题栏
         tv_main_title = findViewById(R.id.tv_main_title);
         tv_main_title.setText("注册");
         rl_title_bar = findViewById(R.id.title_bar);
         rl_title_bar.setBackgroundColor(getResources().getColor(R.color.rdTextColorPress));
         tv_back = findViewById(R.id.tv_back);
         tv_back.setVisibility(View.VISIBLE);
+        //注册控件
         btn_register = findViewById(R.id.btn_register);
         btn_getSMSCode = findViewById(R.id.btn_getSMSCode);
         et_register_userphone = findViewById(R.id.et_register_userphone);
@@ -96,6 +95,7 @@ public class RegisterActivity extends AppCompatActivity implements View.OnClickL
     private void initSMS() {
         //创建倒计时对象
         mCountDownTimerUtils = new CountDownTimerUtils(btn_getSMSCode,60000,1000);
+
         //初始化短信模块
         EventHandler eventHandler = new EventHandler() {
             @RequiresApi(api = Build.VERSION_CODES.CUPCAKE)

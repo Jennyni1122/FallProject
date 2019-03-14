@@ -1,4 +1,4 @@
-package com.jennyni.fallproject.activity;
+package com.jennyni.fallproject.activity.welcome;
 
 import android.annotation.SuppressLint;
 import android.app.Activity;
@@ -19,12 +19,12 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
-import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import com.jennyni.fallproject.Bean.UserLoginBean;
 import com.jennyni.fallproject.R;
+import com.jennyni.fallproject.activity.MainActivity;
 import com.jennyni.fallproject.utils.Constant;
 import com.jennyni.fallproject.utils.JsonParse;
 
@@ -43,9 +43,7 @@ import okhttp3.Response;
 public class LoginActivity extends AppCompatActivity implements View.OnClickListener{
 
     private static final String TAG = "LoginActivity";
-    //基础控件
-    private TextView tv_main_title,tv_back;
-    private RelativeLayout rl_title_bar;
+
     private EditText et_login_psw,et_login_userphone;
     private TextView tv_quick_register,tv_forget_psw;
     private ImageView iv_show_psw;
@@ -71,13 +69,6 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
      * 初始化控件
      */
     private void initView() {
-        //标题栏
-        tv_main_title= findViewById(R.id.tv_main_title);
-        tv_main_title.setText("登录");
-        rl_title_bar= findViewById(R.id.title_bar);
-        rl_title_bar.setBackgroundColor(getResources().getColor(R.color.rdTextColorPress));
-        tv_back= findViewById(R.id.tv_back);
-        tv_back.setVisibility(View.VISIBLE);
         //手机号码，密码，密码可见，快速注册，忘记密码，登录按钮
         et_login_userphone =  findViewById(R.id.et_login_userphone);
         et_login_psw= findViewById(R.id.et_login_psw);
@@ -85,8 +76,7 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
         tv_quick_register= findViewById(R.id.tv_quick_register);
         tv_forget_psw = findViewById(R.id.tv_forget_psw);
         btn_login = findViewById(R.id.btn_login);
-      //监听事件：返回键，密码可见，快速注册，忘记密码，登录按钮
-        tv_back.setOnClickListener(this);
+      //监听事件：密码可见，快速注册，忘记密码，登录按钮
         iv_show_psw.setOnClickListener(this);
         tv_quick_register.setOnClickListener(this);
         tv_forget_psw.setOnClickListener(this);
@@ -108,7 +98,7 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
         if (name.length() > 1 && code.length() > 1) {
             et_login_userphone.setText(name);
             et_login_psw.setText(code);
-            login(); //执行登录的方法
+            //login(); //执行登录的方法
         }
     }
 
@@ -116,9 +106,6 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
     @Override
     public void onClick(View v) {
         switch(v.getId()){
-            case R.id.tv_back:          //返回键
-                LoginActivity.this.finish();
-                break;
             case R.id.iv_show_psw:      //密码可见设置
                 currentPsw = et_login_psw.getText().toString();
                 if (isShowPsw){
@@ -190,6 +177,29 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
 
 
     /**
+     * 事件捕获
+     */
+    @SuppressLint("HandlerLeak")
+    private Handler handler = new Handler(){
+        @Override
+        public void handleMessage(Message msg) {
+            switch (msg.what){
+                case MSG_LOGIN_OK:
+                    //解析JSON, 登录时服务器返回来的数据
+                    if (msg.obj!= null){
+                        //获取数据
+                        UserLoginBean.ResultBean bean = (UserLoginBean.ResultBean) msg.obj;
+                        Log.e("TAG","handleMessage:"+ bean.getAccount());
+                        // tv_result.setText(result);
+                        setGsonData(bean);
+                    }
+                    break;
+
+            }
+        }
+    };
+
+    /**
      * 向服务器请求数据，进行登录操作
      */
     private void sendRequest_login(String account,String pass) {
@@ -231,28 +241,6 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
 
     }
 
-    /**
-     * 事件捕获
-     */
-    @SuppressLint("HandlerLeak")
-    private Handler handler = new Handler(){
-        @Override
-        public void handleMessage(Message msg) {
-            switch (msg.what){
-                case MSG_LOGIN_OK:
-                    //解析JSON, 登录时服务器返回来的数据
-                    if (msg.obj!= null){
-                        //获取数据
-                        UserLoginBean.ResultBean bean = (UserLoginBean.ResultBean) msg.obj;
-                        Log.e("TAG","handleMessage:"+ bean.getAccount());
-                        // tv_result.setText(result);
-                        setGsonData(bean);
-                    }
-                    break;
-
-            }
-        }
-    };
 
     /**
      * 把登录的数据保存

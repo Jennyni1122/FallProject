@@ -1,4 +1,4 @@
-package com.jennyni.fallproject.activity;
+package com.jennyni.fallproject.activity.welcome;
 
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -10,11 +10,11 @@ import android.widget.TextView;
 
 import com.jennyni.fallproject.R;
 
-public class PasswordActivity extends AppCompatActivity {
+public class PasswordActivity extends AppCompatActivity implements View.OnClickListener{
+    private TextView tv_main_title,tv_back;
     private EditText et_validate_name, et_user_name;
     private Button btn_validate;
-    private TextView tv_main_title;
-    private TextView tv_back;
+
     //from为security时是从设置密保界面跳转过来的，否则就是从登录界面跳转过来的
     private String from;
     private TextView tv_reset_psw, tv_user_name;
@@ -44,6 +44,20 @@ public class PasswordActivity extends AppCompatActivity {
         tv_back.setVisibility(View.VISIBLE);
         rl_title_bar = (RelativeLayout) findViewById(R.id.title_bar);
         rl_title_bar.setBackgroundColor(getResources().getColor(R.color.rdTextColorPress));
+
+
+    }
+
+    @Override
+    public void onClick(View v) {
+        switch (v.getId()){
+            case R.id.tv_back:          //返回键
+                finish();
+                break;
+
+
+
+        }
 
 
     }

@@ -8,6 +8,7 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.jennyni.fallproject.FallProjectApplication;
 import com.jennyni.fallproject.R;
 import com.jennyni.fallproject.utils.UtilsHelper;
 
@@ -78,7 +79,9 @@ public class SettingActivity extends AppCompatActivity {
                 Intent data = new Intent();
                 data.putExtra("isLogin", false);
                 setResult(RESULT_OK, data);
-                SettingActivity.this.finish();
+                FallProjectApplication.destroyActivity("mainActivity");
+                finish();
+
             }
         });
 

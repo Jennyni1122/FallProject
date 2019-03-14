@@ -15,7 +15,7 @@ import android.widget.TextView;
 
 import com.bumptech.glide.Glide;
 import com.jennyni.fallproject.Bean.UserUpdateBean;
-import com.jennyni.fallproject.activity.DevUserDetailActivity;
+import com.jennyni.fallproject.activity.devicelocation.DevUserDetailActivity;
 import com.jennyni.fallproject.R;
 
 import java.util.List;

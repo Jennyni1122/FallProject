@@ -6,9 +6,7 @@
     android:layout_height="match_parent"
     android:background="@color/register_bg_color"
     android:orientation="vertical"
-    tools:context=".activity.LoginActivity">
-    <include layout="@layout/main_title_bar" />
-
+    tools:context=".activity.welcome.LoginActivity">
 
     <ImageView
         android:layout_width="120dp"

@@ -317,6 +317,12 @@ public class AddDeviceUserInfoActivity extends AppCompatActivity implements View
         }
     };
 
+    /**
+     * 从选择地址界面回传经纬度
+     * @param requestCode
+     * @param resultCode
+     * @param data
+     */
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);

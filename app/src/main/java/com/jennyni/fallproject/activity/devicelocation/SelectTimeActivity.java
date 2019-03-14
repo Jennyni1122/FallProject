@@ -1,4 +1,4 @@
-package com.jennyni.fallproject.activity;
+package com.jennyni.fallproject.activity.devicelocation;
 
 import android.app.DatePickerDialog;
 import android.app.TimePickerDialog;
@@ -13,9 +13,10 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.TimePicker;
 
+import com.jennyni.fallproject.Bean.AskFallInfoBean;
 import com.jennyni.fallproject.R;
 
-import java.sql.Time;
+import java.io.Serializable;
 import java.util.Calendar;
 
 /** 。。。。。。。。。。。。。。。。。。。。。//传值跳转还没写，还有保存按钮，解析
@@ -26,6 +27,7 @@ public class SelectTimeActivity extends AppCompatActivity implements View.OnClic
     private RelativeLayout rl_title_bar;
     private LinearLayout ll_date,ll_endtime,ll_starttime;
     private boolean isStartTime;
+    private AskFallInfoBean.ResultBean bean;
     Calendar instance;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -78,6 +80,7 @@ public class SelectTimeActivity extends AppCompatActivity implements View.OnClic
                 break;
             case R.id.tv_save:      //保存按钮
 
+                //。。。。。。。。。。。。。。。。。。。。。。。传值，没写
                // PathActivity.startActivity(this,tv_start_time.getText().toString(),tv_end_time.getText().toString(),mode);
                 break;
             case R.id.ll_date:      //选择日期按钮
@@ -101,13 +104,6 @@ public class SelectTimeActivity extends AppCompatActivity implements View.OnClic
 
         }
     }
-
-
-//    public static void startActivity(Context context, SafeLocationMode mode) {
-//        Intent intent = new Intent(context, SelectTimeActivity.class);
-//        intent.putExtra(PathActivity.SAFEMODE_KEY, mode);
-//        context.startActivity(intent);
-//    }
 
 
     @Override

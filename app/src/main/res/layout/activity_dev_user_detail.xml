@@ -5,7 +5,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
-    tools:context="com.jennyni.fallproject.activity.DevUserDetailActivity">
+    tools:context="com.jennyni.fallproject.activity.devicelocation.DevUserDetailActivity">
 
     <include layout="@layout/main_title_bar" />
 
@@ -44,7 +44,7 @@
                         android:layout_height="18dp"
                         android:src="@drawable/ic_online"/>
                     <TextView
-                        android:id="@+id/tv_devicename"
+                        android:id="@+id/tv_dev_user"
                         style="@style/normal_black"
                         android:layout_marginLeft="5dp"
                         android:text="姓名"
@@ -108,7 +108,7 @@
                         android:gravity="center"
                         android:orientation="vertical">
                         <TextView
-                            android:id="@+id/tv_phone"
+                            android:id="@+id/tv_dev_num"
                             style="@style/middle_black" />
                         <TextView
                             style="@style/normal_gray"

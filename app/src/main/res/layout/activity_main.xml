@@ -7,8 +7,6 @@
     android:orientation="vertical"
     tools:context="com.jennyni.fallproject.activity.MainActivity">
 
-    <include layout="@layout/main_title_bar" />
-
     <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent">
@@ -27,18 +25,21 @@
                 android:checked="true"
                 android:drawableTop="@drawable/rb_home_selector"
                 android:text="首页"
+                android:textSize="16sp"
                 android:textColor="@drawable/rb_text_selector" />
             <RadioButton
                 android:id="@+id/rb_find"
                 style="@style/style_RadioButton"
                 android:drawableTop="@drawable/rb_find_selector"
                 android:text="发现"
+                android:textSize="16sp"
                 android:textColor="@drawable/rb_text_selector" />
             <RadioButton
                 android:id="@+id/rb_me"
                 style="@style/style_RadioButton"
                 android:drawableTop="@drawable/rb_me_selector"
                 android:text="我的"
+                android:textSize="16sp"
                 android:textColor="@drawable/rb_text_selector" />
         </RadioGroup>
 
