@@ -263,8 +263,7 @@ public class AddDeviceUserInfoActivity extends AppCompatActivity implements View
         String url = Constant.BASE_WEBSITE + Constant.REQUEST_SETUP_DEVICE_URL +
                 "/account/" + spUserPhone +
                 "/cardid/" + currentDevCode +
-                "/" +
-                "dname/" + URLEncoder.encode(dname) +
+                "/dname/" + URLEncoder.encode(dname) +
                 "/sex/" + URLEncoder.encode(male.isChecked() ? "男" : "女") +
                 "/idcard/" + idcard +
                 "/guardian/" + spUserPhone +
