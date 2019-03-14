@@ -1,0 +1,215 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    tools:context="com.jennyni.fallproject.activity.DevUserDetailActivity">
+
+    <include layout="@layout/main_title_bar" />
+
+    <!--地图显示-->
+    <RelativeLayout
+        android:id="@+id/rl_root"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:orientation="vertical">
+            <!--地图控件-->
+            <com.amap.api.maps2d.MapView
+                android:id="@+id/map"
+                android:layout_width="match_parent"
+                android:layout_height="0dp"
+                android:layout_weight="1">
+            </com.amap.api.maps2d.MapView>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:background="@color/white"
+                android:orientation="vertical"
+                android:paddingBottom="10dp"
+                android:paddingTop="10dp">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:gravity="center">
+                    <ImageView
+                        android:layout_width="18dp"
+                        android:layout_height="18dp"
+                        android:src="@drawable/ic_online"/>
+                    <TextView
+                        android:id="@+id/tv_devicename"
+                        style="@style/normal_black"
+                        android:layout_marginLeft="5dp"
+                        android:text="姓名"
+                        android:textColor="#01cb9d" />
+                </LinearLayout>
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal">
+
+                    <RelativeLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginLeft="10dp">
+
+                        <ImageView
+                            android:id="@+id/iaada"
+                            android:layout_width="20dp"
+                            android:layout_height="20dp"
+                            android:layout_centerVertical="true"
+                            android:src="@drawable/ic_address_icon" />
+                        <TextView
+                            android:id="@+id/tv_address"
+                            style="@style/middle_black"
+                            android:layout_marginLeft="3dp"
+                            android:layout_marginRight="50dp"
+                            android:layout_marginTop="5dp"
+                            android:layout_toRightOf="@+id/iaada"
+                            android:layout_centerVertical="true"
+                            android:ellipsize="end"
+                            android:maxLines="1"
+                            android:textSize="16sp"
+                            android:text="显示地址XXX" />
+                        <ImageView
+                            android:id="@+id/iv_select_time"
+                            android:layout_width="35dp"
+                            android:layout_height="35dp"
+                            android:layout_alignParentRight="true"
+                            android:layout_centerVertical="true"
+                            android:layout_margin="5dp"
+                            android:src="@drawable/ic_positioningtrack" />
+                        <View
+                            style="@style/item_line"
+                            android:layout_below="@+id/iv_select_time"
+                            android:layout_marginTop="7dp" />
+
+                    </RelativeLayout>
+
+                </LinearLayout>
+                <!--第一行信息-->
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal"
+                    android:padding="10dp">
+                    <!--设备号-->
+                    <LinearLayout
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:gravity="center"
+                        android:orientation="vertical">
+                        <TextView
+                            android:id="@+id/tv_phone"
+                            style="@style/middle_black" />
+                        <TextView
+                            style="@style/normal_gray"
+                            android:layout_marginTop="3dp"
+                            android:text="设备号" />
+                    </LinearLayout>
+                    <!--设备信号-->
+                    <LinearLayout
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:gravity="center"
+                        android:orientation="vertical">
+                        <TextView
+                            android:id="@+id/tv_rssi"
+                            style="@style/middle_black" />
+                        <TextView
+                            style="@style/normal_gray"
+                            android:layout_marginTop="3dp"
+                            android:text="设备信号" />
+                    </LinearLayout>
+                    <!--设备编码-->
+                    <LinearLayout
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:gravity="center"
+                        android:orientation="vertical">
+                        <TextView
+                            android:id="@+id/tv_power"
+                            style="@style/middle_black" />
+                        <TextView
+                            style="@style/normal_gray"
+                            android:layout_marginTop="3dp"
+                            android:text="设备电量" />
+                    </LinearLayout>
+
+                </LinearLayout>
+
+                <!--第二行信息-->
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal"
+                    android:padding="10dp">
+                    <!--定位上传间隔-->
+                    <LinearLayout
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:gravity="center"
+                        android:orientation="vertical">
+                        <TextView
+                            android:id="@+id/tv_idcard"
+                            style="@style/middle_black" />
+                        <TextView
+                            style="@style/normal_gray"
+                            android:layout_marginTop="3dp"
+                            android:text="身份证" />
+                    </LinearLayout>
+
+                    <!--安全范围-->
+                    <LinearLayout
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:gravity="center"
+                        android:orientation="vertical">
+                        <TextView
+                            android:id="@+id/tv_alert"
+                            style="@style/middle_black" />
+                        <TextView
+                            style="@style/normal_gray"
+                            android:layout_marginTop="3dp"
+                            android:text="安全范围" />
+                    </LinearLayout>
+
+                    <!--电量-->
+                    <LinearLayout
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:gravity="center"
+                        android:orientation="vertical">
+                        <TextView
+                            android:id="@+id/tv_state"
+                            style="@style/middle_black" />
+                        <TextView
+                            style="@style/normal_gray"
+                            android:layout_marginTop="3dp"
+                            android:text="当前状态" />
+                    </LinearLayout>
+
+                    <!--第二行信息结束-->
+                </LinearLayout>
+                <!--底部全部线性-->
+            </LinearLayout>
+
+        </LinearLayout>
+
+    </RelativeLayout>
+
+
+</LinearLayout>

@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+<selector xmlns:android="http://schemas.android.com/apk/res/android">  
+    <!--默认情况下是一个带圆角,白色背景,绿色边框的矩形-->  
+    <item android:state_window_focused="false">  
+        <shape android:shape="rectangle">   
+            <!--填充颜色为白色-->
+            <!-- 矩形的圆角弧度 -->
+    		<corners android:radius="20dp" />  
+            <solid android:color="@color/theme" />    
+        </shape>  
+    </item>  
+    <!--单击时是一个带圆角,天蓝色背景,绿色边框的矩形-->  
+    <item android:state_pressed="true">  
+        <shape android:shape="rectangle">  
+            <!--填充颜色为白色-->
+            <!-- 矩形的圆角弧度 -->
+    		<corners android:radius="20dp" />    
+            <solid android:color="@color/theme_p" />  
+        </shape>  
+    </item>  
+</selector> 
+

@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+    <!--创建背景选择器，当按钮按下时显示灰色背景，当按钮弹起时显示绿色背景。-->
+<selector xmlns:android="http://schemas.android.com/apk/res/android">
+    <item android:state_pressed="true">
+        <shape android:shape="rectangle">
+            <corners android:radius="4dp"/>
+            <solid android:color="@color/btnCodeColor"/>
+        </shape>
+    </item>
+
+    <item android:state_pressed="false">
+        <shape android:shape="rectangle">
+            <corners android:radius="20dp"/>
+            <solid android:color="@color/btnCodeColor"/>
+        </shape>
+    </item>
+</selector>
