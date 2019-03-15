@@ -23,7 +23,7 @@ public class Constant {
     //添加设备接口
     public static final String REQUEST_ADD_DEVICE_URL = "/addDevice";
     //解绑设备接口：
-    public static final String REQUEST_DEL_DEVICE_URL = "delDevice/account/%s/cardid/%s";
+    public static final String REQUEST_DEL_DEVICE_URL = "/delDevice";
     //编辑设备位置信息接口：
     public static final String REQUEST_SETUP_DEVICE_URL = "/setup";
     //查询设备位置信息接口：

@@ -32,6 +32,8 @@ import com.jennyni.fallproject.utils.JsonParse;
 import com.jennyni.fallproject.utils.UtilsHelper;
 
 
+import org.json.JSONException;
+import org.json.JSONObject;
 import org.w3c.dom.Text;
 
 import java.io.IOException;
@@ -46,30 +48,32 @@ import okhttp3.Response;
 
 import static android.app.Activity.RESULT_OK;
 
-/**..............长按解绑
+/**
+ * ..............长按解绑
  * HomeFragment 用户列表 显示添加设备功能，解绑设备，点击列表项进入设备定位
  */
 
 public class HomeFragment extends Fragment {    //implements DeviceListAdapter.LongClickListener
-    public static final String TAG ="HomeFragment";
+    public static final String TAG = "HomeFragment";
     private RelativeLayout rl_title_bar;
-    private TextView tv_main_title, tv_switch,tv_none;
+    private TextView tv_main_title, tv_switch, tv_none;
     private PullToRefreshView mPullToRefreshView;
     private RecyclerView recycleView;
     public static final int REFRESH_DELAY = 1000;
     public static final int MSG_DevUser_OK = 1; //加载设备，获取数据
-    public static final int MSG_DelDev_OK= 2; //解绑设备，获取数据
+    public static final int MSG_DelDev_OK = 2; //解绑设备，获取数据
     private DeviceListAdapter adapter;
     List<UserUpdateBean.ResultBean> devicelist;
 
-    public HomeFragment(){
+    public HomeFragment() {
 
     }
+
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
 
-               //加载设备用户信息列表数据
+        //加载设备用户信息列表数据
         View view = initView(inflater, container);
         sendrequest_initData();
         return view;
@@ -95,7 +99,7 @@ public class HomeFragment extends Fragment {    //implements DeviceListAdapter.L
                 startActivity(intent);
             }
         });
-        tv_none =(TextView)view.findViewById(R.id.tv_none);     //无设备时显示的文本
+        tv_none = (TextView) view.findViewById(R.id.tv_none);     //无设备时显示的文本
         //下拉刷新
         mPullToRefreshView = (PullToRefreshView) view.findViewById(R.id.
                 pull_to_refresh);
@@ -125,14 +129,15 @@ public class HomeFragment extends Fragment {    //implements DeviceListAdapter.L
             @Override
             public void onItemClick(View view, int position) {          //点击列表项进入设备定位界面
                 Intent intent = new Intent();
-                intent.putExtra("id",devicelist.get(position).getId());
-                getActivity().setResult(RESULT_OK,intent);
+                intent.putExtra("id", devicelist.get(position).getId());
+                getActivity().setResult(RESULT_OK, intent);
 
             }
 
             @Override
             public void onItemLongClick(View view, int position) {      //长按解绑
-                showDelDevDialog();         //显示删除对话框
+                String card_id = devicelist.get(position).getCard_id();
+                showDelDevDialog(card_id);         //显示删除对话框
             }
         });
 
@@ -142,7 +147,7 @@ public class HomeFragment extends Fragment {    //implements DeviceListAdapter.L
     /**
      * 显示是否删除的提示框
      */
-    private void showDelDevDialog() {
+    private void showDelDevDialog(final String cardid) {
         AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
         AlertDialog dialog = builder.setNegativeButton("取消", new DialogInterface.OnClickListener() {
             @Override
@@ -153,7 +158,7 @@ public class HomeFragment extends Fragment {    //implements DeviceListAdapter.L
         }).setPositiveButton("确定", new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which) {
-                sendrequest_delDevice();        //请求网络，删除设备
+                sendrequest_delDevice(cardid);        //请求网络，删除设备
                 dialog.dismiss();
             }
         }).setMessage("跌倒守护：确定解绑设备吗？").create();
@@ -161,12 +166,11 @@ public class HomeFragment extends Fragment {    //implements DeviceListAdapter.L
     }
 
 
-
     /**
      * 事件捕获
      */
     @SuppressLint("HandlerLeak")
-    private Handler handler = new Handler(){
+    private Handler handler = new Handler() {
         @Override
         public void handleMessage(Message msg) {
             super.handleMessage(msg);
@@ -174,13 +178,13 @@ public class HomeFragment extends Fragment {    //implements DeviceListAdapter.L
                 case MSG_DevUser_OK:
                     if (msg.obj != null) {
                         String result = (String) msg.obj;
-                        Log.e(TAG,"handleMessage"+ result);
+                        Log.e(TAG, "handleMessage" + result);
                         //使用Gson解析数据
-                       devicelist = JsonParse.getInstance().getuserUpdateInfo(result);
-                        if (devicelist != null){
-                            if (devicelist.size() > 0){
+                        devicelist = JsonParse.getInstance().getuserUpdateInfo(result);
+                        if (devicelist != null) {
+                            if (devicelist.size() > 0) {
                                 adapter.setData(devicelist);
-                            }else {
+                            } else {
                                 //无数据显示"暂无设备信息~"
                                 tv_none.setVisibility(View.VISIBLE);
                             }
@@ -190,9 +194,10 @@ public class HomeFragment extends Fragment {    //implements DeviceListAdapter.L
                 case MSG_DelDev_OK:         //解绑设备
                     if (msg.obj != null) {
                         String result = (String) msg.obj;
-                        Log.e(TAG,"handleMessage"+ result);
-                        //使用Gson解析数据
-
+                        Log.e(TAG, "handleMessage" + result);
+                        Toast.makeText(getActivity(),result,Toast.LENGTH_SHORT).show();
+                        //重新请求刷新刷新数据= =按道理这里应该是请求刷新方法的，但是这样写直接一点，以后写多了就好了
+                        sendrequest_initData();
                     }
                     break;
             }
@@ -205,8 +210,8 @@ public class HomeFragment extends Fragment {    //implements DeviceListAdapter.L
      */
     private void sendrequest_initData() {
         String account = UtilsHelper.readLoginUserName(getActivity());
-        String url = Constant.BASE_WEBSITE + Constant.REQUEST_UPDATE_USER_URL+"/account/"+account;
-        Log.e(TAG,"initData: "+url );
+        String url = Constant.BASE_WEBSITE + Constant.REQUEST_UPDATE_USER_URL + "/account/" + account;
+        Log.e(TAG, "initData: " + url);
         OkHttpClient okHttpClient = new OkHttpClient();
         final Request request = new Request.Builder().url(url).build();
         Call call = okHttpClient.newCall(request);
@@ -214,13 +219,13 @@ public class HomeFragment extends Fragment {    //implements DeviceListAdapter.L
         call.enqueue(new Callback() {
             @Override
             public void onFailure(Call call, IOException e) {
-                Log.e(TAG,"MSG_DevUser_FAIL"+"请求失败：" + e.getMessage());
+                Log.e(TAG, "MSG_DevUser_FAIL" + "请求失败：" + e.getMessage());
             }
 
             @Override
             public void onResponse(Call call, Response response) throws IOException {
                 String res = response.body().string();
-                Log.e(TAG,"MSG_DevUser_OK"+"请求成功：" + res);
+                Log.e(TAG, "MSG_DevUser_OK" + "请求成功：" + res);
                 Message msg = new Message();
                 msg.what = MSG_DevUser_OK;
                 msg.obj = res;
@@ -232,33 +237,32 @@ public class HomeFragment extends Fragment {    //implements DeviceListAdapter.L
     /**
      * 请求网络，解绑设备
      */
-    private void sendrequest_delDevice() {
+    private void sendrequest_delDevice(String cardid) {
         //String url6 = "http://www.phyth.cn/index/fall/delDevice/account/" + account + "/cardid/" + cardid;
         String account = UtilsHelper.readLoginUserName(getActivity());
-//        String cardid = ;
-//        String url = Constant.BASE_WEBSITE + Constant.REQUEST_DEL_DEVICE_URL +"/account/" + account + "/cardid/" + cardid;
-//        OkHttpClient okHttpClient = new OkHttpClient();
-//        final Request request = new Request.Builder().url(url).build();
-//        Call call = okHttpClient.newCall(request);
-//        //开启异步访问网络
-//        call.enqueue(new Callback() {
-//            @Override
-//            public void onFailure(Call call, IOException e) {
-//                //联网失败
-//                Log.e("MSG_FAIL", "请求失败：" + e.getMessage());
-//            }
-//
-//            @Override
-//            public void onResponse(Call call, Response response) throws IOException {
-//                Log.e("MSG_OK", "请求成功：" + response);
-//                String str = JsonParse.getInstance().getDelDeviceInfo(response.body().string());
-//                Log.e("MSG_OK",str);
-//                Message message = new Message();
-//                message.what = MSG_DelDev_OK;
-//                message.obj = str;
-//                handler.sendMessage(message);
-//            }
-//        });
+        String url = Constant.BASE_WEBSITE + Constant.REQUEST_DEL_DEVICE_URL + "/account/" + account + "/cardid/" + cardid;
+        OkHttpClient okHttpClient = new OkHttpClient();
+        final Request request = new Request.Builder().url(url).build();
+        Call call = okHttpClient.newCall(request);
+        //开启异步访问网络
+        call.enqueue(new Callback() {
+            @Override
+            public void onFailure(Call call, IOException e) {
+                //联网失败
+                Log.e("MSG_FAIL", "请求失败：" + e.getMessage());
+            }
+
+            @Override
+            public void onResponse(Call call, Response response) throws IOException {
+                Log.e("MSG_OK", "请求成功：" + response);
+                String str = JsonParse.getInstance().getDelDeviceInfo(response.body().string());
+                Log.e("MSG_OK", str);
+                Message message = new Message();
+                message.what = MSG_DelDev_OK;
+                message.obj = str;
+                handler.sendMessage(message);
+            }
+        });
 
     }
 
