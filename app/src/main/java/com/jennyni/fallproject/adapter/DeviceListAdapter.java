@@ -26,7 +26,7 @@ import java.util.List;
  * Created by Jenny on 2019/2/25.
  */
 
-public class DeviceListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>implements View.OnClickListener {
+public class DeviceListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>implements View.OnClickListener, View.OnLongClickListener {
     private Context context;
     private List<UserUpdateBean.ResultBean> devicelist=new ArrayList<>();
     private OnItemClickListener mOnItemClickListener = null;
@@ -34,6 +34,7 @@ public class DeviceListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHol
     public DeviceListAdapter(Context context) {
         this.context = context;
     }
+
     public void setOnItemClickListener(OnItemClickListener listener) {
         this.mOnItemClickListener = listener;
     }
@@ -50,6 +51,7 @@ public class DeviceListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHol
         View view = LayoutInflater.from(viewGroup.getContext()).inflate(R.layout.item_device_list,viewGroup,false);
         ViewHolder viewHolder = new ViewHolder(view);
         view.setOnClickListener(this);
+        view.setOnLongClickListener(this);
         return viewHolder;
     }
 
@@ -82,9 +84,13 @@ public class DeviceListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHol
         if (mOnItemClickListener != null) {
             //注意这里使用getTag方法获取position
             mOnItemClickListener.onItemClick(view, (int) view.getTag());
-            mOnItemClickListener.onItemLongClick(view, (int) view.getTag());
-
         }
+    }
+
+    @Override
+    public boolean onLongClick(View view) {
+        mOnItemClickListener.onItemLongClick(view, (int) view.getTag());
+        return false;
     }
 
     public class ViewHolder extends RecyclerView.ViewHolder{

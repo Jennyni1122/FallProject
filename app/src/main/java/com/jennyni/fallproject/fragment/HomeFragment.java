@@ -133,7 +133,6 @@ public class HomeFragment extends Fragment {    //implements DeviceListAdapter.L
             @Override
             public void onItemLongClick(View view, int position) {      //长按解绑
                 showDelDevDialog();         //显示删除对话框
-
             }
         });
 
