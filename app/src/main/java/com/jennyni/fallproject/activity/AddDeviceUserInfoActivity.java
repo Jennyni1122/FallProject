@@ -55,6 +55,7 @@ import okhttp3.Response;
  */
 public class AddDeviceUserInfoActivity extends AppCompatActivity implements View.OnClickListener {
     public static final String TAG = "AddDevice";
+    public static final int REQUEST_CODE = 0x12;
     private RelativeLayout rl_title_bar;
     private LinearLayout ll_addressfence;
     private TextView tv_main_title, tv_back, tv_switch, tv_guardian, tv_geocenter, tv_result;
@@ -207,7 +208,7 @@ public class AddDeviceUserInfoActivity extends AppCompatActivity implements View
                 break;
             case R.id.tv_geocenter:       //围栏地址选择
                 Intent intent = new Intent(AddDeviceUserInfoActivity.this, GetAddressByKeyword.class);
-                startActivity(intent);
+                startActivityForResult(intent, REQUEST_CODE);
                 break;
             case R.id.btn_sure_code:    //验证绑定关系按钮
 
@@ -264,7 +265,7 @@ public class AddDeviceUserInfoActivity extends AppCompatActivity implements View
                 "/idcard/" + idcard +
                 "/guardian/" + spUserPhone +
                 "/isgeo/" + (close.isChecked() ? "0" : "1") +
-                "/geocenter/" + geocenter +
+                "/geocenter/" + URLEncoder.encode(geocenter) +
                 "/georadius/" + georadius;
         Log.e(TAG, url);
         OkHttpClient okHttpClient = new OkHttpClient();
@@ -370,13 +371,13 @@ public class AddDeviceUserInfoActivity extends AppCompatActivity implements View
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
-        if (data != null) {
-            //从选择地址传递过来的经纬度
-            String geocenter = data.getStringExtra("geocenter");
-            if (data != null) {
-                tv_geocenter.setText(geocenter);    //获取经纬度
+        if (RESULT_OK == resultCode) {
+            if (requestCode == REQUEST_CODE) {
+                String geocenter = data.getStringExtra("geocenter");
+                if (data != null) {
+                    tv_geocenter.setText(geocenter);    //获取经纬度
+                }
             }
-
         }
     }
 
