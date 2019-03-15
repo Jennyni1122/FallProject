@@ -69,7 +69,7 @@ public class AddDeviceUserInfoActivity extends AppCompatActivity implements View
     private String currentDevCode, currentDevPsw;
     public static final int MSG_ADDUSER_OK = 1;
     public static final int MSG_BINDDEV_OK = 2;
-    String isgeo, issex, dname, idcard, geocenter, georadius="1000";
+    String isgeo, issex, dname, idcard, geocenter, georadius = "1000";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -110,13 +110,13 @@ public class AddDeviceUserInfoActivity extends AppCompatActivity implements View
         close = (RadioButton) findViewById(R.id.close);
         open = (RadioButton) findViewById(R.id.open);
         sex_event = (RadioGroup) findViewById(R.id.sex_event);           //性别选择
-        set_event = (RadioGroup) findViewById(R.id.sex_event);           //地理围栏选择
+        set_event = (RadioGroup) findViewById(R.id.set_event);           //地理围栏选择
         sex_event.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(RadioGroup group, int checkedId) {
                 RadioButton sex = findViewById(checkedId);
                 Toast.makeText(AddDeviceUserInfoActivity.this, "您选择了：" + sex.getText().toString(), Toast.LENGTH_SHORT).show();
-                if (sex.getText().toString().equals("男")) {
+                if (checkedId == R.id.man) {
                     issex = "男";
                     //头像根据性别变化
                     iv_head_icon.setImageResource(R.drawable.icon_male);
@@ -135,6 +135,7 @@ public class AddDeviceUserInfoActivity extends AppCompatActivity implements View
                     isgeo = "1";
                     ll_addressfence.setVisibility(View.VISIBLE);
                 } else {
+                    ll_addressfence.setVisibility(View.GONE);
                     isgeo = "0";
                 }
 
@@ -333,17 +334,17 @@ public class AddDeviceUserInfoActivity extends AppCompatActivity implements View
                 case MSG_ADDUSER_OK:        //用户数据保存
                     if (msg.obj != null) {
                         //获取数据
-                    //    String dev_result = (String) msg.obj;
+                        //    String dev_result = (String) msg.obj;
                         SetUpBean.ResultBean setupbean = (SetUpBean.ResultBean) msg.obj;
-                        Log.e("TAG","handleMessage:"+ setupbean.getDev_name());
+                        Log.e("TAG", "handleMessage:" + setupbean.getDev_name());
                         //保存数据库？？？？？？？？？？？？？？？？？？？？？？？
                         //DBUtils.getInstance(AddDeviceUserInfoActivity.this).saveUpdateDevInfo(setupbean);
                         Toast.makeText(AddDeviceUserInfoActivity.this, "保存成功", Toast.LENGTH_SHORT).show();
 //                        Intent intent = new Intent(AddDeviceUserInfoActivity.this, MeFragment.class);
 //                        startActivity(intent);
-                       Intent data = new Intent();
-                       data.putExtra("dname",setupbean.getDev_name());
-                       setResult(RESULT_OK,data);
+                        Intent data = new Intent();
+                        data.putExtra("dname", setupbean.getDev_name());
+                        setResult(RESULT_OK, data);
                         finish();
                     }
                     break;
