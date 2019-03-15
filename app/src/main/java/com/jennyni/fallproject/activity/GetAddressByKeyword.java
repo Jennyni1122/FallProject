@@ -50,7 +50,6 @@ public class GetAddressByKeyword extends AppCompatActivity implements GeocodeSea
         setContentView(R.layout.activity_getaddressbykeyword);
         geocoderSearch = new GeocodeSearch(this);
         geocoderSearch.setOnGeocodeSearchListener(this);
-
         initView();
 
     }
@@ -93,7 +92,7 @@ public class GetAddressByKeyword extends AppCompatActivity implements GeocodeSea
 
     public void search(View view) {
         // 第一个参数:地址，第二个参数:查询城市
-        GeocodeQuery query = new GeocodeQuery(et_address.getText().toString(), "苏州");
+        GeocodeQuery query = new GeocodeQuery(et_address.getText().toString(), "广州");
         geocoderSearch.getFromLocationNameAsyn(query);// 设置同步地理编码请求
 
     }
@@ -107,10 +106,15 @@ public class GetAddressByKeyword extends AppCompatActivity implements GeocodeSea
     //地理编码查询回调
     @Override
     public void onGeocodeSearched(GeocodeResult geocodeResult, int i) {
-        Log.e("onGeocodeSearched: ", geocodeResult.toString());
-        List<GeocodeAddress> geocodeAddressList = geocodeResult.getGeocodeAddressList();
-        Log.e("thread：", Thread.currentThread() + "");
-        adapter.addAllData(geocodeAddressList);
+        if(geocodeResult!=null){
+            Log.e("onGeocodeSearched: ", geocodeResult.toString());
+            List<GeocodeAddress> geocodeAddressList = geocodeResult.getGeocodeAddressList();
+            Log.e("thread：", Thread.currentThread() + "");
+            adapter.addAllData(geocodeAddressList);
+        }else {
+            Log.e("thread：", Thread.currentThread() + " 搜索异常！");
+        }
+
 
     }
 
