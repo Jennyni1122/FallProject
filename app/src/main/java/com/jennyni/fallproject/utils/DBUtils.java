@@ -38,16 +38,16 @@ public class DBUtils {
 
 
     /**
-     * 保存设备加载信息
+     * 保存设备用户加载信息（没有加头像headimage的参数）
      */
-    public void saveUpdateDevInfo(List<UserUpdateBean.ResultBean> list) {
+    public void saveUpdateDevInfo(List<UserUpdateBean.ResultBean> devicelist) {
         Cursor cursor = db.rawQuery("SELECT * FROM " + SQLiteHelper.DEVICE_INFO, null);
         if (cursor.getCount() != 0)//添加数据时，如果星座表中有数据，则在添加新数据之前需删除旧数据
         {
             //删除表中的数据
             db.execSQL("DELETE FROM " + SQLiteHelper.DEVICE_INFO);
         }
-        for (UserUpdateBean.ResultBean bean : list) {
+        for (UserUpdateBean.ResultBean bean : devicelist) {
             ContentValues cv = new ContentValues();
             cv.put("id", bean.getId());
             cv.put("cardid",bean.getCard_id());
@@ -63,17 +63,17 @@ public class DBUtils {
             cv.put("isgeo", bean.getIsgeo());
             cv.put("geocenter", bean.getGeocenter());
             cv.put("georadius", bean.getGeoradius());
-
+            cv.put("geopoints", (byte[]) bean.getGeopoints());
             db.insert(SQLiteHelper.DEVICE_INFO, null, cv);
         }
     }
 
-    /**
-     * 根据cardid获取设备用户信息
+    /**(userUpdate,askdevinfo里没有id)
+     * 根据id获取设备用户信息
      */
-    public UserUpdateBean.ResultBean getLoadDeviceInfo(int cardid) {
-        String sql = "SELECT * FROM " + SQLiteHelper.DEVICE_INFO + " WHERE cardid=?";
-        Cursor cursor = db.rawQuery(sql, new String[]{cardid + ""});
+    public UserUpdateBean.ResultBean getUpdateDevInfo(int id) {
+        String sql = "SELECT * FROM " + SQLiteHelper.DEVICE_INFO + " WHERE id=?";
+        Cursor cursor = db.rawQuery(sql, new String[]{id + ""});
         UserUpdateBean.ResultBean bean = null;
         while (cursor.moveToNext()) {
             bean = new UserUpdateBean.ResultBean();

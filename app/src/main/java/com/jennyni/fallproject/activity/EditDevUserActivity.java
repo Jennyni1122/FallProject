@@ -132,6 +132,11 @@ public class EditDevUserActivity extends AppCompatActivity implements View.OnCli
 
         }
 
+        //用askdevinfo接口开看以及编辑的设备用户信息？？？？
+
+
+
+
 
 
 

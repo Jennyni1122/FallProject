@@ -33,18 +33,22 @@ public class SQLiteHelper extends SQLiteOpenHelper {
 
         db.execSQL("CREATE TABLE  IF NOT EXISTS " + DEVICE_INFO + "( "
                 + "_id INTEGER PRIMARY KEY AUTOINCREMENT, "
-                + "account text,"       //手机注册人
+                + "id text,"            //设备id
                 + "cardid text,"        //设备唯一标识码（绑定用户）
                 + "cardpass text,"      //设备密码（添加设备用） 123456 数字，6-8 位
                 + "dname text,"         //设备用户昵称
-                + "headimage text,"
+                + "headimage text,"     //头像（服务器没弄）
                 + "age text,"           //设备用户年龄
                 + "sex text,"           //设备用户性别
                 + "idcard text,"        //设备用户身份证
                 + "devphone text,"      //设备用户电话
                 + "address text,"       //设备用户住址
                 + "casehistory text,"   //设备用户病史
-                + "guardian text"       //监护人手机号码
+                + "guardian text,"      //监护人手机号码(手机注册人)
+                + "isgeo int,"          //设置围栏
+                + "geocenter text,"     //围栏中心点
+                + "georadius text,"       //围栏范围
+                + "geopoints text"       //围栏坐标点
                 + ")");
 
 //        /**

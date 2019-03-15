@@ -15,6 +15,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.RelativeLayout;
+import android.widget.Toast;
 
 import com.jennyni.fallproject.R;
 
@@ -29,7 +30,7 @@ import de.hdodenhof.circleimageview.CircleImageView;
 
 public class MeFragment extends Fragment implements View.OnClickListener{
 
-    private RelativeLayout rl_collection,rl_setting;
+    private RelativeLayout rl_userinfo,rl_collection,rl_setting;
     private CircleImageView iv_avatar;
     private View view;
     private UpdateUserInfoReceiver updateUserInfoReceiver;  //暂不用
@@ -54,7 +55,7 @@ public class MeFragment extends Fragment implements View.OnClickListener{
      * @param view
      */
     private void initView(View view) {
-
+        rl_userinfo = view.findViewById(R.id.rl_userinfo);
         rl_collection = view.findViewById(R.id.rl_collection);
         rl_setting = view.findViewById(R.id.rl_setting);
 
@@ -96,7 +97,7 @@ public class MeFragment extends Fragment implements View.OnClickListener{
     }
 
     private void setListener() {
-
+        rl_userinfo.setOnClickListener(this);    //个人资料按钮
         rl_collection.setOnClickListener(this); //使用帮助按钮
         rl_setting.setOnClickListener(this);    //设置按钮
         iv_avatar.setOnClickListener(this);     //点击头像按钮
@@ -117,26 +118,24 @@ public class MeFragment extends Fragment implements View.OnClickListener{
     @Override
     public void onClick(View v) {
         switch (v.getId()){
-
+            case R.id.rl_userinfo:    //点击个人资料
+                if (isLogin){
+                    //跳转到个人资料界面
+                    Intent userinfoIntent = new Intent(getActivity(),UserInfoActivity.class);
+                    startActivityForResult(userinfoIntent,1);   //回传数据
+                }
+                break;
             case R.id.rl_collection:
                 //跳到使用帮助界面
-                Intent collection = new Intent(getActivity(),SettingActivity.class);
-                startActivity(collection);
+                Toast.makeText(getActivity(), "暂未开放", Toast.LENGTH_SHORT).show();
+//                Intent collection = new Intent(getActivity(),SettingActivity.class);
+//                startActivity(collection);
                 break;
             case R.id.rl_setting:
                     Intent settingIntent = new Intent(getActivity(),SettingActivity.class);
                     startActivityForResult(settingIntent,1);
                 break;
-            case R.id.iv_avatar:    //点击头像事件
-                if (isLogin){
-                    //跳转到个人资料界面
-                    Intent userinfo = new Intent(getActivity(),UserInfoActivity.class);
-                    startActivityForResult(userinfo,1);   //回传数据
-                }else {
-                    //跳转到登录界面
-                    Intent loginIntent = new Intent(getActivity(),LoginActivity.class);
-                    startActivityForResult(loginIntent,1);      //回传数据
-                }
+
         }
 
     }

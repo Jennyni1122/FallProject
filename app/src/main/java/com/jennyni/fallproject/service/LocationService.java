@@ -40,7 +40,6 @@ import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.Response;
 
-import static com.jennyni.fallproject.activity.devicelocation.DevUserDetailActivity.MSG_MAPPAGE_OK;
 
 /**
  * Created by YellowHuang on 2018/10/22.

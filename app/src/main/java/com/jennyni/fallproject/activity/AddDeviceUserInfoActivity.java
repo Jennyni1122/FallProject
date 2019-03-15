@@ -26,10 +26,12 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.jennyni.fallproject.Bean.SetUpBean;
 import com.jennyni.fallproject.R;
 import com.jennyni.fallproject.fragment.MeFragment;
 import com.jennyni.fallproject.net.NetWorkBuilder;
 import com.jennyni.fallproject.utils.Constant;
+import com.jennyni.fallproject.utils.DBUtils;
 import com.jennyni.fallproject.utils.JsonParse;
 import com.jennyni.fallproject.utils.StringUtil;
 import com.jennyni.fallproject.utils.UtilsHelper;
@@ -167,28 +169,21 @@ public class AddDeviceUserInfoActivity extends AppCompatActivity implements View
                 break;
             case R.id.tv_save:          //保存设备用户信息
 
-                if (TextUtils.isEmpty(currentDevCode) && TextUtils.isEmpty(currentDevPsw)) {
-                    Toast.makeText(this, "输入设备号及设备密码~", Toast.LENGTH_SHORT).show();
-                }
-                if (TextUtils.isEmpty(et_device_name.getText().toString())) {
-                    Toast.makeText(this, "请输入用户名~", Toast.LENGTH_SHORT).show();
-                }
-                if (TextUtils.isEmpty(et_idcard.getText().toString())) {
-                    Toast.makeText(this, "请输入身份证号码~", Toast.LENGTH_SHORT).show();
-                }
                 //身份证格式
                 Pattern p = Pattern.compile("[0-9]{17,17}[0-9X]");
                 Matcher m = p.matcher(et_idcard.getText().toString());
                 if (m.matches()) {
                     //Intent跳转
                     if (isNetworkAvaible(AddDeviceUserInfoActivity.this)) {
-                        sendquest_saveData();       //从服务器上拉数据
+
                     } else {
                         Toast.makeText(AddDeviceUserInfoActivity.this, "当前网络错误", Toast.LENGTH_SHORT).show();
                     }
                 } else {
                     Toast.makeText(AddDeviceUserInfoActivity.this, "请输入合法的身份证号", Toast.LENGTH_SHORT).show();
                 }
+
+                sendrequest_saveData();       //从服务器上拉数据
 
                 break;
             case R.id.iv_show_psw:      //密码可见设置
@@ -215,7 +210,7 @@ public class AddDeviceUserInfoActivity extends AppCompatActivity implements View
                 break;
             case R.id.btn_sure_code:    //验证绑定关系按钮
 
-                sendquest_recode();     //请求网络，验证绑定关系
+                sendrequest_recode();     //请求网络，验证绑定关系
                 break;
         }
 
@@ -229,7 +224,7 @@ public class AddDeviceUserInfoActivity extends AppCompatActivity implements View
     /**
      * 保存设备用户信息，进行上传
      */
-    private void sendquest_saveData() {
+    private void sendrequest_saveData() {
         dname = et_device_name.getText().toString().trim();
         idcard = et_idcard.getText().toString().trim();
         currentDevCode = et_dev_cardid.getText().toString();
@@ -287,7 +282,7 @@ public class AddDeviceUserInfoActivity extends AppCompatActivity implements View
                 String str = JsonParse.getInstance().getSetupInfo(response.body().string());
                 Log.e(TAG, "MSG_ADDUSER_OK" + str);
                 Message message = new Message();
-                message.what = MSG_BINDDEV_OK;
+                message.what = MSG_ADDUSER_OK;
                 message.obj = str;
                 handler.sendMessage(message);
             }
@@ -298,7 +293,7 @@ public class AddDeviceUserInfoActivity extends AppCompatActivity implements View
     /**
      * 请求网络，验证设备绑定关系（注：设备号和密码是给定不变的）
      */
-    private void sendquest_recode() {
+    private void sendrequest_recode() {
         currentDevCode = et_dev_cardid.getText().toString();
         currentDevPsw = et_dev_psw.getText().toString();
         String url = Constant.BASE_WEBSITE + Constant.REQUEST_ADD_DEVICE_URL + "/account/" + spUserPhone + "/cardid/" + currentDevCode + "/cardpass/" + currentDevPsw;
@@ -338,12 +333,17 @@ public class AddDeviceUserInfoActivity extends AppCompatActivity implements View
                 case MSG_ADDUSER_OK:        //用户数据保存
                     if (msg.obj != null) {
                         //获取数据
-                        String result = (String) msg.obj;
-                        Log.e("handleMessage", result);
-
+                    //    String dev_result = (String) msg.obj;
+                        SetUpBean.ResultBean setupbean = (SetUpBean.ResultBean) msg.obj;
+                        Log.e("TAG","handleMessage:"+ setupbean.getDev_name());
+                        //保存数据库？？？？？？？？？？？？？？？？？？？？？？？
+                        //DBUtils.getInstance(AddDeviceUserInfoActivity.this).saveUpdateDevInfo(setupbean);
                         Toast.makeText(AddDeviceUserInfoActivity.this, "保存成功", Toast.LENGTH_SHORT).show();
-                        Intent intent = new Intent(AddDeviceUserInfoActivity.this, MeFragment.class);
-                        startActivity(intent);
+//                        Intent intent = new Intent(AddDeviceUserInfoActivity.this, MeFragment.class);
+//                        startActivity(intent);
+                       Intent data = new Intent();
+                       data.putExtra("dname",setupbean.getDev_name());
+                       setResult(RESULT_OK,data);
                         finish();
                     }
                     break;

@@ -25,89 +25,65 @@ import java.util.List;
  * Created by Jenny on 2019/2/25.
  */
 
-public class DeviceListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>{
-    private List<UserUpdateBean.ResultBean> devicelist;
+public class DeviceListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>implements View.OnClickListener {
     private Context context;
-    private AdapterView.OnItemClickListener mOnItemClickListener;
+    private List<UserUpdateBean.ResultBean> devicelist;
+    private OnItemClickListener mOnItemClickListener = null;
 
     public DeviceListAdapter(Context context) {
         this.context = context;
     }
-
-    public void setData(List<UserUpdateBean.ResultBean> list){
-        this.devicelist = list;
+    public void setOnItemClickListener(OnItemClickListener listener) {
+        this.mOnItemClickListener = listener;
+    }
+    public void setData(List<UserUpdateBean.ResultBean> devicelist){
+        this.devicelist = devicelist;
         notifyDataSetChanged();     //更新
     }
 
 
     @NonNull
     @Override
-    public RecyclerView.ViewHolder onCreateViewHolder(@NonNull ViewGroup viewGroup, int viewType) {
+    public ViewHolder onCreateViewHolder(@NonNull ViewGroup viewGroup, int viewType) {
 
         View view = LayoutInflater.from(viewGroup.getContext()).inflate(R.layout.item_device_list,viewGroup,false);
-        final ViewHolder viewHolder = new ViewHolder(view);
-
-
-        //长按列表项，解绑设备(参考网上)
-        //1.适配器中添加长按点击方法
-        view.setOnLongClickListener(new View.OnLongClickListener() {
-            @Override
-            public boolean onLongClick(View v) {
-                //获取view对应对应的位置
-                int position = viewHolder.getLayoutPosition();
-                if (longClickLisenter!=null){
-                    //回调监听
-                    longClickLisenter.onRecyclerViewItemLongClick(position);
-                }
-                return true;
-            }
-        });
-
-
+        ViewHolder viewHolder = new ViewHolder(view);
+        view.setOnClickListener(this);
         return viewHolder;
     }
 
     @Override
-    public void onBindViewHolder(@NonNull final RecyclerView.ViewHolder holder, int position) {
-
-        final UserUpdateBean.ResultBean bean = devicelist.get(position);
+    public void onBindViewHolder(@NonNull RecyclerView.ViewHolder holder, int i) {
+        if (devicelist == null) return;
+        UserUpdateBean.ResultBean bean = devicelist.get(i);
 
         //每个列表项，显示：设备用户图片，设备名和设备号
         Glide
                 .with(context)
                 .load(bean.getHeadimage())
                 .error(R.mipmap.ic_launcher)
-                .into(((ViewHolder)holder).iv_img_sex);//根据性别变换头像,暂不用
+                .into(((ViewHolder) holder).iv_img_sex);//根据性别变换头像,暂不用
         ((ViewHolder) holder).tv_device_username.setText(bean.getDev_name());
         ((ViewHolder) holder).tv_device_name.setText(bean.getCard_id());
 
-        //点击进入单个用户的设备定位界面信息,显示设备号，设备用户，电量，信号，经纬度，电子围栏等信息
-        if (mOnItemClickListener != null){
-            holder.itemView.setOnClickListener(new View.OnClickListener() { //点击子项目
-                @Override
-                public void onClick(View v) {
-                    Intent intent = new Intent(context,DevUserDetailActivity.class);
-                    //显示内容：设备用户名，设备编号，设备信号，设备电量，身份证，安全范围，当前状态
-                    intent.putExtra("id",bean.getId());
-                    intent.putExtra("dname",bean.getDev_name());
-                    intent.putExtra("cardid",bean.getCard_id());
-                    intent.putExtra("guardian",bean.getGuardian());
-                    intent.putExtra("isgeo",bean.getIsgeo());
-                    intent.putExtra("geocenter",bean.getGeocenter());
-                    intent.putExtra("georadius",bean.getGeoradius());
-                    //注意：协议里缺少信号，电量等。。。
-                    context.startActivity(intent);
-                }
-            });
-
-        }
-
+        //将i保存在itemView的Tag中，以便点击时进行获取
+        holder.itemView.setTag(i);
 
     }
 
     @Override
     public int getItemCount() {
         return devicelist == null ? 0 : devicelist.size();
+    }
+
+    @Override
+    public void onClick(View view) {
+        if (mOnItemClickListener != null) {
+            //注意这里使用getTag方法获取position
+            mOnItemClickListener.onItemClick(view, (int) view.getTag());
+            mOnItemClickListener.onItemLongClick(view, (int) view.getTag());
+
+        }
     }
 
     public class ViewHolder extends RecyclerView.ViewHolder{
@@ -121,22 +97,9 @@ public class DeviceListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHol
         }
     }
 
-    //2.创建接口
-    public interface OnLongClickLisenter {
-        void onRecyclerViewItemLongClick(int position);
+    public interface OnItemClickListener {
+        void onItemClick(View view, int position);
+        void onItemLongClick(View view, int position);
     }
-
-    private OnLongClickLisenter longClickLisenter;
-
-    public void setOnRecyclerViewItemLongClickLisenter(OnLongClickLisenter longClickLisenter) {
-        this.longClickLisenter = longClickLisenter;
-    }
-
-    //3.定义删除方法
-    public void removeItem(int position){
-        devicelist.remove(position);
-        notifyDataSetChanged();
-    }
-
 
 }

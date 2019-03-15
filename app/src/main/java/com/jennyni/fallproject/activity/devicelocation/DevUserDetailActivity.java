@@ -31,13 +31,18 @@ import com.amap.api.services.geocoder.GeocodeSearch;
 import com.amap.api.services.geocoder.RegeocodeAddress;
 import com.amap.api.services.geocoder.RegeocodeResult;
 import com.jennyni.fallproject.Bean.AskFallInfoBean;
+import com.jennyni.fallproject.Bean.UserUpdateBean;
+import com.jennyni.fallproject.FallProjectApplication;
 import com.jennyni.fallproject.R;
 import com.jennyni.fallproject.activity.EditDevUserActivity;
+import com.jennyni.fallproject.fragment.HomeFragment;
 import com.jennyni.fallproject.utils.Constant;
+import com.jennyni.fallproject.utils.DBUtils;
 import com.jennyni.fallproject.utils.JsonParse;
 import com.jennyni.fallproject.utils.UtilsHelper;
 
 import java.io.IOException;
+import java.util.List;
 import java.util.Random;
 
 import okhttp3.Call;
@@ -52,12 +57,13 @@ import okhttp3.Response;
 public class DevUserDetailActivity extends BaseMapActivity implements GeocodeSearch.OnGeocodeSearchListener {
     //标题栏
     public static final String TAG = "DevUserDetailActivity";
-    private TextView tv_main_title,tv_back, tv_switch;
+    private TextView tv_main_title,tv_back, tv_edit_device;
     private RelativeLayout rl_title_bar;
     //内容控件
     private TextView tv_dev_user,tv_address,tv_dev_num,tv_rssi,tv_power,tv_idcard,tv_alert,tv_state;
     private ImageView iv_select_time;
-    public static final int MSG_MAPPAGE_OK = 1;    //获取设备数据
+    public static final int MSG_DevUser_OK = 1; //加载设备，获取数据
+    public static final int MSG_FALLINFO_OK = 2;    //获取跌倒设备数据
     private Circle circle;
     private Marker marker;
     private Marker marker1;
@@ -87,9 +93,11 @@ public class DevUserDetailActivity extends BaseMapActivity implements GeocodeSea
         IntentFilter filter = new IntentFilter(getPackageName().concat(".safelocaiton"));
         registerReceiver(broadcastReceiver, filter);
         setMapDragListener(null, this);
-        sendrequest_initData();     //请求网络，查询设备最新数据
+        sendrequest_userUpdateData();
+        sendrequest_fallData();     //请求网络，查询跌倒最新数据
 
     }
+
 
 
 
@@ -114,17 +122,20 @@ public class DevUserDetailActivity extends BaseMapActivity implements GeocodeSea
         tv_back.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {            //返回按钮
-               DevUserDetailActivity.this.finish();
+                Intent intent = new Intent( DevUserDetailActivity.this,HomeFragment.class);
+                startActivityForResult(intent, 1);
             }
         });
-        tv_switch = (TextView) findViewById(R.id.tv_save);
-        tv_switch.setVisibility(View.VISIBLE);
-        tv_switch.setText("编辑设备");
-        tv_switch.setOnClickListener(new View.OnClickListener() {       //跳转到编辑设备界面
+        tv_edit_device = (TextView) findViewById(R.id.tv_save);
+        tv_edit_device.setVisibility(View.VISIBLE);
+        tv_edit_device.setText("编辑设备");
+        tv_edit_device.setOnClickListener(new View.OnClickListener() {       //跳转到编辑设备界面
             @Override
             public void onClick(View view) {
                 Intent intent = new Intent(  DevUserDetailActivity.this, EditDevUserActivity.class);
-                startActivityForResult(intent, 1);
+               // startActivityForResult(intent, 1);
+                startActivity(intent);
+                finish();
             }
         });
 
@@ -170,17 +181,44 @@ public class DevUserDetailActivity extends BaseMapActivity implements GeocodeSea
         public void handleMessage(Message msg) {
             super.handleMessage(msg);
             switch (msg.what) {
-                case MSG_MAPPAGE_OK:
+                case MSG_DevUser_OK:                //设备用户数据信息
+                    if (msg.obj != null) {
+                        String result = (String) msg.obj;
+                        Log.e(TAG,"handleMessage"+ result);
+                        List<UserUpdateBean.ResultBean> devicelist = JsonParse.getInstance().getuserUpdateInfo(result);
+                        if (devicelist != null){
+                            if (devicelist.size() > 0){
+                                //保存数据到数据库
+                                DBUtils.getInstance(FallProjectApplication.getContext())
+                                        .saveUpdateDevInfo(devicelist);
+                                UserUpdateBean.ResultBean devicebean = DBUtils.getInstance(FallProjectApplication.getContext())
+                                        .getUpdateDevInfo(1);
+                                setData(devicebean);
+                            }
+                        }
+                    }
+                    break;
+                case MSG_FALLINFO_OK:           //设备跌倒报警信息
                     if (msg.obj != null) {
                         //获取数据
-                        AskFallInfoBean.ResultBean bean = (AskFallInfoBean.ResultBean) msg.obj;
+                        AskFallInfoBean.ResultBean fallbean = (AskFallInfoBean.ResultBean) msg.obj;
                         Log.e("TAG","handleMessage:"+"id:"+ bean.getId() + "设备编号："+ bean.getCard_id());
-                        showLocation(bean);
+                        showLocation(fallbean);
                     }
                     break;
             }
         }
     };
+
+    /**
+     * 显示数据到界面
+     * @param devicebean
+     */
+    private void setData(UserUpdateBean.ResultBean devicebean) {
+
+
+
+    }
 
     /**.................................跌倒和状态怎么显示，电量和信号该显示百分比吗， 围栏信息不在这个接口
      * 将设备参数及定位的数据显示出来()
@@ -277,10 +315,41 @@ public class DevUserDetailActivity extends BaseMapActivity implements GeocodeSea
 
     }
 
-    /**
-     * 查询网络，查询设备最新数据
+    /**（userUpdate）
+     * 请求网络，查询设备设备用户最新数据
      */
-    private void sendrequest_initData() {
+    private void sendrequest_userUpdateData() {
+        String account = UtilsHelper.readLoginUserName(this);
+        String url = Constant.BASE_WEBSITE + Constant.REQUEST_UPDATE_USER_URL+"/account/"+account;
+        Log.e(TAG,"initData: "+url );
+        OkHttpClient okHttpClient = new OkHttpClient();
+        final Request request = new Request.Builder().url(url).build();
+        Call call = okHttpClient.newCall(request);
+        //开启异步线程访问网络
+        call.enqueue(new Callback() {
+            @Override
+            public void onFailure(Call call, IOException e) {
+                Log.e(TAG,"MSG_DevUser_FAIL"+"请求失败：" + e.getMessage());
+            }
+
+            @Override
+            public void onResponse(Call call, Response response) throws IOException {
+                String res = response.body().string();
+                Log.e(TAG,"MSG_DevUser_OK"+"请求成功：" + res);
+                Message msg = new Message();
+                msg.what = MSG_DevUser_OK;
+                msg.obj = res;
+                handler.sendMessage(msg);
+            }
+        });
+
+    }
+
+
+    /**（AskFallInfo）
+     * 请求网络，查询设备跌倒报警最新数据
+     */
+    private void sendrequest_fallData() {
         //10.请求设备最新数据(跌倒报警与地理围栏报警)
         //String url10 = "http://www.phyth.cn/index/fall/askfallinfo/account/" + account + "/cardid/" + cardid;
         String url = Constant.BASE_WEBSITE+Constant.REQUEST_ASKFALLINFO_DEVICE_URL +"/account/" + account + "/cardid/" + cardid;
@@ -305,7 +374,7 @@ public class DevUserDetailActivity extends BaseMapActivity implements GeocodeSea
                     return;
                 }
                 Message message = new Message();
-                message.what = MSG_MAPPAGE_OK;
+                message.what = MSG_FALLINFO_OK;
                 message.obj = bean;
                 handler.sendMessage(message);
             }
@@ -348,5 +417,20 @@ public class DevUserDetailActivity extends BaseMapActivity implements GeocodeSea
         }
     }
 
+    /**
+     * 从HomeFragment设备用户列表回传数据
+     * @param requestCode
+     * @param resultCode
+     * @param data
+     */
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        if (data != null) {
+            int id = data.getIntExtra("id", 0);
+            UserUpdateBean.ResultBean bean = DBUtils.getInstance(DevUserDetailActivity.this).getUpdateDevInfo(id);
+            setData(bean);
+        }
+    }
 
 }

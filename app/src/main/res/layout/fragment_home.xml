@@ -1,28 +1,36 @@
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:orientation="vertical"
     tools:context="com.jennyni.fallproject.fragment.HomeFragment">
 
-    <include layout="@layout/main_title_bar"/>
-
-    <com.itheima.PullToRefreshView
-        android:id="@+id/pull_to_refresh"
+    <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:background="#f6f6f6">
+        android:orientation="vertical">
 
-        <com.jennyni.fallproject.view.WrapRecyclerView
-            android:id="@+id/recycler_view"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:divider="@null"
-            android:dividerHeight="0dp"
-            android:fadingEdge="none" />
-    </com.itheima.PullToRefreshView>
+         <include layout="@layout/main_title_bar"/>
 
+         <com.itheima.PullToRefreshView
+             android:id="@+id/pull_to_refresh"
+             android:layout_width="match_parent"
+             android:layout_height="match_parent"
+             android:background="#f6f6f6">
+
+             <android.support.v7.widget.RecyclerView
+                 android:id="@+id/recycler_view"
+                 android:layout_width="fill_parent"
+                 android:layout_height="match_parent"
+                 android:divider="@null"
+                 android:dividerHeight="0dp"
+                 android:fadingEdge="none"
+                 android:paddingBottom="8dp"
+                 android:paddingTop="8dp" />
+
+        </com.itheima.PullToRefreshView>
+
+    </LinearLayout>
     <!--<android.support.design.widget.FloatingActionButton-->
         <!--android:id="@+id/fab"-->
         <!--android:layout_width="wrap_content"-->
@@ -32,4 +40,13 @@
         <!--app:backgroundTint="@color/btnCodeColor"-->
         <!--app:srcCompat="@android:drawable/ic_menu_add" />-->
 
-</LinearLayout>
+    <TextView
+        android:id="@+id/tv_none"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:gravity="center"
+        android:text="暂无设备信息~"
+        android:textColor="@android:color/darker_gray"
+        android:textSize="16sp"
+        android:visibility="gone" />
+</RelativeLayout>

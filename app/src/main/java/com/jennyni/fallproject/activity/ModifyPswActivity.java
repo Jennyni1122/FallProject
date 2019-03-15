@@ -36,7 +36,7 @@ import okhttp3.Response;
 
 
 /**
- * 修改密码（复用）
+ * 修改密码
  * Created by Jenny on 2019/3/6.
  */
 
