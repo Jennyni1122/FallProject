@@ -26,6 +26,7 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.amap.api.services.core.LatLonPoint;
 import com.jennyni.fallproject.Bean.SetUpBean;
 import com.jennyni.fallproject.R;
 import com.jennyni.fallproject.fragment.MeFragment;
@@ -373,9 +374,9 @@ public class AddDeviceUserInfoActivity extends AppCompatActivity implements View
         super.onActivityResult(requestCode, resultCode, data);
         if (RESULT_OK == resultCode) {
             if (requestCode == REQUEST_CODE) {
-                String geocenter = data.getStringExtra("geocenter");
-                if (data != null) {
-                    tv_geocenter.setText(geocenter);    //获取经纬度
+                LatLonPoint geocenter = data.getParcelableExtra("geocenter");
+                if (geocenter != null) {
+                    tv_geocenter.setText(geocenter.getLatitude()+","+geocenter.getLongitude());    //获取经纬度
                 }
             }
         }
