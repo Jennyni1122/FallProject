@@ -69,10 +69,12 @@ public class HomeFragment extends Fragment {    //implements DeviceListAdapter.L
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
 
-        sendrequest_initData();         //加载设备用户信息列表数据
+               //加载设备用户信息列表数据
         View view = initView(inflater, container);
+        sendrequest_initData();
         return view;
     }
+
 
     private View initView(final LayoutInflater inflater, ViewGroup container) {
         View view = inflater.inflate(R.layout.fragment_home, container, false);

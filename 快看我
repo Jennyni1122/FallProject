@@ -1,0 +1,4 @@
+activity之间需要传值需要用startActivityForResult()启动，注意Intent之间传值的类型，自定义的Java类要注意序列化问题（LatLonPoint,Serializable）
+activity之间需要传值需要用startActivityForResult()启动，注意Intent之间传值的类型，自定义的Java类要注意序列化问题（LatLonPoint,Serializable）
+解析问题
+==和equals问题

@@ -18,6 +18,7 @@ import com.jennyni.fallproject.Bean.UserUpdateBean;
 import com.jennyni.fallproject.activity.devicelocation.DevUserDetailActivity;
 import com.jennyni.fallproject.R;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -27,7 +28,7 @@ import java.util.List;
 
 public class DeviceListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>implements View.OnClickListener {
     private Context context;
-    private List<UserUpdateBean.ResultBean> devicelist;
+    private List<UserUpdateBean.ResultBean> devicelist=new ArrayList<>();
     private OnItemClickListener mOnItemClickListener = null;
 
     public DeviceListAdapter(Context context) {

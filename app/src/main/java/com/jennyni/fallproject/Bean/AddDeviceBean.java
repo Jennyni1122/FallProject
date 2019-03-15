@@ -1,11 +1,13 @@
 package com.jennyni.fallproject.Bean;
 
+import java.io.Serializable;
+
 /**
  * 添加设备
  * Created by Jenny on 2019/3/4.
  */
 
-public class AddDeviceBean {
+public class AddDeviceBean implements Serializable {
 
 
     /**
