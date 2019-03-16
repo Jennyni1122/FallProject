@@ -131,7 +131,7 @@ public class HomeFragment extends Fragment {    //implements DeviceListAdapter.L
                 Intent intent = new Intent(getActivity(),DevUserDetailActivity.class);
                 intent.putExtra("id", devicelist.get(position).getId());
                 getActivity().setResult(RESULT_OK, intent);
-                startActivity(intent);
+               // startActivity(intent);
             }
 
             @Override

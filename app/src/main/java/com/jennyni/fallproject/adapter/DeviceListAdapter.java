@@ -69,17 +69,11 @@ public class DeviceListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHol
         ((ViewHolder) holder).tv_device_username.setText(bean.getDev_name());
         ((ViewHolder) holder).tv_device_name.setText(bean.getCard_id());
         //头像根据性别变化
-//        if ( bean.getDev_sex().equals("男")) {
-//            ((ViewHolder) holder).iv_head_icon.setImageResource(R.drawable.icon_male);
-//        } else {
-//            ((ViewHolder) holder).iv_head_icon.setImageResource(R.drawable.icon_female);
-//        }
-//        Glide
-//                .with(context)
-//                .load(R.drawable.icon_male)
-//                .error(R.mipmap.ic_launcher)
-//                .into((holder).iv_head_icon);
-
+        if ( bean.getDev_sex().equals("男")) {
+            ((ViewHolder) holder).iv_img_sex.setImageResource(R.drawable.icon_male);
+        } else {
+            ((ViewHolder) holder).iv_img_sex.setImageResource(R.drawable.icon_female);
+        }
         //将i保存在itemView的Tag中，以便点击时进行获取
         holder.itemView.setTag(i);
 
@@ -106,15 +100,12 @@ public class DeviceListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHol
 
     public class ViewHolder extends RecyclerView.ViewHolder{
         public TextView tv_device_username,tv_device_name;
-        public ImageView iv_head_icon;
-        public RadioGroup sex_event;
-        public RadioButton sex;
+        public ImageView iv_img_sex;
         public ViewHolder(View itemView) {
             super(itemView);
             tv_device_username = itemView.findViewById(R.id.tv_device_username);
             tv_device_name = itemView.findViewById(R.id.tv_device_name);
-          //  sex_event = itemView.findViewById(R.id.sex_event);           //性别选择
-            iv_head_icon = itemView.findViewById(R.id.iv_head_icon);
+            iv_img_sex = itemView.findViewById(R.id.iv_img_sex);
 
         }
     }
