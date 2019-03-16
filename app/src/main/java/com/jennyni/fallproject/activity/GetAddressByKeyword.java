@@ -36,7 +36,7 @@ import java.util.List;
 public class GetAddressByKeyword extends AppCompatActivity implements GeocodeSearch.OnGeocodeSearchListener, GetAddressAdapter.ItemClickListener {
 
     private RelativeLayout rl_title_bar;
-    private TextView tv_main_title, tv_back, tv_switch;
+    private TextView tv_main_title, tv_back;
     private GeocodeSearch geocoderSearch;
     private EditText et_address;
     private TextView tv_latlng;
@@ -61,17 +61,9 @@ public class GetAddressByKeyword extends AppCompatActivity implements GeocodeSea
         tv_main_title = findViewById(R.id.tv_main_title);
         tv_main_title.setText("选择围栏地址");
         tv_back = findViewById(R.id.tv_back);
-        tv_switch = findViewById(R.id.tv_save);
         tv_back.setVisibility(View.VISIBLE);
-        tv_switch.setVisibility(View.VISIBLE);
-        tv_switch.setText("保存");
+
         tv_back.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                GetAddressByKeyword.this.finish();
-            }
-        });
-        tv_switch.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 Intent data = new Intent();
@@ -80,6 +72,7 @@ public class GetAddressByKeyword extends AppCompatActivity implements GeocodeSea
                 GetAddressByKeyword.this.finish();
             }
         });
+
 
         et_address = (EditText) findViewById(R.id.et_address);
         tv_latlng = (TextView) findViewById(R.id.tv_latlng);
@@ -92,7 +85,7 @@ public class GetAddressByKeyword extends AppCompatActivity implements GeocodeSea
 
     public void search(View view) {
         // 第一个参数:地址，第二个参数:查询城市
-        GeocodeQuery query = new GeocodeQuery(et_address.getText().toString(), "广州");
+        GeocodeQuery query = new GeocodeQuery(et_address.getText().toString(), "苏州");
         geocoderSearch.getFromLocationNameAsyn(query);// 设置同步地理编码请求
 
     }

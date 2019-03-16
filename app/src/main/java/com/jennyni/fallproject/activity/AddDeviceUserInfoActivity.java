@@ -60,7 +60,6 @@ public class AddDeviceUserInfoActivity extends AppCompatActivity implements View
     private RelativeLayout rl_title_bar;
     private LinearLayout ll_addressfence;
     private TextView tv_main_title, tv_back, tv_switch, tv_guardian, tv_geocenter, tv_result;
-    private TextView tv_weilandizhi, tv_weilanfanwei, tv_mi, tv_shuoming;//可忽略
     private EditText et_device_name, et_idcard, et_dev_cardid, et_dev_psw, et_georadius;
     private RadioGroup sex_event, set_event;
     private RadioButton male, female, open, close;
@@ -117,7 +116,7 @@ public class AddDeviceUserInfoActivity extends AppCompatActivity implements View
             @Override
             public void onCheckedChanged(RadioGroup group, int checkedId) {
                 RadioButton sex = findViewById(checkedId);
-                Toast.makeText(AddDeviceUserInfoActivity.this, "您选择了：" + sex.getText().toString(), Toast.LENGTH_SHORT).show();
+        //        Toast.makeText(AddDeviceUserInfoActivity.this, "您选择了：" + sex.getText().toString(), Toast.LENGTH_SHORT).show();
                 if (checkedId == R.id.man) {
                     issex = "男";
                     //头像根据性别变化
@@ -132,7 +131,7 @@ public class AddDeviceUserInfoActivity extends AppCompatActivity implements View
             @Override
             public void onCheckedChanged(RadioGroup group, int checkedId) {
                 RadioButton set = findViewById(checkedId);
-                Toast.makeText(AddDeviceUserInfoActivity.this, "您选择了：" + set.getText().toString(), Toast.LENGTH_SHORT).show();
+            //    Toast.makeText(AddDeviceUserInfoActivity.this, "您选择了：" + set.getText().toString(), Toast.LENGTH_SHORT).show();
                 if (set.getText().toString().equals("开启")) {
                     isgeo = "1";
                     ll_addressfence.setVisibility(View.VISIBLE);
@@ -339,8 +338,6 @@ public class AddDeviceUserInfoActivity extends AppCompatActivity implements View
                         //    String dev_result = (String) msg.obj;
                         SetUpBean.ResultBean setupbean = (SetUpBean.ResultBean) msg.obj;
                         Log.e("TAG", "handleMessage:" + setupbean.getDev_name());
-                        //保存数据库？？？？？？？？？？？？？？？？？？？？？？？
-                        //DBUtils.getInstance(AddDeviceUserInfoActivity.this).saveUpdateDevInfo(setupbean);
                         Toast.makeText(AddDeviceUserInfoActivity.this, "保存成功", Toast.LENGTH_SHORT).show();
 //                        Intent intent = new Intent(AddDeviceUserInfoActivity.this, MeFragment.class);
 //                        startActivity(intent);

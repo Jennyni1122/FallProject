@@ -1,16 +1,20 @@
 package com.jennyni.fallproject.adapter;
 
+import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.Intent;
 import android.support.annotation.NonNull;
 
 
+import android.support.v7.view.menu.MenuView;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ImageView;
+import android.widget.RadioButton;
+import android.widget.RadioGroup;
 import android.widget.TextView;
 
 import com.bumptech.glide.Glide;
@@ -55,20 +59,27 @@ public class DeviceListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHol
         return viewHolder;
     }
 
+    @SuppressLint("ResourceType")
     @Override
-    public void onBindViewHolder(@NonNull RecyclerView.ViewHolder holder, int i) {
+    public void onBindViewHolder(@NonNull final RecyclerView.ViewHolder holder, int i) {
         if (devicelist == null) return;
         UserUpdateBean.ResultBean bean = devicelist.get(i);
 
         //每个列表项，显示：设备用户图片，设备名和设备号
-        Glide
-                .with(context)
-                .load(bean.getHeadimage())
-                .error(R.mipmap.ic_launcher)
-                .into(((ViewHolder) holder).iv_img_sex);//根据性别变换头像,暂不用
         ((ViewHolder) holder).tv_device_username.setText(bean.getDev_name());
         ((ViewHolder) holder).tv_device_name.setText(bean.getCard_id());
-
+//        ((ViewHolder) holder).sex_event.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {
+//            @Override
+//            public void onCheckedChanged(RadioGroup group, int checkedId) {
+//               // ((ViewHolder) holder).sex = ((ViewHolder) holder).itemView.findViewById(checkedId);
+//                if (checkedId == R.id.man) {
+//                    //头像根据性别变化
+//                    ((ViewHolder) holder).iv_head_icon.setImageResource(R.drawable.icon_male);
+//                } else {
+//                    ((ViewHolder) holder).iv_head_icon.setImageResource(R.drawable.icon_female);
+//                }
+//            }
+//        });
         //将i保存在itemView的Tag中，以便点击时进行获取
         holder.itemView.setTag(i);
 
@@ -82,7 +93,7 @@ public class DeviceListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHol
     @Override
     public void onClick(View view) {
         if (mOnItemClickListener != null) {
-            //注意这里使用getTag方法获取position
+            //这里使用getTag方法获取position
             mOnItemClickListener.onItemClick(view, (int) view.getTag());
         }
     }
@@ -95,12 +106,16 @@ public class DeviceListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHol
 
     public class ViewHolder extends RecyclerView.ViewHolder{
         public TextView tv_device_username,tv_device_name;
-        public ImageView iv_img_sex;
+        public ImageView iv_head_icon;
+        public RadioGroup sex_event;
+        public RadioButton sex;
         public ViewHolder(View itemView) {
             super(itemView);
             tv_device_username = itemView.findViewById(R.id.tv_device_username);
             tv_device_name = itemView.findViewById(R.id.tv_device_name);
-            iv_img_sex = itemView.findViewById(R.id.iv_img_sex);
+            sex_event = itemView.findViewById(R.id.sex_event);           //性别选择
+            iv_head_icon = itemView.findViewById(R.id.iv_head_icon);
+
         }
     }
 
@@ -108,5 +123,4 @@ public class DeviceListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHol
         void onItemClick(View view, int position);
         void onItemLongClick(View view, int position);
     }
-
 }
