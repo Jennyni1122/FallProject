@@ -23,7 +23,9 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.amap.api.location.AMapLocation;
+import com.amap.api.maps2d.AMap;
 import com.amap.api.maps2d.model.BitmapDescriptorFactory;
+import com.amap.api.maps2d.model.CameraPosition;
 import com.amap.api.maps2d.model.Circle;
 import com.amap.api.maps2d.model.LatLng;
 import com.amap.api.maps2d.model.Marker;
@@ -55,7 +57,7 @@ import okhttp3.Response;
 /**
  * 显示设备定位，用户跌倒报警和地理围栏功能以及报警，报警提示
  */
-public class DevUserDetailActivity extends BaseMapActivity implements GeocodeSearch.OnGeocodeSearchListener {
+public class DevUserDetailActivity extends BaseMapActivity implements GeocodeSearch.OnGeocodeSearchListener, AMap.OnCameraChangeListener {
     //标题栏
     public static final String TAG = "DevUserDetailActivity";
     private static final String CARDID_KEY = "cardid";
@@ -174,11 +176,13 @@ public class DevUserDetailActivity extends BaseMapActivity implements GeocodeSea
     @Override
     public void onPermissionRequestSuccess() {
         super.onPermissionRequestSuccess();
+
     }
 
     @Override
     protected void locationSuccess(AMapLocation aMapLocation) {
         super.locationSuccess(aMapLocation);
+
     }
 
 
@@ -191,23 +195,6 @@ public class DevUserDetailActivity extends BaseMapActivity implements GeocodeSea
         public void handleMessage(Message msg) {
             super.handleMessage(msg);
             switch (msg.what) {
-                case MSG_DevUser_OK:                //设备用户数据信息
-                    if (msg.obj != null) {
-                        String result = (String) msg.obj;
-                        Log.e(TAG, "handleMessage" + result);
-                        List<UserUpdateBean.ResultBean> devicelist = JsonParse.getInstance().getuserUpdateInfo(result);
-                        if (devicelist != null) {
-                            if (devicelist.size() > 0) {
-                                //保存数据到数据库
-                                DBUtils.getInstance(FallProjectApplication.getContext())
-                                        .saveUpdateDevInfo(devicelist);
-                                UserUpdateBean.ResultBean devicebean = DBUtils.getInstance(FallProjectApplication.getContext())
-                                        .getUpdateDevInfo(1);
-                                setData();      //将设备用户数据显示出来
-                            }
-                        }
-                    }
-                    break;
                 case MSG_FALLINFO_OK:           //设备跌倒报警信息
                     if (msg.obj != null) {
                         //获取数据
@@ -238,7 +225,7 @@ public class DevUserDetailActivity extends BaseMapActivity implements GeocodeSea
         LatLng geopoints = new LatLng(Double.valueOf(fallbean.getLat()), Double.valueOf(fallbean.getLng()));
         if (devicebean.getIsgeo() == 1) {
             String geocenter = devicebean.getGeocenter();
-            if (geocenter!=null){
+            if (geocenter != null) {
                 String array[] = geocenter.split(",");
                 if (array != null && array.length >= 2) {
                     lat = Double.valueOf(array[0]);
@@ -266,6 +253,9 @@ public class DevUserDetailActivity extends BaseMapActivity implements GeocodeSea
         } else {
             marker1.setIcon(BitmapDescriptorFactory.fromBitmap(BitmapFactory.decodeResource(getResources(), R.drawable.location_marker)));
             marker1.setPosition(geopoints);
+        }
+        if (geopoints!=null){
+            moveToPoint(geopoints);
         }
 
     }
@@ -420,6 +410,16 @@ public class DevUserDetailActivity extends BaseMapActivity implements GeocodeSea
     //地理逆编码回调函数
     @Override
     public void onGeocodeSearched(GeocodeResult geocodeResult, int i) {
+
+    }
+
+    @Override
+    public void onCameraChange(CameraPosition cameraPosition) {
+
+    }
+
+    @Override
+    public void onCameraChangeFinish(CameraPosition cameraPosition) {
 
     }
 
