@@ -222,6 +222,7 @@ public class DevUserDetailActivity extends BaseMapActivity implements GeocodeSea
         tv_state.setText(String.valueOf(fallbean.getFall()));       //显示状态
 
         //显示设备的定位，geopoints为设备定位，latlng(geocenter)为围栏中心点
+
         LatLng geopoints = new LatLng(Double.valueOf(fallbean.getLat()), Double.valueOf(fallbean.getLng()));
         if (devicebean.getIsgeo() == 1) {
             String geocenter = devicebean.getGeocenter();
