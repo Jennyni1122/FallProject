@@ -128,10 +128,10 @@ public class HomeFragment extends Fragment {    //implements DeviceListAdapter.L
         adapter.setOnItemClickListener(new DeviceListAdapter.OnItemClickListener() {
             @Override
             public void onItemClick(View view, int position) {          //点击列表项进入设备定位界面
-                Intent intent = new Intent();
+                Intent intent = new Intent(getActivity(),DevUserDetailActivity.class);
                 intent.putExtra("id", devicelist.get(position).getId());
                 getActivity().setResult(RESULT_OK, intent);
-
+                startActivity(intent);
             }
 
             @Override

@@ -63,23 +63,23 @@ public class DeviceListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHol
     @Override
     public void onBindViewHolder(@NonNull final RecyclerView.ViewHolder holder, int i) {
         if (devicelist == null) return;
-        UserUpdateBean.ResultBean bean = devicelist.get(i);
+        final UserUpdateBean.ResultBean bean = devicelist.get(i);
 
         //每个列表项，显示：设备用户图片，设备名和设备号
         ((ViewHolder) holder).tv_device_username.setText(bean.getDev_name());
         ((ViewHolder) holder).tv_device_name.setText(bean.getCard_id());
-//        ((ViewHolder) holder).sex_event.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {
-//            @Override
-//            public void onCheckedChanged(RadioGroup group, int checkedId) {
-//               // ((ViewHolder) holder).sex = ((ViewHolder) holder).itemView.findViewById(checkedId);
-//                if (checkedId == R.id.man) {
-//                    //头像根据性别变化
-//                    ((ViewHolder) holder).iv_head_icon.setImageResource(R.drawable.icon_male);
-//                } else {
-//                    ((ViewHolder) holder).iv_head_icon.setImageResource(R.drawable.icon_female);
-//                }
-//            }
-//        });
+        //头像根据性别变化
+//        if ( bean.getDev_sex().equals("男")) {
+//            ((ViewHolder) holder).iv_head_icon.setImageResource(R.drawable.icon_male);
+//        } else {
+//            ((ViewHolder) holder).iv_head_icon.setImageResource(R.drawable.icon_female);
+//        }
+//        Glide
+//                .with(context)
+//                .load(R.drawable.icon_male)
+//                .error(R.mipmap.ic_launcher)
+//                .into((holder).iv_head_icon);
+
         //将i保存在itemView的Tag中，以便点击时进行获取
         holder.itemView.setTag(i);
 
@@ -113,7 +113,7 @@ public class DeviceListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHol
             super(itemView);
             tv_device_username = itemView.findViewById(R.id.tv_device_username);
             tv_device_name = itemView.findViewById(R.id.tv_device_name);
-            sex_event = itemView.findViewById(R.id.sex_event);           //性别选择
+          //  sex_event = itemView.findViewById(R.id.sex_event);           //性别选择
             iv_head_icon = itemView.findViewById(R.id.iv_head_icon);
 
         }
