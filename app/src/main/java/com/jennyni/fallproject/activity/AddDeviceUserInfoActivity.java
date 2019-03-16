@@ -373,7 +373,7 @@ public class AddDeviceUserInfoActivity extends AppCompatActivity implements View
             if (requestCode == REQUEST_CODE) {
                 LatLonPoint geocenter = data.getParcelableExtra("geocenter");
                 if (geocenter != null) {
-                    tv_geocenter.setText(geocenter.getLatitude()+","+geocenter.getLongitude());    //获取经纬度
+                    tv_geocenter.setText(geocenter.getLongitude()+","+geocenter.getLatitude());    //获取经纬度
                 }
             }
         }
@@ -406,12 +406,6 @@ public class AddDeviceUserInfoActivity extends AppCompatActivity implements View
         return false;
     }
 
-    /**
-     * http://www.phyth.cn/index/fall/delDevice/account/18860000386/cardid/18255180000
-     */
-    void unBindDevice() {
-
-    }
 }
 
 

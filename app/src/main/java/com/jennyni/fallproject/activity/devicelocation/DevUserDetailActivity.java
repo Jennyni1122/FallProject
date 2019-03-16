@@ -23,6 +23,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.amap.api.location.AMapLocation;
+import com.amap.api.maps2d.model.BitmapDescriptorFactory;
 import com.amap.api.maps2d.model.Circle;
 import com.amap.api.maps2d.model.LatLng;
 import com.amap.api.maps2d.model.Marker;
@@ -69,7 +70,8 @@ public class DevUserDetailActivity extends BaseMapActivity implements GeocodeSea
     private Marker marker;
     private Marker marker1;
     private LocationBroadcastReceiver broadcastReceiver;
-    private AskFallInfoBean.ResultBean bean;
+    private AskFallInfoBean.ResultBean fallbean;
+    private UserUpdateBean.ResultBean devicebean;
     private String account,cardid,dname;
 
 
@@ -139,7 +141,7 @@ public class DevUserDetailActivity extends BaseMapActivity implements GeocodeSea
         tv_edit_device.setText("编辑设备");
         tv_edit_device.setOnClickListener(new View.OnClickListener() {       //跳转到编辑设备界面
             @Override
-            public void onClick(View view) {
+            public void onClick(View view) {            //进入编辑设备界面
                 Intent intent = new Intent(  DevUserDetailActivity.this, EditDevUserActivity.class);
                // startActivityForResult(intent, 1);
                 startActivity(intent);
@@ -201,7 +203,7 @@ public class DevUserDetailActivity extends BaseMapActivity implements GeocodeSea
                                         .saveUpdateDevInfo(devicelist);
                                 UserUpdateBean.ResultBean devicebean = DBUtils.getInstance(FallProjectApplication.getContext())
                                         .getUpdateDevInfo(1);
-                                setData(devicebean);
+                                setData();      //将设备用户数据显示出来
                             }
                         }
                     }
@@ -210,59 +212,57 @@ public class DevUserDetailActivity extends BaseMapActivity implements GeocodeSea
                     if (msg.obj != null) {
                         //获取数据
                         AskFallInfoBean.ResultBean fallbean = (AskFallInfoBean.ResultBean) msg.obj;
-                        Log.e("TAG","handleMessage:"+"id:"+ bean.getId() + "设备编号："+ bean.getCard_id());
-                        showLocation(fallbean);
+                        Log.e("TAG","handleMessage:"+"id:"+ fallbean.getId() + "设备编号："+ fallbean.getCard_id());
+                        setData();
                     }
                     break;
             }
         }
     };
 
-    /**
-     * 显示数据到界面
-     * @param devicebean
-     */
-    private void setData(UserUpdateBean.ResultBean devicebean) {
-
-
-
-    }
 
     /**.................................跌倒和状态怎么显示，电量和信号该显示百分比吗， 围栏信息不在这个接口
      * 将设备参数及定位的数据显示出来()
-     * @param bean
      */
-    private void showLocation(AskFallInfoBean.ResultBean bean) {
-        tv_dev_user.setText(bean.getDname());   //显示设备用户名
-        tv_dev_num.setText(bean.getCard_id());  //显示设备编号
-        tv_rssi.setText(bean.getRssi()+"%");    //显示信号
-        tv_power.setText(bean.getPower()+"%");  //显示电量
-        tv_idcard.setText(bean.getCard_id());   //显示身份证
+    private void setData() {
+        devicebean = new UserUpdateBean.ResultBean();       //加载设备的接口（获取围栏参数）
+        fallbean = new AskFallInfoBean.ResultBean();        //设备报警信息（设备参数，跌倒报警，围栏报警）
+
+        tv_dev_user.setText(fallbean.getDname());   //显示设备用户名
+        tv_dev_num.setText(fallbean.getCard_id());  //显示设备编号
+        tv_rssi.setText(fallbean.getRssi());        //显示信号
+        tv_power.setText(fallbean.getPower());      //显示电量
+        tv_idcard.setText(fallbean.getCard_id());   //显示身份证
+        tv_alert.setText(fallbean.getAlert());      //显示跌倒
+        tv_state.setText(fallbean.getFall());       //显示状态
+
+        //显示设备的定位，geopoints为设备定位，latlng(geocenter)为围栏中心点
+        LatLng geopoints = new LatLng(Double.valueOf(fallbean.getLat()), Double.valueOf(fallbean.getLng()));
+        String geocenter = devicebean.getGeocenter();
+        String array[] = geocenter.split(",");
+        if (array!=null && array.length>=2){
+            lat=Double.valueOf(array[0]);
+            lng=Double.valueOf(array[1]);
+            LatLng latlng = new LatLng(lat,lng);
+            moveToPoint(latlng);
+        }
 
 
-        tv_alert.setText(bean.getAlert());      //显示跌倒
-        tv_state.setText(bean.getFall());       //显示状态
-
-        //显示设备的定位，latLng1为设备定位，latLng为围栏中心点
-        LatLng latLng1 = new LatLng(Double.valueOf(bean.getLat()), Double.valueOf(bean.getLng()));
-
-
-        //latLng为围栏中心点，在另一个接口里
 
         //围栏部分，围栏接口在跌倒里
-//        float length = getPoint2PointLength(latLng, new LatLng(Double.valueOf(bean.getLat()), Double.valueOf(bean.getLng())));
-//        getAddressByLatlng(latLng1);
-//        if (marker1 == null) {
-//            marker1 = addMarker(latLng1, BitmapFactory.decodeResource(getResources(), R.drawable.location_marker));
-//        }
-//        if (length > Double.valueOf(safeLocationMode.getSafetyRadius())) {
-//            sendNotifycation();     //发送通知
-//            marker1.setIcon(BitmapDescriptorFactory.fromBitmap(BitmapFactory.decodeResource(getResources(), R.drawable.ic_position_red)));
-//            marker1.setPosition(latLng1);
-//        } else {
-//            marker1.setIcon(BitmapDescriptorFactory.fromBitmap(BitmapFactory.decodeResource(getResources(), R.drawable.ic_position_blue)));
-//            marker1.setPosition(latLng1);
-//        }
+        float length = getPoint2PointLength(geopoints, new LatLng(Double.valueOf(fallbean.getLat()), Double.valueOf(fallbean.getLng())));
+        getAddressByLatlng(geopoints);
+        if (marker1 == null) {
+            marker1 = addMarker(geopoints, BitmapFactory.decodeResource(getResources(), R.drawable.ic_centrallocation));
+        }
+        if (length > Double.valueOf(devicebean.getGeoradius())) {
+            sendNotifycation();     //发送通知
+            marker1.setIcon(BitmapDescriptorFactory.fromBitmap(BitmapFactory.decodeResource(getResources(), R.drawable.ic_position_red)));
+            marker1.setPosition(geopoints);
+        } else {
+            marker1.setIcon(BitmapDescriptorFactory.fromBitmap(BitmapFactory.decodeResource(getResources(), R.drawable.location_marker)));
+            marker1.setPosition(geopoints);
+        }
 
     }
 
@@ -436,8 +436,8 @@ public class DevUserDetailActivity extends BaseMapActivity implements GeocodeSea
         super.onActivityResult(requestCode, resultCode, data);
         if (data != null) {
             int id = data.getIntExtra("id", 0);
-            UserUpdateBean.ResultBean bean = DBUtils.getInstance(DevUserDetailActivity.this).getUpdateDevInfo(id);
-            setData(bean);
+            UserUpdateBean.ResultBean devicebean = DBUtils.getInstance(DevUserDetailActivity.this).getUpdateDevInfo(id);
+            setData();
         }
     }
 

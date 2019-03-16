@@ -116,9 +116,9 @@ public class GetAddressByKeyword extends AppCompatActivity implements GeocodeSea
         geocodeAddress = adapter.getGeocodeAddressList().get(position);
         double latitude = geocodeAddress.getLatLonPoint().getLatitude();
         double longitude = geocodeAddress.getLatLonPoint().getLongitude();
-        LatLng latlng = new LatLng(latitude, longitude);
+        LatLng latlng = new LatLng(longitude,latitude);
         Log.e("GetAddressByKeyword", "经纬度值:" + geocodeAddress.getLatLonPoint() + "\n位置描述:"
                 + geocodeAddress.getFormatAddress());
-        tv_latlng.setText(String.format("lat:%s lng:%s", String.valueOf(latlng.latitude), String.valueOf(latlng.longitude)));
+        tv_latlng.setText(String.format("lng:%s lat:%s ",String.valueOf(latlng.longitude),String.valueOf(latlng.latitude)));
     }
 }
