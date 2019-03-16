@@ -57,17 +57,19 @@ public abstract class BaseMapActivity extends Activity implements AMapLocationLi
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+    }
+
+    protected void initMap(Bundle savedInstanceState) {
+
         mMapView = (MapView) findViewById(R.id.map);
         mMapView.onCreate(savedInstanceState);
         mLocation = new LocationUtil();
         mLocation.initLocation(this, this);
-        initMap();
         permissionsRequest = new PermissionsRequest(this, this, true,
                 new String[]{Manifest.permission.ACCESS_COARSE_LOCATION, Manifest.permission.ACCESS_FINE_LOCATION});
         permissionsRequest.setRequireCheck(true);
-    }
 
-    protected void initMap() {
+
         aMap = mMapView.getMap();
         aMap.setMyLocationEnabled(true);
         aMap.setMapType(AMap.MAP_TYPE_NORMAL);

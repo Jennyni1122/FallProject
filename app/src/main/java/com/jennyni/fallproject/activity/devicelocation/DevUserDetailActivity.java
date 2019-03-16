@@ -57,6 +57,7 @@ import okhttp3.Response;
 public class DevUserDetailActivity extends BaseMapActivity implements GeocodeSearch.OnGeocodeSearchListener {
     //标题栏
     public static final String TAG = "DevUserDetailActivity";
+    private static final String CARDID_KEY = "cardid";
     private TextView tv_main_title,tv_back, tv_edit_device;
     private RelativeLayout rl_title_bar;
     //内容控件
@@ -71,11 +72,22 @@ public class DevUserDetailActivity extends BaseMapActivity implements GeocodeSea
     private AskFallInfoBean.ResultBean bean;
     private String account,cardid,dname;
 
+
+    /**
+     * 跳转到选择时间界面，将解析数据传值
+     * @param context
+     */
+    public static void startActivity(Context context,String cardid) {
+        Intent intent = new Intent(context, DevUserDetailActivity.class);
+        intent.putExtra(CARDID_KEY,cardid);
+        context.startActivity(intent);
+    }
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_dev_user_detail);
-
+        initMap(savedInstanceState);
 
         //问题：应该是从HomeFragment传递进来设备用户信息，然后报警消息显示到Fragment
 
@@ -93,6 +105,9 @@ public class DevUserDetailActivity extends BaseMapActivity implements GeocodeSea
         IntentFilter filter = new IntentFilter(getPackageName().concat(".safelocaiton"));
         registerReceiver(broadcastReceiver, filter);
         setMapDragListener(null, this);
+
+        cardid = getIntent().getStringExtra(CARDID_KEY);
+
         sendrequest_userUpdateData();
         sendrequest_fallData();     //请求网络，查询跌倒最新数据
 
@@ -101,14 +116,7 @@ public class DevUserDetailActivity extends BaseMapActivity implements GeocodeSea
 
 
 
-    /**
-     * 跳转到选择时间界面，将解析数据传值
-     * @param context
-     */
-    public static void startActivity(Context context) {
-        Intent intent = new Intent(context, DevUserDetailActivity.class);
-        context.startActivity(intent);
-    }
+
 
     private void initView() {
         //标题栏，左退出至列表项，右边进入编辑设备的界面
@@ -370,7 +378,7 @@ public class DevUserDetailActivity extends BaseMapActivity implements GeocodeSea
                 AskFallInfoBean.ResultBean bean = JsonParse.getInstance().getAskFallInfo(response.body().string());
                 if (bean==null){
                     Log.e("MSG_MAPPAGE_OK", "请求设备定位异常！");
-                    Toast.makeText(DevUserDetailActivity.this, "请求设备定位异常！", Toast.LENGTH_SHORT).show();
+//                    Toast.makeText(DevUserDetailActivity.this, "请求设备定位异常！", Toast.LENGTH_SHORT).show();
                     return;
                 }
                 Message message = new Message();
