@@ -1,12 +1,13 @@
 package com.jennyni.fallproject.Bean;
 
+import java.io.Serializable;
 import java.util.List;
 
 /**
  * Created by Jenny on 2019/3/8.
  */
 
-public class UserUpdateBean {
+public class UserUpdateBean implements Serializable {
 
 
     /**
@@ -43,7 +44,7 @@ public class UserUpdateBean {
         this.result = result;
     }
 
-    public static class ResultBean {
+    public static class ResultBean implements Serializable {
         /**
          * id : 2
          * phone_account : 18860900316

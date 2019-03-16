@@ -128,10 +128,12 @@ public class HomeFragment extends Fragment {    //implements DeviceListAdapter.L
         adapter.setOnItemClickListener(new DeviceListAdapter.OnItemClickListener() {
             @Override
             public void onItemClick(View view, int position) {          //点击列表项进入设备定位界面
-                Intent intent = new Intent(getActivity(),DevUserDetailActivity.class);
-                intent.putExtra("id", devicelist.get(position).getId());
-//                getActivity().setResult(RESULT_OK, intent);
-                startActivity(intent);
+//                Intent intent = new Intent(getActivity(),DevUserDetailActivity.class);
+//                intent.putExtra("id", devicelist.get(position).getId());
+////                getActivity().setResult(RESULT_OK, intent);
+//                startActivity(intent);
+                UserUpdateBean.ResultBean resultBean = devicelist.get(position);
+                DevUserDetailActivity.startActivity(getActivity(), resultBean);
             }
 
 
@@ -196,7 +198,7 @@ public class HomeFragment extends Fragment {    //implements DeviceListAdapter.L
                     if (msg.obj != null) {
                         String result = (String) msg.obj;
                         Log.e(TAG, "handleMessage" + result);
-                        Toast.makeText(getActivity(),result,Toast.LENGTH_SHORT).show();
+                        Toast.makeText(getActivity(), result, Toast.LENGTH_SHORT).show();
                         //重新请求刷新刷新数据= =按道理这里应该是请求刷新方法的，但是这样写直接一点，以后写多了就好了
                         sendrequest_initData();
                     }

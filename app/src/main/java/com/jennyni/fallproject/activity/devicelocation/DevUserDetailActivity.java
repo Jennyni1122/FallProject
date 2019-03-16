@@ -59,10 +59,11 @@ public class DevUserDetailActivity extends BaseMapActivity implements GeocodeSea
     //标题栏
     public static final String TAG = "DevUserDetailActivity";
     private static final String CARDID_KEY = "cardid";
-    private TextView tv_main_title,tv_back, tv_edit_device;
+    private static final String DEVICEBEAN_KEY = "devicebean";
+    private TextView tv_main_title, tv_back, tv_edit_device;
     private RelativeLayout rl_title_bar;
     //内容控件
-    private TextView tv_dev_user,tv_address,tv_dev_num,tv_rssi,tv_power,tv_idcard,tv_alert,tv_state;
+    private TextView tv_dev_user, tv_address, tv_dev_num, tv_rssi, tv_power, tv_idcard, tv_alert, tv_state;
     private ImageView iv_select_time;
     public static final int MSG_DevUser_OK = 1; //加载设备，获取数据
     public static final int MSG_FALLINFO_OK = 2;    //获取跌倒设备数据
@@ -72,16 +73,17 @@ public class DevUserDetailActivity extends BaseMapActivity implements GeocodeSea
     private LocationBroadcastReceiver broadcastReceiver;
     private AskFallInfoBean.ResultBean fallbean;
     private UserUpdateBean.ResultBean devicebean;
-    private String account,cardid,dname;
+    private String account, cardid, dname;
 
 
     /**
      * 跳转到选择时间界面，将解析数据传值
+     *
      * @param context
      */
-    public static void startActivity(Context context,String cardid) {
+    public static void startActivity(Context context, UserUpdateBean.ResultBean devicebean) {
         Intent intent = new Intent(context, DevUserDetailActivity.class);
-        intent.putExtra(CARDID_KEY,cardid);
+        intent.putExtra(DEVICEBEAN_KEY, devicebean);
         context.startActivity(intent);
     }
 
@@ -90,7 +92,6 @@ public class DevUserDetailActivity extends BaseMapActivity implements GeocodeSea
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_dev_user_detail);
         initMap(savedInstanceState);
-
         //问题：应该是从HomeFragment传递进来设备用户信息，然后报警消息显示到Fragment
 
 //        //从FindFragment的消息列表点击事件进来，显示跌倒该用户的跌倒信息
@@ -108,16 +109,14 @@ public class DevUserDetailActivity extends BaseMapActivity implements GeocodeSea
         registerReceiver(broadcastReceiver, filter);
         setMapDragListener(null, this);
 
-        cardid = getIntent().getStringExtra(CARDID_KEY);
+        Intent intent = getIntent();
 
-        sendrequest_userUpdateData();
+        devicebean = (UserUpdateBean.ResultBean) intent.getSerializableExtra(DEVICEBEAN_KEY);
+        cardid = devicebean.getCard_id();
+//        sendrequest_userUpdateData();
         sendrequest_fallData();     //请求网络，查询跌倒最新数据
 
     }
-
-
-
-
 
 
     private void initView() {
@@ -132,8 +131,9 @@ public class DevUserDetailActivity extends BaseMapActivity implements GeocodeSea
         tv_back.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {            //返回按钮
-                Intent intent = new Intent( DevUserDetailActivity.this,HomeFragment.class);
-                startActivityForResult(intent, 1);
+//                Intent intent = new Intent( DevUserDetailActivity.this,HomeFragment.class);
+//                startActivityForResult(intent, 1);
+                finish();
             }
         });
         tv_edit_device = (TextView) findViewById(R.id.tv_save);
@@ -142,8 +142,8 @@ public class DevUserDetailActivity extends BaseMapActivity implements GeocodeSea
         tv_edit_device.setOnClickListener(new View.OnClickListener() {       //跳转到编辑设备界面
             @Override
             public void onClick(View view) {            //进入编辑设备界面
-                Intent intent = new Intent(  DevUserDetailActivity.this, EditDevUserActivity.class);
-               // startActivityForResult(intent, 1);
+                Intent intent = new Intent(DevUserDetailActivity.this, EditDevUserActivity.class);
+                // startActivityForResult(intent, 1);
                 startActivity(intent);
                 finish();
             }
@@ -194,10 +194,10 @@ public class DevUserDetailActivity extends BaseMapActivity implements GeocodeSea
                 case MSG_DevUser_OK:                //设备用户数据信息
                     if (msg.obj != null) {
                         String result = (String) msg.obj;
-                        Log.e(TAG,"handleMessage"+ result);
+                        Log.e(TAG, "handleMessage" + result);
                         List<UserUpdateBean.ResultBean> devicelist = JsonParse.getInstance().getuserUpdateInfo(result);
-                        if (devicelist != null){
-                            if (devicelist.size() > 0){
+                        if (devicelist != null) {
+                            if (devicelist.size() > 0) {
                                 //保存数据到数据库
                                 DBUtils.getInstance(FallProjectApplication.getContext())
                                         .saveUpdateDevInfo(devicelist);
@@ -211,8 +211,8 @@ public class DevUserDetailActivity extends BaseMapActivity implements GeocodeSea
                 case MSG_FALLINFO_OK:           //设备跌倒报警信息
                     if (msg.obj != null) {
                         //获取数据
-                        AskFallInfoBean.ResultBean fallbean = (AskFallInfoBean.ResultBean) msg.obj;
-                        Log.e("TAG","handleMessage:"+"id:"+ fallbean.getId() + "设备编号："+ fallbean.getCard_id());
+                        fallbean = (AskFallInfoBean.ResultBean) msg.obj;
+                        Log.e("TAG", "handleMessage:" + "id:" + fallbean.getId() + "设备编号：" + fallbean.getCard_id());
                         setData();
                     }
                     break;
@@ -221,32 +221,36 @@ public class DevUserDetailActivity extends BaseMapActivity implements GeocodeSea
     };
 
 
-    /**.................................跌倒和状态怎么显示，电量和信号该显示百分比吗， 围栏信息不在这个接口
+    /**
+     * .................................跌倒和状态怎么显示，电量和信号该显示百分比吗， 围栏信息不在这个接口
      * 将设备参数及定位的数据显示出来()
      */
     private void setData() {
-        devicebean = new UserUpdateBean.ResultBean();       //加载设备的接口（获取围栏参数）
-        fallbean = new AskFallInfoBean.ResultBean();        //设备报警信息（设备参数，跌倒报警，围栏报警）
-
         tv_dev_user.setText(fallbean.getDname());   //显示设备用户名
         tv_dev_num.setText(fallbean.getCard_id());  //显示设备编号
-        tv_rssi.setText(fallbean.getRssi());        //显示信号
-        tv_power.setText(fallbean.getPower());      //显示电量
+        tv_rssi.setText(String.valueOf(fallbean.getRssi()));        //显示信号
+        tv_power.setText(String.valueOf(fallbean.getPower()));      //显示电量
         tv_idcard.setText(fallbean.getCard_id());   //显示身份证
-        tv_alert.setText(fallbean.getAlert());      //显示跌倒
-        tv_state.setText(fallbean.getFall());       //显示状态
+        tv_alert.setText(String.valueOf(fallbean.getAlert()));      //显示跌倒
+        tv_state.setText(String.valueOf(fallbean.getFall()));       //显示状态
 
         //显示设备的定位，geopoints为设备定位，latlng(geocenter)为围栏中心点
         LatLng geopoints = new LatLng(Double.valueOf(fallbean.getLat()), Double.valueOf(fallbean.getLng()));
-        String geocenter = devicebean.getGeocenter();
-        String array[] = geocenter.split(",");
-        if (array!=null && array.length>=2){
-            lat=Double.valueOf(array[0]);
-            lng=Double.valueOf(array[1]);
-            LatLng latlng = new LatLng(lat,lng);
-            moveToPoint(latlng);
-        }
+        if (devicebean.getIsgeo() == 1) {
+            String geocenter = devicebean.getGeocenter();
+            if (geocenter!=null){
+                String array[] = geocenter.split(",");
+                if (array != null && array.length >= 2) {
+                    lat = Double.valueOf(array[0]);
+                    lng = Double.valueOf(array[1]);
+                    LatLng latlng = new LatLng(lat, lng);
+                    moveToPoint(latlng);
+                }
+            }
 
+        } else {
+            showToast("该设备未启用电子围栏");
+        }
 
 
         //围栏部分，围栏接口在跌倒里
@@ -323,44 +327,45 @@ public class DevUserDetailActivity extends BaseMapActivity implements GeocodeSea
 
     }
 
-    /**（userUpdate）
-     * 请求网络，查询设备设备用户最新数据
-     */
-    private void sendrequest_userUpdateData() {
-        String account = UtilsHelper.readLoginUserName(this);
-        String url = Constant.BASE_WEBSITE + Constant.REQUEST_UPDATE_USER_URL+"/account/"+account;
-        Log.e(TAG,"initData: "+url );
-        OkHttpClient okHttpClient = new OkHttpClient();
-        final Request request = new Request.Builder().url(url).build();
-        Call call = okHttpClient.newCall(request);
-        //开启异步线程访问网络
-        call.enqueue(new Callback() {
-            @Override
-            public void onFailure(Call call, IOException e) {
-                Log.e(TAG,"MSG_DevUser_FAIL"+"请求失败：" + e.getMessage());
-            }
+//    /**（userUpdate）
+//     * 请求网络，查询设备设备用户最新数据
+//     */
+//    private void sendrequest_userUpdateData() {
+//        String account = UtilsHelper.readLoginUserName(this);
+//        String url = Constant.BASE_WEBSITE + Constant.REQUEST_UPDATE_USER_URL+"/account/"+account;
+//        Log.e(TAG,"initData: "+url );
+//        OkHttpClient okHttpClient = new OkHttpClient();
+//        final Request request = new Request.Builder().url(url).build();
+//        Call call = okHttpClient.newCall(request);
+//        //开启异步线程访问网络
+//        call.enqueue(new Callback() {
+//            @Override
+//            public void onFailure(Call call, IOException e) {
+//                Log.e(TAG,"MSG_DevUser_FAIL"+"请求失败：" + e.getMessage());
+//            }
+//
+//            @Override
+//            public void onResponse(Call call, Response response) throws IOException {
+//                String res = response.body().string();
+//                Log.e(TAG,"MSG_DevUser_OK"+"请求成功：" + res);
+//                Message msg = new Message();
+//                msg.what = MSG_DevUser_OK;
+//                msg.obj = res;
+//                handler.sendMessage(msg);
+//            }
+//        });
+//
+//    }
 
-            @Override
-            public void onResponse(Call call, Response response) throws IOException {
-                String res = response.body().string();
-                Log.e(TAG,"MSG_DevUser_OK"+"请求成功：" + res);
-                Message msg = new Message();
-                msg.what = MSG_DevUser_OK;
-                msg.obj = res;
-                handler.sendMessage(msg);
-            }
-        });
 
-    }
-
-
-    /**（AskFallInfo）
+    /**
+     * （AskFallInfo）
      * 请求网络，查询设备跌倒报警最新数据
      */
     private void sendrequest_fallData() {
         //10.请求设备最新数据(跌倒报警与地理围栏报警)
         //String url10 = "http://www.phyth.cn/index/fall/askfallinfo/account/" + account + "/cardid/" + cardid;
-        String url = Constant.BASE_WEBSITE+Constant.REQUEST_ASKFALLINFO_DEVICE_URL +"/account/" + account + "/cardid/" + cardid;
+        String url = Constant.BASE_WEBSITE + Constant.REQUEST_ASKFALLINFO_DEVICE_URL + "/account/" + account + "/cardid/" + cardid;
         OkHttpClient okHttpClient = new OkHttpClient();
         final Request request = new Request.Builder().url(url).build();
         Call call = okHttpClient.newCall(request);
@@ -376,8 +381,14 @@ public class DevUserDetailActivity extends BaseMapActivity implements GeocodeSea
             public void onResponse(Call call, Response response) throws IOException {
                 Log.e("MSG_MAPPAGE_OK", "请求成功：" + response);
                 AskFallInfoBean.ResultBean bean = JsonParse.getInstance().getAskFallInfo(response.body().string());
-                if (bean==null){
-                    Log.e("MSG_MAPPAGE_OK", "请求设备定位异常！");
+                if (bean == null) {
+                    Log.e("MSG_MAPPAGE_OK", "设备异常或者该设备无最新位置信息！");
+                    handler.post(new Runnable() {
+                        @Override
+                        public void run() {
+                            showToast("设备异常或者该设备无最新位置信息！");
+                        }
+                    });
 //                    Toast.makeText(DevUserDetailActivity.this, "请求设备定位异常！", Toast.LENGTH_SHORT).show();
                     return;
                 }
@@ -388,9 +399,6 @@ public class DevUserDetailActivity extends BaseMapActivity implements GeocodeSea
             }
         });
     }
-
-
-
 
 
     @Override
@@ -408,6 +416,7 @@ public class DevUserDetailActivity extends BaseMapActivity implements GeocodeSea
         RegeocodeAddress regeocodeAddress = regeocodeResult.getRegeocodeAddress();
         tv_address.setText(regeocodeAddress.getFormatAddress());
     }
+
     //地理逆编码回调函数
     @Override
     public void onGeocodeSearched(GeocodeResult geocodeResult, int i) {
@@ -415,7 +424,7 @@ public class DevUserDetailActivity extends BaseMapActivity implements GeocodeSea
     }
 
 
-    private class LocationBroadcastReceiver extends BroadcastReceiver{
+    private class LocationBroadcastReceiver extends BroadcastReceiver {
         @Override
         public void onReceive(Context context, Intent intent) {
 
@@ -427,6 +436,7 @@ public class DevUserDetailActivity extends BaseMapActivity implements GeocodeSea
 
     /**
      * 从HomeFragment设备用户列表回传数据
+     *
      * @param requestCode
      * @param resultCode
      * @param data
