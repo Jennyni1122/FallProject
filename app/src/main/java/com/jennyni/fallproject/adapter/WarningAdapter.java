@@ -61,8 +61,7 @@ public class WarningAdapter extends RecyclerView.Adapter<WarningAdapter.
         holder.tv_num.setText(bean.getCard_id());
         holder.tv_name.setText(bean.getDev_name());
         holder.tv_time.setText(bean.getUpdate_time());
-        Glide
-                .with(mContext)
+        Glide.with(mContext)
                 .load(R.drawable.fall_icon)
                 .error(R.mipmap.ic_launcher)
                 .into((holder).iv_img);

@@ -64,7 +64,7 @@ public class LocationService extends Service {
     @Override
     public void onCreate() {
         super.onCreate();
-        handler.sendEmptyMessageDelayed(0, 30 * 1000);
+        handler.sendEmptyMessageDelayed(0, 5 * 1000);
     }
 
     @Nullable
@@ -77,8 +77,8 @@ public class LocationService extends Service {
     private Handler handler = new Handler() {
         @Override
         public void handleMessage(Message msg) {
-            sendrequest_initData();     //查询网络，查询设备最新数据（无围栏坐标点及围栏范围的参数）
-            sendEmptyMessageDelayed(0, 30 * 1000);
+            sendrequest_initData("" );     //查询网络，查询设备最新数据（无围栏坐标点及围栏范围的参数）
+            sendEmptyMessageDelayed(0, 5 * 1000);
 
         }
     };
@@ -86,19 +86,19 @@ public class LocationService extends Service {
     /**
      * 查询网络，查询设备最新数据
      */
-    private void sendrequest_initData() {
+    private void sendrequest_initData(String cardid) {
 
-//        //10.请求设备最新数据(跌倒报警与地理围栏报警)
-//        //String url10 = "http://www.phyth.cn/index/fall/askfallinfo/account/" + account + "/cardid/" + cardid;
-//
-//        String account = UtilsHelper.readLoginUserName(this);      //登录的用户名
-//
-//        String url = Constant.BASE_WEBSITE+Constant.REQUEST_ASKFALLINFO_DEVICE_URL +
-//                "/account/" + account + "/cardid/" + cardid;
-//        OkHttpClient okHttpClient = new OkHttpClient();
-//        final Request request = new Request.Builder().url(url).build();
-//        Call call = okHttpClient.newCall(request);
-//        //开启异步访问网络
+        //10.请求设备最新数据(跌倒报警与地理围栏报警)
+        //String url10 = "http://www.phyth.cn/index/fall/askfallinfo/account/" + account + "/cardid/" + cardid;
+
+        String account = UtilsHelper.readLoginUserName(this);      //登录的用户名
+
+        String url = Constant.BASE_WEBSITE+Constant.REQUEST_ASKFALLINFO_DEVICE_URL +
+                "/account/" + account + "/cardid/" + cardid;
+        OkHttpClient okHttpClient = new OkHttpClient();
+        final Request request = new Request.Builder().url(url).build();
+        Call call = okHttpClient.newCall(request);
+        //开启异步访问网络
 //        call.enqueue(new Callback() {
 //            @Override
 //            public void onFailure(Call call, IOException e) {
@@ -153,26 +153,6 @@ public class LocationService extends Service {
 //        }
 //    };
 
-    //。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。复制原来项目,
-//    @Override
-//    public void onStateTure(String responseBody, String type) {
-//        Intent intent = new Intent(getPackageName().concat(".safelocaiton"));
-//        intent.putExtra("responseBody", responseBody);
-//        sendBroadcast(intent);
-//        try {
-//
-//            SafeLocationMode safeLocationMode = SafeLocationMode.getSafeLocationMode(new JSONObject(responseBody));
-//            LatLng latLng = new LatLng(Double.valueOf(safeLocationMode.getCentreLocationX()),
-//                    Double.valueOf(safeLocationMode.getCentreLocationY()));
-//            float length = BaseMapActivity.getPoint2PointLength(latLng, new LatLng(Double.valueOf(safeLocationMode.getX()),
-//                    Double.valueOf(safeLocationMode.getY())));
-//            if (length > Double.valueOf(safeLocationMode.getSafetyRadius())) {
-//                sendNotifycation();
-//            }
-//        } catch (Exception e) {
-//            e.printStackTrace();
-//        }
-//    }
 
 
     @Override

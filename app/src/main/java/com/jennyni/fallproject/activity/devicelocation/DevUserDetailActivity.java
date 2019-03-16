@@ -166,7 +166,7 @@ public class DevUserDetailActivity extends BaseMapActivity implements GeocodeSea
             public void onClick(View v) {
                 //跳转到选择时间界面，将解析数据传值
 //                if (bean != null) {
-//                    SelectTimeActivity.startActivity(this,bean);
+                    SelectTimeActivity.startActivity(DevUserDetailActivity.this,devicebean.getCard_id());
 //                }
             }
         });

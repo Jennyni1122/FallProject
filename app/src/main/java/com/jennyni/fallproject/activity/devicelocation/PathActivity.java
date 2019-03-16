@@ -1,6 +1,8 @@
 package com.jennyni.fallproject.activity.devicelocation;
 
 import android.annotation.SuppressLint;
+import android.content.Context;
+import android.content.Intent;
 import android.graphics.BitmapFactory;
 import android.graphics.Color;
 import android.os.Handler;
@@ -39,9 +41,19 @@ public class PathActivity extends AppCompatActivity {
     private static final int MSG_ASKTRACK_OK = 1;
     private static final String STARTTIME_KEY = "d1";
     private static final String ENDTIME_KEY = "d2";
+    private static final String CARDID_KEY = "cardid";
     public static final String SAFEMODE_KEY = "safemode_key";
 
     private String startTime,endTime,account,cardid;
+
+
+    public static void startActivity(Context context,String startTime,String endTime,String cardid){
+        Intent intent = new Intent(context, PathActivity.class);
+        intent.putExtra(STARTTIME_KEY,startTime);
+        intent.putExtra(ENDTIME_KEY,endTime);
+        intent.putExtra(CARDID_KEY,cardid);
+        context.startActivity(intent);
+    }
 
 
     @Override
@@ -50,9 +62,9 @@ public class PathActivity extends AppCompatActivity {
         setContentView(R.layout.activity_path);
 
         initView();     //初始化控件
-
         startTime = getIntent().getStringExtra(STARTTIME_KEY);
         endTime = getIntent().getStringExtra(ENDTIME_KEY);
+        cardid = getIntent().getStringExtra(CARDID_KEY);
         account = UtilsHelper.readLoginUserName(this);
         //cardid = ..............................;
         sendrequest_askTrace();

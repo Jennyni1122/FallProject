@@ -10,32 +10,6 @@
     <include layout="@layout/main_title_bar" />
 
     <LinearLayout
-        android:id="@+id/ll_date"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="10dp"
-        android:background="@color/white"
-        android:gravity="center_vertical"
-        android:padding="13dp">
-
-        <TextView
-            style="@style/normal_black"
-            android:layout_weight="1"
-            android:text="日期" />
-
-        <TextView
-            style="@style/normal_black"
-            android:id="@+id/tv_date"
-            android:hint="请选择" />
-
-        <ImageView
-            android:layout_width="15dp"
-            android:src="@drawable/iv_right_arrow"
-            android:layout_height="15dp" />
-
-    </LinearLayout>
-
-    <LinearLayout
         android:id="@+id/ll_starttime"
         android:layout_width="match_parent"
         android:background="@color/white"
