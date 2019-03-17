@@ -75,9 +75,9 @@
                             android:layout_toRightOf="@+id/iaada"
                             android:layout_centerVertical="true"
                             android:ellipsize="end"
-                            android:maxLines="1"
+                            android:maxLines="2"
                             android:textSize="16sp"
-                            android:text="显示地址XXX" />
+                            android:text="" />
                         <ImageView
                             android:id="@+id/iv_select_time"
                             android:layout_width="35dp"
@@ -99,16 +99,17 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:orientation="horizontal"
-                    android:padding="10dp">
+                    android:padding="6dp">
                     <!--设备号-->
                     <LinearLayout
                         android:layout_width="0dp"
-                        android:layout_height="wrap_content"
+                        android:layout_height="60dp"
                         android:layout_weight="1"
                         android:gravity="center"
                         android:orientation="vertical">
                         <TextView
                             android:id="@+id/tv_dev_num"
+                            android:textSize="12sp"
                             style="@style/middle_black" />
                         <TextView
                             style="@style/normal_gray"
@@ -118,13 +119,15 @@
                     <!--设备信号-->
                     <LinearLayout
                         android:layout_width="0dp"
-                        android:layout_height="wrap_content"
+                        android:layout_height="60dp"
                         android:layout_weight="1"
                         android:gravity="center"
                         android:orientation="vertical">
-                        <TextView
-                            android:id="@+id/tv_rssi"
-                            style="@style/middle_black" />
+
+                        <ImageView
+                            android:id="@+id/iv_rssi"
+                            android:layout_width="18dp"
+                            android:layout_height="18dp" />
                         <TextView
                             style="@style/normal_gray"
                             android:layout_marginTop="3dp"
@@ -133,13 +136,14 @@
                     <!--设备编码-->
                     <LinearLayout
                         android:layout_width="0dp"
-                        android:layout_height="wrap_content"
+                        android:layout_height="60dp"
                         android:layout_weight="1"
                         android:gravity="center"
                         android:orientation="vertical">
-                        <TextView
-                            android:id="@+id/tv_power"
-                            style="@style/middle_black" />
+                        <ImageView
+                            android:id="@+id/iv_power"
+                            android:layout_width="18dp"
+                            android:layout_height="18dp" />
                         <TextView
                             style="@style/normal_gray"
                             android:layout_marginTop="3dp"
@@ -153,16 +157,17 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:orientation="horizontal"
-                    android:padding="10dp">
+                    android:padding="6dp">
                     <!--定位上传间隔-->
                     <LinearLayout
                         android:layout_width="0dp"
-                        android:layout_height="wrap_content"
+                        android:layout_height="60dp"
                         android:layout_weight="1"
                         android:gravity="center"
                         android:orientation="vertical">
                         <TextView
                             android:id="@+id/tv_idcard"
+                            android:textSize="12sp"
                             style="@style/middle_black" />
                         <TextView
                             style="@style/normal_gray"
@@ -173,12 +178,13 @@
                     <!--安全范围-->
                     <LinearLayout
                         android:layout_width="0dp"
-                        android:layout_height="wrap_content"
+                        android:layout_height="60dp"
                         android:layout_weight="1"
                         android:gravity="center"
                         android:orientation="vertical">
                         <TextView
                             android:id="@+id/tv_alert"
+                            android:textSize="16sp"
                             style="@style/middle_black" />
                         <TextView
                             style="@style/normal_gray"
@@ -189,12 +195,13 @@
                     <!--电量-->
                     <LinearLayout
                         android:layout_width="0dp"
-                        android:layout_height="wrap_content"
+                        android:layout_height="60dp"
                         android:layout_weight="1"
                         android:gravity="center"
                         android:orientation="vertical">
                         <TextView
                             android:id="@+id/tv_state"
+                            android:textSize="16sp"
                             style="@style/middle_black" />
                         <TextView
                             style="@style/normal_gray"

@@ -51,8 +51,8 @@
                 android:id="@+id/iv_head_icon"
                 android:layout_width="40dp"
                 android:layout_height="40dp"
-                android:layout_alignParentRight="true"
-                android:layout_centerVertical="true"
+                android:layout_gravity="center_vertical"
+                android:layout_marginLeft="60dp"
                 android:scaleType="fitXY"
                 android:src="@drawable/icon_male" />
         </LinearLayout>
@@ -328,63 +328,15 @@
                 android:background="@color/divider_line_color" />
         </LinearLayout>
 
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="vertical">
-
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_centerVertical="true"
-                android:singleLine="true"
-                android:layout_marginTop="50dp"
-                android:layout_marginBottom="8dp"
-                android:layout_gravity="center"
-                android:text="绑定设备信息"
-                android:background="@drawable/register_edittext_bottom_radius"
-                android:textColor="@color/colorPrimary"
-                android:textSize="22sp" />
-
-            <View
-                android:layout_width="fill_parent"
-                android:layout_height="1dp"
-                android:background="@color/divider_line_color" />
-            <TextView
-                android:id="@+id/tv_dev_cardid"
-                android:layout_width="fill_parent"
-                android:layout_height="60dp"
-                android:layout_gravity="center_horizontal"
-                android:background="@drawable/register_edittext_top_radius"
-                android:drawableLeft="@drawable/user_name_icon"
-                android:drawablePadding="10dp"
-                android:gravity="center_vertical"
-                android:text="设备号"
-                android:inputType="number"
-                android:paddingLeft="8dp"
-                android:singleLine="true"
-                android:textColor="#000000"
-                android:textColorHint="@color/register_hint_text_color"
-                android:textCursorDrawable="@null"
-                android:textSize="18sp" />
-            <View
-                android:layout_width="fill_parent"
-                android:layout_height="1dp"
-                android:background="@color/divider_line_color" />
-
-            <View
-                android:layout_width="fill_parent"
-                android:layout_height="1dp"
-                android:background="#E4E4E4" />
-        </LinearLayout>
 
         <TextView
             android:id="@+id/tv_result"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="注：如需解绑设备，请长按列表项进行解绑。"
+            android:text="注：如需解绑设备，请返回列表项长按点击进行解绑。"
             android:layout_gravity="center_horizontal"
             android:layout_marginTop="8dp"
+            android:layout_marginBottom="60dp"
             android:textSize="16sp"/>
     </LinearLayout>
 </ScrollView>

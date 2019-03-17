@@ -20,6 +20,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.itheima.PullToRefreshView;
+import com.jennyni.fallproject.Bean.AskAllFallInfoBean;
 import com.jennyni.fallproject.Bean.UserUpdateBean;
 import com.jennyni.fallproject.R;
 import com.jennyni.fallproject.activity.devicelocation.DevUserDetailActivity;
@@ -50,14 +51,13 @@ public class FindFragment extends Fragment implements WarningAdapter.IonSlidingV
     private TextView tv_main_title, tv_none;
     private RelativeLayout rl_title_bar;
     private Context context;
-    private DBUtils db;
     private RecyclerView recycleView;
     private WarningAdapter adapter;
     private PullToRefreshView mPullToRefreshView;
     public static final int REFRESH_DELAY = 1000;
-    public static final int MSG_DevUser_OK = 1;                //获取数据
-    public static final int MSG_DevUser_FAIL = 2;
-    List<UserUpdateBean.ResultBean> list;
+    public static final int MSG_ALLFALL_OK = 1;                //获取数据
+    public static final int MSG_ALLFALL_FAIL = 2;
+    List<AskAllFallInfoBean.ResultBean> list;
     private String account;     //手机登录账户
 
     public FindFragment(){
@@ -67,17 +67,15 @@ public class FindFragment extends Fragment implements WarningAdapter.IonSlidingV
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View view = initView(inflater, container);
-        sendrequest_initData();
+        sendrequest_allfallData();
 
         return view;
     }
 
     private View initView(LayoutInflater inflater, ViewGroup container) {
         View view = inflater.inflate(R.layout.fragment_find, container, false);
-//        db = DBUtils.getInstance(getActivity());
+
         account = UtilsHelper.readLoginUserName(getActivity());
-//        list = new ArrayList<>();
-//        list = (List<UserUpdateBean.ResultBean>) db.getAskFallInfo(account);
         //标题栏
         tv_main_title = (TextView) view.findViewById(R.id.tv_main_title);
         tv_main_title.setText("消息列表");
@@ -101,7 +99,7 @@ public class FindFragment extends Fragment implements WarningAdapter.IonSlidingV
 //                    @Override
 //                    public void run() {
 //                        mPullToRefreshView.setRefreshing(false);
-//                        sendrequest_initData();      //加载设备用户信息列表数据,获取报警信息
+//                        sendrequest_allfallData();      //加载设备用户信息列表数据,获取报警信息
 //                    }
 //                }, REFRESH_DELAY);
 //            }
@@ -120,12 +118,12 @@ public class FindFragment extends Fragment implements WarningAdapter.IonSlidingV
         public void handleMessage(Message msg) {
             super.handleMessage(msg);
             switch (msg.what){
-                case MSG_DevUser_OK:
+                case MSG_ALLFALL_OK:
                     if (msg.obj != null){
                         //获取数据
                         String result = (String)msg.obj;
                         Log.e(TAG,"handleMessage:"+ result);
-                        list = JsonParse.getInstance().getuserUpdateInfo(result);
+                        list = JsonParse.getInstance().getAskAllFallInfo(result);
                         if (list != null){
                             if (list.size() > 0){
                                 adapter.setData(list);
@@ -136,7 +134,7 @@ public class FindFragment extends Fragment implements WarningAdapter.IonSlidingV
                         }
                     }
                     break;
-                case MSG_DevUser_FAIL:
+                case MSG_ALLFALL_FAIL:
                     Toast.makeText(getActivity(), "加载报警信息失败~", Toast.LENGTH_SHORT).show();
             }
         }
@@ -145,11 +143,10 @@ public class FindFragment extends Fragment implements WarningAdapter.IonSlidingV
     /**
      * 请求网络，显示报警信息
      */
-    private void sendrequest_initData() {
-        //String url4 = "http://www.phyth.cn/index/fall/userUpdate/account/"+account;
+    private void sendrequest_allfallData() {
 
         String account = UtilsHelper.readLoginUserName(getActivity());
-        String url = Constant.BASE_WEBSITE+Constant.REQUEST_UPDATE_USER_URL+"/account/" + account;
+       String url = Constant.BASE_WEBSITE+Constant.REQUEST_ASKALLFALLINFO_DEVICE_URL+"/account/" + account;
         OkHttpClient okHttpClient = new OkHttpClient();
         final Request request = new Request.Builder().url(url).build();
         Call call = okHttpClient.newCall(request);
@@ -158,15 +155,15 @@ public class FindFragment extends Fragment implements WarningAdapter.IonSlidingV
             @Override
             public void onFailure(Call call, IOException e) {
                 //联网失败
-                Log.e(TAG,"MSG_DevUser_FAIL"+ "请求失败：" + e.getMessage());
+                Log.e(TAG,"请求失败：" + e.getMessage());
             }
 
             @Override
             public void onResponse(Call call, Response response) throws IOException {
-                Log.e(TAG,"MSG_DevUser_OK"+ "请求成功：" + response);
+                Log.e(TAG, "请求成功：" + response);
                 String res = response.body().string();
                 Message message = new Message();
-                message.what = MSG_DevUser_OK;
+                message.what = MSG_ALLFALL_OK;
                 message.obj = res;
                 handler.sendMessage(message);
             }
@@ -180,6 +177,7 @@ public class FindFragment extends Fragment implements WarningAdapter.IonSlidingV
     //点击事件
     @Override
     public void onItemClick(View view, int position) {
+        //(空指针)
         Intent intent = new Intent(context, DevUserDetailActivity.class);
         intent.putExtra("askfallinfo", (Serializable) list.get(position));
         intent.putExtra("position", position + "");

@@ -11,6 +11,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.bumptech.glide.Glide;
+import com.jennyni.fallproject.Bean.AskAllFallInfoBean;
 import com.jennyni.fallproject.Bean.AskFallInfoBean;
 import com.jennyni.fallproject.Bean.UserUpdateBean;
 import com.jennyni.fallproject.R;
@@ -19,7 +20,9 @@ import com.jennyni.fallproject.utils.JsonParse;
 import com.jennyni.fallproject.utils.UtilsHelper;
 import com.jennyni.fallproject.view.SlidingButtonView;
 
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 /**
@@ -33,7 +36,7 @@ public class WarningAdapter extends RecyclerView.Adapter<WarningAdapter.
 
     private Context mContext;
     IonSlidingViewClickListener mIDeleteBtnClickListener;
-    private List<UserUpdateBean.ResultBean> userUpdateinfolist = new ArrayList<>();
+    private List<AskAllFallInfoBean.ResultBean> allfallinfolist = new ArrayList<>();
     private SlidingButtonView mMenu = null;
 
     public WarningAdapter(Context context,IonSlidingViewClickListener mIDeleteBtnClickListener){
@@ -41,14 +44,14 @@ public class WarningAdapter extends RecyclerView.Adapter<WarningAdapter.
       this.mIDeleteBtnClickListener = mIDeleteBtnClickListener;
     }
 
-    public void setData(List<UserUpdateBean.ResultBean> userUpdateinfolist) {
-        this.userUpdateinfolist = userUpdateinfolist;
+    public void setData(List<AskAllFallInfoBean.ResultBean> allfallinfolist) {
+        this.allfallinfolist = allfallinfolist;
         notifyDataSetChanged();
     }
 
     @Override
     public int getItemCount() {
-        return userUpdateinfolist.size();
+        return allfallinfolist.size();
     }
 
 
@@ -57,10 +60,14 @@ public class WarningAdapter extends RecyclerView.Adapter<WarningAdapter.
     @Override
     public void onBindViewHolder(final WarningAdapter.MyViewHolder holder, int position) {
         //显示界面控件,设备号，设备用户名，设备跌倒时间，头像（设备跌倒类型未添加）
-        UserUpdateBean.ResultBean bean = userUpdateinfolist.get(position);
+        AskAllFallInfoBean.ResultBean bean = allfallinfolist.get(position);
         holder.tv_num.setText(bean.getCard_id());
-        holder.tv_name.setText(bean.getDev_name());
-        holder.tv_time.setText(bean.getUpdate_time());
+        holder.tv_name.setText(bean.getName());
+        //时间戳转换
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+        String time = sdf.format(new Date(bean.getTime()));   // 时间戳转换成时间
+        holder.tv_time.setText(time);
+
         Glide.with(mContext)
                 .load(R.drawable.fall_icon)
                 .error(R.mipmap.ic_launcher)
@@ -124,9 +131,9 @@ public class WarningAdapter extends RecyclerView.Adapter<WarningAdapter.
 //        UserUpdateBean.ResultBean bean = userUpdateinfolist.get(position);
 //        //从跌倒信息的数据库中也要删除此数据
 //        DBUtils.getInstance(mContext).delAskFallInfo(bean.getId(),bean.getCard_id(),bean.getTime());
-        userUpdateinfolist.remove(position);
+        allfallinfolist.remove(position);
         notifyItemRemoved(position);
-        if (userUpdateinfolist.size() == 0)
+        if (allfallinfolist.size() == 0)
             tv_none.setVisibility(View.VISIBLE);
     }
     /**

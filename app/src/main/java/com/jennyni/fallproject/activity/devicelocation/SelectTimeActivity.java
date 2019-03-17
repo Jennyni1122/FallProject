@@ -14,6 +14,7 @@ import android.widget.TextView;
 import android.widget.TimePicker;
 
 import com.jennyni.fallproject.Bean.AskFallInfoBean;
+import com.jennyni.fallproject.Bean.UserUpdateBean;
 import com.jennyni.fallproject.R;
 
 import java.io.Serializable;
@@ -79,7 +80,8 @@ public class SelectTimeActivity extends AppCompatActivity implements View.OnClic
     private void setListener() {
         ll_endtime.setOnClickListener(this);        //开始时间按钮
         ll_starttime.setOnClickListener(this);      //结束时间按钮
-        tv_back.setOnClickListener(this);           //返回按钮
+        tv_back.setOnClickListener(this);
+        //返回按钮
         tv_switch.setOnClickListener(this);         //选择完成按钮（切换至设备轨迹界面）
 
     }
@@ -125,5 +127,12 @@ public class SelectTimeActivity extends AppCompatActivity implements View.OnClic
     public void onTimeSet(TimePicker view, int hourOfDay, int minute) {
 
 
+    }
+
+
+    public static void startActivity(Context context, AskFallInfoBean.ResultBean devicebean) {
+        Intent intent = new Intent(context,SelectTimeActivity.class);
+        intent.putExtra(PathActivity.SAFEMODE_KEY, (Serializable) devicebean);
+        context.startActivity(intent);
     }
 }

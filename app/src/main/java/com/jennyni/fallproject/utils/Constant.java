@@ -33,6 +33,8 @@ public class Constant {
     //查询设备最新数据
     public static final String REQUEST_ASKFALLINFO_DEVICE_URL = "/askfallinfo";
 
+    //查询所有设备最新数据（findfragment）
+    public static final String REQUEST_ASKALLFALLINFO_DEVICE_URL = "/askAllFallInfo";
 
     //查询设备运动轨迹接口：
     public static final String REQUEST_ASKTRACK_DEVICE_URL = "/askTrack";

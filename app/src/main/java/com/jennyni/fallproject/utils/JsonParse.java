@@ -3,6 +3,7 @@ package com.jennyni.fallproject.utils;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 import com.jennyni.fallproject.Bean.AddDeviceBean;
+import com.jennyni.fallproject.Bean.AskAllFallInfoBean;
 import com.jennyni.fallproject.Bean.AskDevInfoBean;
 import com.jennyni.fallproject.Bean.AskFallInfoBean;
 import com.jennyni.fallproject.Bean.AskTrackBetweenBean;
@@ -351,6 +352,33 @@ public class JsonParse {
         } else {
             return null;
         }
+    }
+
+    /**
+     *13.手机端刷新设备信息 获取的JSON数据
+     * @param response
+     * @return
+     */
+    public  List<AskAllFallInfoBean.ResultBean>  getAskAllFallInfo(String response){
+        //使用gson库解析JSON数据
+        Gson gson = new Gson();
+        AskAllFallInfoBean bean = gson.fromJson(response,AskAllFallInfoBean.class);
+        //如果结果码为200，返回查询的设备信息
+        if (bean.getStatus() == 200) {
+            StringBuilder sb = new StringBuilder();
+            List<AskAllFallInfoBean.ResultBean> list = bean.getResult();
+            for (AskAllFallInfoBean.ResultBean alldevBean : list) {
+                sb.append("请求所有报警设备：" + "\n" + alldevBean.getId() + "\n" + alldevBean.getCard_id() + "\n" +
+                        alldevBean.getName()+ "\n" + alldevBean.getLng()+ "\n" +alldevBean.getLat()+ "\n" +
+                        alldevBean.getRssi()+ "\n" + alldevBean.getPower()+ "\n" +alldevBean.getFall()+ "\n"
+                        +alldevBean.getAlert()+ "\n" + alldevBean.getFence()+ "\n" +alldevBean.getLoctype()+ "\n"
+                        +alldevBean.getSteps()+ "\n" + alldevBean.getCalor()+ "\n" +alldevBean.getTime() + "\n");
+            }
+            return list;
+        }else {
+            return null;
+        }
+
     }
 
 }

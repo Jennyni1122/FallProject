@@ -28,6 +28,7 @@ import android.widget.Toast;
 
 import com.amap.api.services.core.LatLonPoint;
 import com.jennyni.fallproject.Bean.SetUpBean;
+import com.jennyni.fallproject.Bean.UserUpdateBean;
 import com.jennyni.fallproject.R;
 import com.jennyni.fallproject.fragment.MeFragment;
 import com.jennyni.fallproject.net.NetWorkBuilder;
@@ -41,6 +42,7 @@ import java.io.IOException;
 import java.net.URI;
 import java.net.URL;
 import java.net.URLEncoder;
+import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -71,6 +73,7 @@ public class AddDeviceUserInfoActivity extends AppCompatActivity implements View
     public static final int MSG_ADDUSER_OK = 1;
     public static final int MSG_BINDDEV_OK = 2;
     String isgeo, issex, dname, idcard, geocenter, georadius = "1000";
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -138,6 +141,7 @@ public class AddDeviceUserInfoActivity extends AppCompatActivity implements View
                 } else {
                     ll_addressfence.setVisibility(View.GONE);
                     isgeo = "0";
+                    tv_geocenter.setText("");           //围栏关闭时内容为空
                 }
 
             }

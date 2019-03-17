@@ -1,24 +1,25 @@
 package com.jennyni.fallproject.Bean;
 
-import java.io.Serializable;
+import com.google.gson.annotations.SerializedName;
+
+import java.util.List;
 
 /**
- * 请求跌倒设备的最新数据
- * Created by Jenny on 2019/3/4.
+ * 13.查看所有设备报警数据
+ * Created by Jenny on 2019/3/16.
  */
 
-public class AskFallInfoBean {
-  //  private static final long serialVersionUID = 1L;
+public class AskAllFallInfoBean {
 
     /**
      * status : 200
      * msg : succeed
-     * result : {"id":5,"card_id":"18255000000","lng":"120.411234","lat":"31.321234","rssi":20,"power":40,"fall":0,"alert":0,"steps":5000,"calor":56,"time":1543823607,"dname":"朱颖康"}
+     * result : [{"id":2,"card_id":"18255000000","lng":"120.418955","lat":"31.326614","rssi":3,"power ":2,"fall":1,"alert":1,"fence":0,"loctype":1,"steps":666,"calor":555,"time":1548246462,"nam e":"熊二"},{"id":55,"card_id":"18255180000","lng":"120.453657","lat":"31.329629","rssi":4,"powe r":1,"fall":0,"alert":0,"fence":1,"loctype":1,"steps":666,"calor":555,"time":1552721345,"na me":"龙飞"}]
      */
 
     private int status;
     private String msg;
-    private ResultBean result;
+    private List<ResultBean> result;
 
     public int getStatus() {
         return status;
@@ -36,35 +37,37 @@ public class AskFallInfoBean {
         this.msg = msg;
     }
 
-    public ResultBean getResult() {
+    public List<ResultBean> getResult() {
         return result;
     }
 
-    public void setResult(ResultBean result) {
+    public void setResult(List<ResultBean> result) {
         this.result = result;
     }
 
     public static class ResultBean {
         /**
-         * id : 5
+         * id : 2
          * card_id : 18255000000
-         * lng : 120.411234
-         * lat : 31.321234
-         * rssi : 20
-         * power : 40
-         * fall : 0
-         * alert : 0
-         * fence:1
-         * loctype:1
-         * steps : 5000
-         * calor : 56
-         * time : 1543823607
-         * dname : 朱颖康
-         * reason:
+         * lng : 120.418955
+         * lat : 31.326614
+         * rssi : 3
+         * power  : 2
+         * fall : 1
+         * alert : 1
+         * fence : 0
+         * loctype : 1
+         * steps : 666
+         * calor : 555
+         * time : 1548246462
+         * name : 熊二
+         * power : 1
+         * name : 龙飞
          */
 
         private int id;
         private String card_id;
+        private String name;
         private String lng;
         private String lat;
         private int rssi;
@@ -75,9 +78,10 @@ public class AskFallInfoBean {
         private int loctype;
         private int steps;
         private int calor;
-        private String time;
-        private String dname;
-        private String reason;
+        private int time;
+
+
+
 
         public int getId() {
             return id;
@@ -93,6 +97,14 @@ public class AskFallInfoBean {
 
         public void setCard_id(String card_id) {
             this.card_id = card_id;
+        }
+
+        public String getName() {
+            return name;
+        }
+
+        public void setName(String name) {
+            this.name = name;
         }
 
         public String getLng() {
@@ -175,28 +187,13 @@ public class AskFallInfoBean {
             this.calor = calor;
         }
 
-        public String getTime() {
+        public int getTime() {
             return time;
         }
 
-        public void setTime(String time) {
+        public void setTime(int time) {
             this.time = time;
         }
 
-        public String getDname() {
-            return dname;
-        }
-
-        public void setDname(String dname) {
-            this.dname = dname;
-        }
-
-        public String getReason() {
-            return reason;
-        }
-
-        public void setReason(String reason) {
-            this.reason = reason;
-        }
     }
 }

@@ -65,8 +65,8 @@ public class DevUserDetailActivity extends BaseMapActivity implements GeocodeSea
     private TextView tv_main_title, tv_back, tv_edit_device;
     private RelativeLayout rl_title_bar;
     //内容控件
-    private TextView tv_dev_user, tv_address, tv_dev_num, tv_rssi, tv_power, tv_idcard, tv_alert, tv_state;
-    private ImageView iv_select_time;
+    private TextView tv_dev_user, tv_address, tv_dev_num, tv_idcard, tv_alert, tv_state;
+    private ImageView iv_select_time,iv_rssi, iv_power;
     public static final int MSG_DevUser_OK = 1; //加载设备，获取数据
     public static final int MSG_FALLINFO_OK = 2;    //获取跌倒设备数据
     private Circle circle;
@@ -155,8 +155,8 @@ public class DevUserDetailActivity extends BaseMapActivity implements GeocodeSea
         tv_dev_user = findViewById(R.id.tv_dev_user);       //设备用户名
         tv_address = findViewById(R.id.tv_address);         //设备定位地址
         tv_dev_num = findViewById(R.id.tv_dev_num);         //设备编号
-        tv_rssi = findViewById(R.id.tv_rssi);               //设备信号
-        tv_power = findViewById(R.id.tv_power);             //设备电量
+        iv_rssi = findViewById(R.id.iv_rssi);               //设备信号
+        iv_power = findViewById(R.id.iv_power);             //设备电量
         tv_idcard = findViewById(R.id.tv_idcard);           //设备用户身份证
         tv_alert = findViewById(R.id.tv_alert);             //设备围栏范围（安全范围）
         tv_state = findViewById(R.id.tv_state);             //设备状态（跌倒报警，围栏）
@@ -215,14 +215,56 @@ public class DevUserDetailActivity extends BaseMapActivity implements GeocodeSea
     private void setData() {
         tv_dev_user.setText(fallbean.getDname());   //显示设备用户名
         tv_dev_num.setText(fallbean.getCard_id());  //显示设备编号
-        tv_rssi.setText(String.valueOf(fallbean.getRssi()));        //显示信号
-        tv_power.setText(String.valueOf(fallbean.getPower()));      //显示电量
         tv_idcard.setText(fallbean.getCard_id());   //显示身份证
-        tv_alert.setText(String.valueOf(fallbean.getAlert()));      //显示跌倒
-        tv_state.setText(String.valueOf(fallbean.getFall()));       //显示状态
+
+        //显示信号
+        if (String.valueOf(fallbean.getRssi()).equals("2")){
+            iv_rssi.setImageResource(R.drawable.rssi2);
+        }else if (String.valueOf(fallbean.getRssi()).equals("3")){
+            iv_rssi.setImageResource(R.drawable.rssi3);
+        }else if (String.valueOf(fallbean.getRssi()).equals("4")){
+            iv_rssi.setImageResource(R.drawable.rssi4);
+        }else {
+            iv_rssi.setImageResource(R.drawable.rssi0);
+        }
+        //显示电量
+        if (String.valueOf(fallbean.getPower()).equals("1")){
+            iv_power.setImageResource(R.drawable.power1);
+        }else if (String.valueOf(fallbean.getPower()).equals("2")){
+            iv_power.setImageResource(R.drawable.power2);
+        }else if (String.valueOf(fallbean.getPower()).equals("3")){
+            iv_power.setImageResource(R.drawable.power3);
+        }else if (String.valueOf(fallbean.getPower()).equals("4")){
+            iv_power.setImageResource(R.drawable.power4);
+        }else {
+            iv_power.setImageResource(R.drawable.power0);
+        }
+
+//        tv_alert.setText(String.valueOf(fallbean.getAlert()));
+//        tv_state.setText(String.valueOf(fallbean.getFall()));
+        //显示安全范围。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。待修改
+        if (fallbean.getAlert() == 1){
+           tv_alert.setText("超出范围！");
+           tv_alert.setTextColor(Color.RED);
+        }else {
+            tv_alert.setText("正常范围");
+            tv_alert.setTextColor(Color.GREEN);
+        }
+
+        //显示跌倒 (地图显示报警跳动)
+       if (fallbean.getFall() == 1){
+
+          tv_state.setText("发生跌倒！");
+          tv_state.setTextColor(Color.RED);
+          sendNotifycation();       //发生通知
+       }else {
+           tv_state.setText("正常");
+           tv_state.setTextColor(Color.GREEN);
+       }
+
+
 
         //显示设备的定位，geopoints为设备定位，latlng(geocenter)为围栏中心点
-
         LatLng geopoints = new LatLng(Double.valueOf(fallbean.getLat()), Double.valueOf(fallbean.getLng()));
         if (devicebean.getIsgeo() == 1) {
             String geocenter = devicebean.getGeocenter();
@@ -241,7 +283,7 @@ public class DevUserDetailActivity extends BaseMapActivity implements GeocodeSea
         }
 
 
-        //围栏部分，围栏接口在跌倒里
+        //围栏部分
         float length = getPoint2PointLength(geopoints, new LatLng(Double.valueOf(fallbean.getLat()), Double.valueOf(fallbean.getLng())));
         getAddressByLatlng(geopoints);
         if (marker1 == null) {
