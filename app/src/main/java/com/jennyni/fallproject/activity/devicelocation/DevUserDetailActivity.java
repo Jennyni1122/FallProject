@@ -15,6 +15,7 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
 import android.support.v4.app.NotificationCompat;
+import android.support.v4.content.ContextCompat;
 import android.util.Log;
 import android.view.View;
 import android.widget.ImageView;
@@ -264,6 +265,7 @@ public class DevUserDetailActivity extends BaseMapActivity implements GeocodeSea
                     lat = Double.valueOf(array[0]);
                     lng = Double.valueOf(array[1]);
                     LatLng latlng = new LatLng(lat, lng);
+                    addcircle(latlng,devicebean.getGeoradius(), ContextCompat.getColor(this,android.R.color.holo_green_light));
                     moveToPoint(latlng);
                 }
             }
@@ -274,8 +276,10 @@ public class DevUserDetailActivity extends BaseMapActivity implements GeocodeSea
 
 
         //围栏部分
+        //下面这句计算距离有问题
         float length = getPoint2PointLength(geopoints, new LatLng(Double.valueOf(fallbean.getLat()), Double.valueOf(fallbean.getLng())));
         getAddressByLatlng(geopoints);
+
         if (marker1 == null) {
             marker1 = addMarker(geopoints, BitmapFactory.decodeResource(getResources(), R.drawable.ic_centrallocation));
         }

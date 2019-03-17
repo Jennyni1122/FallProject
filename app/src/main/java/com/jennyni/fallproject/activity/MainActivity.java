@@ -16,6 +16,7 @@ import com.jennyni.fallproject.R;
 import com.jennyni.fallproject.fragment.FindFragment;
 import com.jennyni.fallproject.fragment.HomeFragment;
 import com.jennyni.fallproject.fragment.MeFragment;
+import com.jennyni.fallproject.service.LocationService;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -31,9 +32,12 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-
         initView();         //初始化控件
+        startNotifyService();
+    }
 
+    private void startNotifyService() {
+        LocationService.startService(this);
     }
 
     private void initView() {
@@ -46,16 +50,16 @@ public class MainActivity extends AppCompatActivity {
         radioGroup.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(RadioGroup group, int checkedId) {
-                switch(checkedId){
+                switch (checkedId) {
                     case R.id.rb_home:
                         //setCurrentItem()方法中第二个参数控制页面切换动画，true:打开，false:关闭
-                        viewPager.setCurrentItem(0,false);
+                        viewPager.setCurrentItem(0, false);
                         break;
                     case R.id.rb_find:
-                        viewPager.setCurrentItem(1,false);
+                        viewPager.setCurrentItem(1, false);
                         break;
                     case R.id.rb_me:
-                        viewPager.setCurrentItem(2,true);
+                        viewPager.setCurrentItem(2, true);
                         break;
                 }
             }
@@ -73,7 +77,7 @@ public class MainActivity extends AppCompatActivity {
         alFragment.add(meFragment);
         viewPager.setOffscreenPageLimit(2);     //mFragments.size()-1,三个界面之间来回切换都不会重新加载数据。
         //ViewPager设置适配器
-        viewPager.setAdapter(new MyFragmentPagerAdapter(getSupportFragmentManager(),alFragment));
+        viewPager.setAdapter(new MyFragmentPagerAdapter(getSupportFragmentManager(), alFragment));
         viewPager.setCurrentItem(0);        //ViewPager显示第一个Fragment
 
         //ViewPager页面切换监听
@@ -85,7 +89,7 @@ public class MainActivity extends AppCompatActivity {
 
             @Override
             public void onPageSelected(int position) {
-                switch (position){
+                switch (position) {
                     case 0:
                         radioGroup.check(R.id.rb_home);
 //                        tv_main_title.setText("设备用户列表");
@@ -116,16 +120,22 @@ public class MainActivity extends AppCompatActivity {
     @Override
     public boolean onKeyDown(int keyCode, KeyEvent event) {
         if (keyCode == KeyEvent.KEYCODE_BACK
-                && event.getAction() == KeyEvent.ACTION_DOWN){
-            if ((System.currentTimeMillis() - exitTime) > 2000){
-                Toast.makeText(MainActivity.this,"再按一次退出此应用哟~",Toast.LENGTH_SHORT).show();
+                && event.getAction() == KeyEvent.ACTION_DOWN) {
+            if ((System.currentTimeMillis() - exitTime) > 2000) {
+                Toast.makeText(MainActivity.this, "再按一次退出此应用哟~", Toast.LENGTH_SHORT).show();
                 exitTime = System.currentTimeMillis();
-            }else {
+            } else {
                 MainActivity.this.finish();
                 System.exit(0);
             }
             return true;
         }
         return super.onKeyDown(keyCode, event);
+    }
+
+    @Override
+    protected void onDestroy() {
+        LocationService.stopService(this);
+        super.onDestroy();
     }
 }

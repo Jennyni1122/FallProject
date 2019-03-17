@@ -15,11 +15,14 @@ import android.os.IBinder;
 import android.os.Message;
 import android.support.annotation.Nullable;
 import android.support.v4.app.NotificationCompat;
+import android.support.v4.content.ContextCompat;
 import android.util.Log;
 import android.widget.Toast;
 
 import com.amap.api.maps2d.model.LatLng;
+import com.google.gson.Gson;
 import com.jennyni.fallproject.Bean.AskFallInfoBean;
+import com.jennyni.fallproject.Bean.AskFallInfoLIstBean;
 import com.jennyni.fallproject.R;
 import com.jennyni.fallproject.activity.devicelocation.BaseMapActivity;
 import com.jennyni.fallproject.activity.devicelocation.DevUserDetailActivity;
@@ -31,6 +34,7 @@ import org.json.JSONObject;
 
 import java.io.IOException;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Random;
 
@@ -47,15 +51,15 @@ import okhttp3.Response;
 
 public class LocationService extends Service {
 
-
     private static final String STOP_KEY = "stopservice";
+    private static final int FALL_STATE = 1;
+    private static final int FENCE_STATE = 1; //超出范围
 
     public static void startService(Context context) {
         context.startService(new Intent(context, LocationService.class));
     }
 
     public static void stopService(Context context) {
-
         Intent service = new Intent(context, LocationService.class);
         service.putExtra("isStop", true);
         context.startService(service);
@@ -77,7 +81,7 @@ public class LocationService extends Service {
     private Handler handler = new Handler() {
         @Override
         public void handleMessage(Message msg) {
-            sendrequest_initData("" );     //查询网络，查询设备最新数据（无围栏坐标点及围栏范围的参数）
+            sendrequest_initData("");     //查询网络，查询设备最新数据（无围栏坐标点及围栏范围的参数）
             sendEmptyMessageDelayed(0, 5 * 1000);
 
         }
@@ -93,24 +97,51 @@ public class LocationService extends Service {
 
         String account = UtilsHelper.readLoginUserName(this);      //登录的用户名
 
-        String url = Constant.BASE_WEBSITE+Constant.REQUEST_ASKFALLINFO_DEVICE_URL +
-                "/account/" + account + "/cardid/" + cardid;
+        String url = Constant.BASE_WEBSITE + Constant.REQUEST_ASKALLFALLINFO_DEVICE_URL +
+                "/account/" + account;
         OkHttpClient okHttpClient = new OkHttpClient();
         final Request request = new Request.Builder().url(url).build();
         Call call = okHttpClient.newCall(request);
         //开启异步访问网络
-//        call.enqueue(new Callback() {
-//            @Override
-//            public void onFailure(Call call, IOException e) {
-//                //联网失败
-//                Log.e("MSG_MAPPAGE_FAIL", "请求失败：" + e.getMessage());
-//            }
-//
-//            @Override
-//            public void onResponse(Call call, Response response) throws IOException {
-//                Log.e("MSG_MAPPAGE_OK", "请求成功：" + response);
-//                AskFallInfoBean.ResultBean bean = JsonParse.getInstance().getAskFallInfo(response.body().string());
-//                if (bean==null){
+        call.enqueue(new Callback() {
+            @Override
+            public void onFailure(Call call, IOException e) {
+                //联网失败
+                Log.e("MSG_MAPPAGE_FAIL", "请求失败：" + e.getMessage());
+            }
+
+            @Override
+            public void onResponse(Call call, Response response) throws IOException {
+                Log.e("MSG_MAPPAGE_OK", "请求成功：" + response);
+                Gson gson = new Gson();
+                String string = response.body().string();
+                AskFallInfoLIstBean askFallInfoBean = gson.fromJson(string, AskFallInfoLIstBean.class);
+                if (askFallInfoBean != null && askFallInfoBean.getStatus() == 200) {
+                    List<AskFallInfoLIstBean.ResultBean> result = askFallInfoBean.getResult();
+                    if (result.size() == 0) return;
+                    for (final AskFallInfoLIstBean.ResultBean bean : result) {
+                        if (isOutOfRadius(bean.getFence())) {
+                            handler.post(new Runnable() {
+                                @Override
+                                public void run() {
+                                    sendNotifycation(String.format("%s在范围外，请注意!", bean.getDname() == null ? "未知用户" : bean.getDname()));
+                                }
+                            });
+
+                        }
+                        if (isFalled(bean.getFall())) {
+                            handler.post(new Runnable() {
+                                @Override
+                                public void run() {
+                                    sendNotifycation(String.format("%s已跌倒，请注意!", bean.getDname() == null ? "未知用户" : bean.getDname()));
+                                }
+                            });
+                        }
+
+
+                    }
+                }
+//                if (bean == null) {
 //                    Log.e("MSG_MAPPAGE_OK", "请求设备定位异常！");
 //                    Toast.makeText(LocationService.this, "请求设备定位异常！", Toast.LENGTH_SHORT).show();
 //                    return;
@@ -119,13 +150,28 @@ public class LocationService extends Service {
 //                message.what = MSG_MAPPAGE_OK;
 //                message.obj = bean;
 //                handler.sendMessage(message);
-//            }
-//        });
+            }
+        });
+    }
+
+    boolean isFalled(int fallState) {
+        return fallState == FALL_STATE;
+    }
+
+
+    /**
+     * 范围外
+     *
+     * @return
+     */
+    boolean isOutOfRadius(int fenceState) {
+//        float point2PointLength = BaseMapActivity.getPoint2PointLength();
+        return fenceState == 1;
     }
 
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
-        if (intent.getBooleanExtra(STOP_KEY, false)) {
+        if (intent!=null &&intent.getBooleanExtra(STOP_KEY, false)) {
             stopSelf();
         }
         return super.onStartCommand(intent, flags, startId);
@@ -154,14 +200,13 @@ public class LocationService extends Service {
 //    };
 
 
-
     @Override
     public void onDestroy() {
-
+        handler.removeCallbacksAndMessages(null);
         super.onDestroy();
     }
 
-    void sendNotifycation() {
+    void sendNotifycation(String str) {
         if (Build.VERSION.SDK_INT < Build.VERSION_CODES.O) {
             /**
              *  创建通知栏管理工具
@@ -180,9 +225,9 @@ public class LocationService extends Service {
              *  设置Builder
              */
             //设置标题
-            mBuilder.setContentTitle("幸福e区")
+            mBuilder.setContentTitle(getString(R.string.app_name))
                     //设置内容
-                    .setContentText("超出设定的安全范围，请注意！")
+                    .setContentText(str)
                     //设置大图标
                     .setLargeIcon(BitmapFactory.decodeResource(getResources(), R.drawable.icon_fall))
                     //设置小图标
@@ -190,7 +235,7 @@ public class LocationService extends Service {
                     //设置通知时间
                     .setWhen(System.currentTimeMillis())
                     //首次进入时显示效果
-                    .setTicker("超出设定的安全范围，请注意！")
+                    .setTicker(str)
                     //设置通知方式，声音，震动，呼吸灯等效果，这里通知方式为声音
                     .setDefaults(Notification.DEFAULT_SOUND);
             //发送通知请求
@@ -201,8 +246,8 @@ public class LocationService extends Service {
             Notification.Builder builder = new Notification.Builder(this, "1"); //与channelId对应
             //icon title text必须包含，不然影响桌面图标小红点的展示
             builder.setSmallIcon(android.R.drawable.stat_notify_chat)
-                    .setContentTitle("跌倒守护")
-                    .setContentText("超出设定的安全范围，请注意！")
+                    .setContentTitle(getString(R.string.app_name))
+                    .setContentText(str)
                     .setNumber(3); //久按桌面图标时允许的此条通知的数量
             NotificationManager notificationManager = (NotificationManager) this.getSystemService(Context.NOTIFICATION_SERVICE);
 

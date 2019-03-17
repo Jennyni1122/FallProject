@@ -31,10 +31,11 @@ import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.Response;
 
-/**..................解析里的url的cardid,d1,d2
+/**
+ * ..................解析里的url的cardid,d1,d2
  * 显示设备轨迹
  */
-public class PathActivity extends AppCompatActivity {
+public class PathActivity extends BaseMapActivity {
     private TextView tv_main_title, tv_back;
     private RelativeLayout rl_title_bar;
 
@@ -44,14 +45,14 @@ public class PathActivity extends AppCompatActivity {
     private static final String CARDID_KEY = "cardid";
     public static final String SAFEMODE_KEY = "safemode_key";
 
-    private String startTime,endTime,account,cardid;
+    private String startTime, endTime, account, cardid;
 
 
-    public static void startActivity(Context context,String startTime,String endTime,String cardid){
+    public static void startActivity(Context context, String startTime, String endTime, String cardid) {
         Intent intent = new Intent(context, PathActivity.class);
-        intent.putExtra(STARTTIME_KEY,startTime);
-        intent.putExtra(ENDTIME_KEY,endTime);
-        intent.putExtra(CARDID_KEY,cardid);
+        intent.putExtra(STARTTIME_KEY, startTime);
+        intent.putExtra(ENDTIME_KEY, endTime);
+        intent.putExtra(CARDID_KEY, cardid);
         context.startActivity(intent);
     }
 
@@ -60,7 +61,7 @@ public class PathActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_path);
-
+        initMap(savedInstanceState);
         initView();     //初始化控件
         startTime = getIntent().getStringExtra(STARTTIME_KEY);
         endTime = getIntent().getStringExtra(ENDTIME_KEY);
@@ -68,7 +69,7 @@ public class PathActivity extends AppCompatActivity {
         account = UtilsHelper.readLoginUserName(this);
         //cardid = ..............................;
         sendrequest_askTrace();
-       // mode = (SafeLocationMode) getIntent().getSerializableExtra(SAFEMODE_KEY);
+        // mode = (SafeLocationMode) getIntent().getSerializableExtra(SAFEMODE_KEY);
 
     }
 
@@ -104,7 +105,6 @@ public class PathActivity extends AppCompatActivity {
 //    }
 
 
-
     /**
      * 事件捕获
      */
@@ -119,8 +119,14 @@ public class PathActivity extends AppCompatActivity {
                         //获取数据
                         String result = (String) msg.obj;
                         Log.e("handleMessage", result);
-                        List<AskTrackBetweenBean.ResultBean> modelist= JsonParse.getInstance().getAskTraceBetweenInfo(result);
-                        List<LatLng> list = new ArrayList<>();
+                        List<AskTrackBetweenBean.ResultBean> modelist = JsonParse.getInstance().getAskTraceBetweenInfo(result);
+                        if (modelist == null) {
+                            showToast("无轨迹或无绑定关系");
+                        } else {
+                            List<LatLng> list = new ArrayList<>();
+                            showToast("有数据");
+                        }
+
 //                        if (modelist.size() == 1) {
 //                            PathMode pathMode = pahModes.get(0);
 //                            LatLng latLng = new LatLng(Double.valueOf(pathMode.getX()), Double.valueOf(pathMode.getY()));
@@ -146,14 +152,18 @@ public class PathActivity extends AppCompatActivity {
             }
         }
     };
+
+
+
+
     /**
      * 请求网络，查询设备定位
      */
     private void sendrequest_askTrace() {
         //12.请求查询历史设备运动轨迹： (d1>d2)
         //String url12 = "http://www.phyth.cn/index/fall/askTrackBetween/account/"+account+"/cardid/"+cardid+"/d1/"+ cardpass+"/d2/0";
-        String url = Constant.BASE_WEBSITE+Constant.REQUEST_ASKTRACKBETWEEN_DEVICE_URL+
-               "/account/"+account+"/cardid/"+cardid+"/d1/"+ startTime +"/d2/"+endTime;
+        String url = Constant.BASE_WEBSITE + Constant.REQUEST_ASKTRACKBETWEEN_DEVICE_URL +
+                "/account/" + account + "/cardid/" + cardid + "/d1/" + startTime + "/d2/" + endTime;
         OkHttpClient okHttpClient = new OkHttpClient();
         final Request request = new Request.Builder().url(url).build();
         Call call = okHttpClient.newCall(request);
@@ -169,7 +179,7 @@ public class PathActivity extends AppCompatActivity {
             public void onResponse(Call call, Response response) throws IOException {
                 Log.e("MSG_TRACK_OK", "请求成功：" + response);
                 String res = response.body().string();
-                Log.e("MSG_OK",res);
+                Log.e("MSG_OK", res);
                 Message message = new Message();
                 message.what = MSG_ASKTRACK_OK;
                 message.obj = res;

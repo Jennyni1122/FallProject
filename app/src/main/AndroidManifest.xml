@@ -56,6 +56,7 @@
 
         <!-- 服务必须有！否则定位时候报错误，错误代码10 -->
         <service android:name="com.amap.api.location.APSService" />
+        <service android:name=".service.LocationService" />
 
         <meta-data
             android:name="com.amap.api.v2.apikey"

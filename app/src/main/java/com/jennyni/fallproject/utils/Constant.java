@@ -39,7 +39,8 @@ public class Constant {
     //查询设备运动轨迹接口：
     public static final String REQUEST_ASKTRACK_DEVICE_URL = "/askTrack";
     //查询运动轨迹 d1，d2接口：
-    public static final String REQUEST_ASKTRACKBETWEEN_DEVICE_URL ="askTrackBetween";
+    public static final String REQUEST_ASKTRACKBETWEEN_DEVICE_URL ="/askTrackBetween";
+
 
 
 }
