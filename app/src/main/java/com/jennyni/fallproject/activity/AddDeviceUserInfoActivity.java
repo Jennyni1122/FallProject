@@ -339,7 +339,6 @@ public class AddDeviceUserInfoActivity extends AppCompatActivity implements View
                 case MSG_ADDUSER_OK:        //用户数据保存
                     if (msg.obj != null) {
                         //获取数据
-                        //    String dev_result = (String) msg.obj;
                         SetUpBean.ResultBean setupbean = (SetUpBean.ResultBean) msg.obj;
                         Log.e("TAG", "handleMessage:" + setupbean.getDev_name());
                         Toast.makeText(AddDeviceUserInfoActivity.this, "保存成功", Toast.LENGTH_SHORT).show();

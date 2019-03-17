@@ -25,9 +25,11 @@ import com.jennyni.fallproject.Bean.UserUpdateBean;
 import com.jennyni.fallproject.R;
 import com.jennyni.fallproject.utils.Constant;
 import com.jennyni.fallproject.utils.JsonParse;
+import com.jennyni.fallproject.utils.StringUtil;
 import com.jennyni.fallproject.utils.UtilsHelper;
 
 import java.io.IOException;
+import java.net.URLEncoder;
 import java.util.List;
 
 import okhttp3.Call;
@@ -53,8 +55,8 @@ public class EditDevUserActivity extends AppCompatActivity implements View.OnCli
     private ImageView iv_head_icon;
     private String spUserPhone,cardid;         //定义 获取登录时的用户名
     private String currentDevCode,currentDevPsw;
-    public static final int MSG_EDIT_OK = 1;
-    public static final int MSG_SAVE_OK = 2;
+    public static final int MSG_SHOW_OK = 1;
+    public static final int MSG_EDIT_OK = 2;
     String isgeo,issex,dname,idcard,geocenter,georadius;
     List<UserUpdateBean.ResultBean> devicelist;
     @Override
@@ -142,37 +144,24 @@ public class EditDevUserActivity extends AppCompatActivity implements View.OnCli
         tv_geocenter.setOnClickListener(this);      //设置地理围栏：选择地址按钮
     }
 
-    /**
-     * 请求网络，加载设备用户信息
-     */
-    private void sendrequest_askDevInfo() {
 
-        cardid = devicelist.get(0).getCard_id();
-        String url = Constant.BASE_WEBSITE+Constant.REQUEST_ASKDEVINFO_DEVICE_URL + "/account/" +spUserPhone +"/cardid/"+ cardid;
-        Log.e(TAG, url);
-        OkHttpClient okHttpClient = new OkHttpClient();
-        final Request request = new Request.Builder().url(url).build();
-        Call call = okHttpClient.newCall(request);
-        //开启异步访问网络
-        call.enqueue(new Callback() {
-            @Override
-            public void onFailure(Call call, IOException e) {
-                Log.e(TAG, "MSG_EDIT_FAIL" + "请求失败：" + e.getMessage());
-            }
 
-            @Override
-            public void onResponse(Call call, Response response) throws IOException {
-                Log.e(TAG, "MSG_EDIT_OK" + "请求成功：" + response);
-                String str = JsonParse.getInstance().getAskDevInfo(response.body().string());
-                Log.e(TAG, "MSG_EDIT_OK" + str);
-                Message message = new Message();
-                message.what = MSG_EDIT_OK;
-                message.obj = str;
-                handler.sendMessage(message);
+    @Override
+    public void onClick(View v) {
+        switch (v.getId()){
+            case R.id.tv_back:      //返回按钮
+                EditDevUserActivity.this.finish();
+                break;
+            case R.id.tv_save:      //保存按钮
 
-            }
-        });
+                sendrequest_saveData();             //请求网络，修改保存用户信息
+                break;
+            case R.id.tv_geocenter:     //围栏设置
+                Intent intent = new Intent(EditDevUserActivity.this,GetAddressByKeyword.class);
+                startActivity(intent);
+                break;
 
+        }
     }
 
 
@@ -185,7 +174,7 @@ public class EditDevUserActivity extends AppCompatActivity implements View.OnCli
         public void handleMessage(Message msg) {
             super.handleMessage(msg);
             switch (msg.what) {
-                case MSG_EDIT_OK:        //查看用户数据
+                case MSG_SHOW_OK:        //查看用户数据
                     if (msg.obj != null) {
                         //获取数据
                         //    String dev_result = (String) msg.obj;
@@ -227,45 +216,122 @@ public class EditDevUserActivity extends AppCompatActivity implements View.OnCli
 
                     }
                     break;
-                case MSG_SAVE_OK:        //修改用户信息，进行上传
-//                    if (msg.obj != null) {
-//                        //获取数据
-//                        String result = (String) msg.obj;
-//                        Log.e("handleMessage", result);
-//                        tv_result.setText(result);      //显示绑定结果
-//                    }
+                case MSG_EDIT_OK:        //修改用户信息，进行上传
+                    if (msg.obj != null) {
+                        //获取数据
+                        SetUpBean.ResultBean setupbean = (SetUpBean.ResultBean) msg.obj;
+                        Log.e("TAG", "handleMessage:" + setupbean.getDev_name());
+                        Toast.makeText(EditDevUserActivity.this, "保存成功", Toast.LENGTH_SHORT).show();
+                    }
                     break;
             }
         }
     };
 
 
+    /**
+     * 请求网络，显示设备用户信息
+     */
+    private void sendrequest_askDevInfo() {
 
+        cardid = devicelist.get(0).getCard_id();
+        String url = Constant.BASE_WEBSITE+Constant.REQUEST_ASKDEVINFO_DEVICE_URL + "/account/" +spUserPhone +"/cardid/"+ cardid;
+        Log.e(TAG, url);
+        OkHttpClient okHttpClient = new OkHttpClient();
+        final Request request = new Request.Builder().url(url).build();
+        Call call = okHttpClient.newCall(request);
+        //开启异步访问网络
+        call.enqueue(new Callback() {
+            @Override
+            public void onFailure(Call call, IOException e) {
+                Log.e(TAG, "MSG_SHOW_FAIL" + "请求失败：" + e.getMessage());
+            }
 
-    @Override
-    public void onClick(View v) {
-        switch (v.getId()){
-            case R.id.tv_back:      //返回按钮
-                EditDevUserActivity.this.finish();
-                break;
-            case R.id.tv_save:      //保存按钮
+            @Override
+            public void onResponse(Call call, Response response) throws IOException {
+                Log.e(TAG, "MSG_SHOW_OK" + "请求成功：" + response);
+                String str = JsonParse.getInstance().getAskDevInfo(response.body().string());
+                Log.e(TAG, "MSG_SHOW_OK" + str);
+                Message message = new Message();
+                message.what = MSG_SHOW_OK;
+                message.obj = str;
+                handler.sendMessage(message);
 
-                Toast.makeText(this, "修改成功~", Toast.LENGTH_SHORT).show();
-                break;
-            case R.id.tv_geocenter:     //围栏设置
-                Intent intent = new Intent(EditDevUserActivity.this,GetAddressByKeyword.class);
-                startActivity(intent);
-                break;
-
-        }
-
-
-
-
-
-
-
-
+            }
+        });
 
     }
+
+    void toast(String msg) {
+        Toast.makeText(this, msg, Toast.LENGTH_SHORT).show();
+    }
+
+    /**
+     * 修改设备用户信息，进行保存上传
+     */
+    private void sendrequest_saveData() {
+        dname = et_device_name.getText().toString().trim();
+        idcard = et_idcard.getText().toString().trim();
+        geocenter = tv_geocenter.getText().toString();
+        georadius = et_georadius.getText().toString();
+
+        if (StringUtil.isEmpty(dname)) {
+            toast("设备用户不能为空");
+            return;
+        }
+
+        if (StringUtil.isEmpty(idcard)) {
+            toast("身份证不能为空");
+            return;
+        }
+        if (StringUtil.isEmpty(currentDevCode)) {
+            toast("设备号不能为空");
+            return;
+        }
+        if (StringUtil.isEmpty(currentDevPsw)) {
+            toast("设备密码不能为空");
+            return;
+        }
+
+        /**
+         * http://www.phyth.cn/index/fall/setup/account/18860900316/cardid/18255180000/
+         * guardian/13330000888/pilltime1/081080/isgeo/true/geocenter/115.672126,38.817129/georadius/1000
+         */
+
+        String url = Constant.BASE_WEBSITE + Constant.REQUEST_SETUP_DEVICE_URL +
+                "/account/" + spUserPhone +
+                "/cardid/" + currentDevCode +
+                "/dname/" + URLEncoder.encode(dname) +
+                "/sex/" + URLEncoder.encode(male.isChecked() ? "男" : "女") +
+                "/idcard/" + idcard +
+                "/guardian/" + spUserPhone +
+                "/isgeo/" + (close.isChecked() ? "0" : "1") +
+                "/geocenter/" + URLEncoder.encode(geocenter) +
+                "/georadius/" + georadius;
+        Log.e(TAG, url);
+        OkHttpClient okHttpClient = new OkHttpClient();
+        final Request request = new Request.Builder().url(url).build();
+        Call call = okHttpClient.newCall(request);
+        //开启异步访问网络
+        call.enqueue(new Callback() {
+            @Override
+            public void onFailure(Call call, IOException e) {
+                Log.e(TAG, "MSG_EDIT_FAIL" + "请求失败：" + e.getMessage());
+            }
+
+            @Override
+            public void onResponse(Call call, Response response) throws IOException {
+                Log.e(TAG, "MSG_EDIT_OK" + "请求成功：" + response);
+                String str = JsonParse.getInstance().getSetupInfo(response.body().string());
+                Log.e(TAG, "MSG_EDIT_OK" + str);
+                Message message = new Message();
+                message.what = MSG_EDIT_OK;
+                message.obj = str;
+                handler.sendMessage(message);
+            }
+        });
+
+    }
+
+
 }

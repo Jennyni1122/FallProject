@@ -94,15 +94,7 @@ public class DevUserDetailActivity extends BaseMapActivity implements GeocodeSea
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_dev_user_detail);
         initMap(savedInstanceState);
-        //问题：应该是从HomeFragment传递进来设备用户信息，然后报警消息显示到Fragment
 
-//        //从FindFragment的消息列表点击事件进来，显示跌倒该用户的跌倒信息
-//        AskFallInfoBean.ResultBean  askfallinfo = (AskFallInfoBean.ResultBean) getIntent().getSerializableExtra("askfallinfo");
-//        String position = getIntent().getStringExtra("position");
-//        if (askfallinfo != null) {
-//            cardid =askfallinfo.getCard_id();
-//            dname = askfallinfo.getDname();
-//        }
         account = UtilsHelper.readLoginUserName(this);      //登录的用户名
         initView();     //初始化控件
 
@@ -164,10 +156,8 @@ public class DevUserDetailActivity extends BaseMapActivity implements GeocodeSea
         iv_select_time.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                //跳转到选择时间界面，将解析数据传值
-//                if (bean != null) {
-                    SelectTimeActivity.startActivity(DevUserDetailActivity.this,devicebean.getCard_id());
-//                }
+             //跳转到选择时间界面，将解析数据传值
+             SelectTimeActivity.startActivity(DevUserDetailActivity.this,devicebean.getCard_id());
             }
         });
 
@@ -209,7 +199,7 @@ public class DevUserDetailActivity extends BaseMapActivity implements GeocodeSea
 
 
     /**
-     * .................................跌倒和状态怎么显示，电量和信号该显示百分比吗， 围栏信息不在这个接口
+     *
      * 将设备参数及定位的数据显示出来()
      */
     private void setData() {

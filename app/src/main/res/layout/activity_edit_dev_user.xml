@@ -320,7 +320,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:padding="5dp"
-                android:text="说明：此地理围栏呈圆形，输入的围栏地址为中心点、输入的围栏范围为半径。"
+                android:text="说明：此地理围栏呈圆形，输入的围栏地址为中心点、输入的围栏范围为半径(建议设置半径＞1000米)。"
                 android:textSize="16sp" />
             <View
                 android:layout_width="fill_parent"
