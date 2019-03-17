@@ -16,6 +16,7 @@ import android.widget.TextView;
 
 import com.amap.api.maps2d.model.LatLng;
 import com.jennyni.fallproject.Bean.AskTrackBetweenBean;
+import com.jennyni.fallproject.Bean.UserUpdateBean;
 import com.jennyni.fallproject.R;
 import com.jennyni.fallproject.utils.Constant;
 import com.jennyni.fallproject.utils.JsonParse;
@@ -32,11 +33,11 @@ import okhttp3.Request;
 import okhttp3.Response;
 
 /**
- * ..................解析里的url的cardid,d1,d2
+ *
  * 显示设备轨迹
  */
 public class PathActivity extends BaseMapActivity {
-    private TextView tv_main_title, tv_back;
+    private TextView tv_main_title, tv_back,tv_select_time;
     private RelativeLayout rl_title_bar;
 
     private static final int MSG_ASKTRACK_OK = 1;
@@ -44,14 +45,12 @@ public class PathActivity extends BaseMapActivity {
     private static final String ENDTIME_KEY = "d2";
     private static final String CARDID_KEY = "cardid";
     public static final String SAFEMODE_KEY = "safemode_key";
-
+    private static final String DEVICEBEAN_KEY = "devicebean";
     private String startTime, endTime, account, cardid;
 
 
-    public static void startActivity(Context context, String startTime, String endTime, String cardid) {
+    public static void startActivity(Context context, String cardid) {
         Intent intent = new Intent(context, PathActivity.class);
-        intent.putExtra(STARTTIME_KEY, startTime);
-        intent.putExtra(ENDTIME_KEY, endTime);
         intent.putExtra(CARDID_KEY, cardid);
         context.startActivity(intent);
     }
@@ -67,9 +66,7 @@ public class PathActivity extends BaseMapActivity {
         endTime = getIntent().getStringExtra(ENDTIME_KEY);
         cardid = getIntent().getStringExtra(CARDID_KEY);
         account = UtilsHelper.readLoginUserName(this);
-        //cardid = ..............................;
         sendrequest_askTrace();
-        // mode = (SafeLocationMode) getIntent().getSerializableExtra(SAFEMODE_KEY);
 
     }
 
@@ -81,16 +78,26 @@ public class PathActivity extends BaseMapActivity {
         tv_main_title = (TextView) findViewById(R.id.tv_main_title);
         tv_main_title.setText("设备轨迹");
         tv_back = (TextView) findViewById(R.id.tv_back);
+        tv_select_time = findViewById(R.id.tv_save);
+        tv_select_time.setText("选择时间");
         rl_title_bar = (RelativeLayout) findViewById(R.id.title_bar);
         rl_title_bar.setBackgroundColor(getResources().getColor(R.color.rdTextColorPress));
         tv_back.setVisibility(View.VISIBLE);
-        tv_back.setOnClickListener(new View.OnClickListener() {
+        tv_select_time.setVisibility(View.VISIBLE);
+        tv_back.setOnClickListener(new View.OnClickListener() {     //返回设备定位界面
             @Override
             public void onClick(View v) {
                 finish();
             }
         });
+        tv_select_time.setOnClickListener(new View.OnClickListener() {      //点击进入选择时间日期
+            @Override
+            public void onClick(View v) {
 
+            //跳转到选择时间界面，将解析数据传值
+             SelectTimeActivity.startActivity(PathActivity.this,cardid);
+            }
+        });
     }
 
 //    @Override
@@ -187,6 +194,5 @@ public class PathActivity extends BaseMapActivity {
         });
 
     }
-
 
 }

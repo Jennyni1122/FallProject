@@ -36,7 +36,7 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
-        <activity android:name=".activity.welcome.LoginActivity"></activity>
+        <activity android:name=".activity.welcome.LoginActivity" />
         <activity
             android:name=".activity.welcome.RegisterActivity"
             android:theme="@style/AppTheme.TransparentActivity" />
@@ -48,10 +48,8 @@
 
         <receiver android:name=".receiver.AutoUpdateReceiver" />
 
-        <activity android:name=".activity.devicelocation.DevUserDetailActivity"></activity>
-        <activity android:name=".activity.AddDeviceUserInfoActivity">
-
-        </activity>
+        <activity android:name=".activity.devicelocation.DevUserDetailActivity" />
+        <activity android:name=".activity.AddDeviceUserInfoActivity"></activity>
         <activity android:name=".activity.GetAddressByKeyword" />
 
         <!-- 服务必须有！否则定位时候报错误，错误代码10 -->
@@ -65,7 +63,7 @@
         <activity android:name=".activity.EditDevUserActivity" />
         <activity android:name=".activity.devicelocation.SelectTimeActivity" />
         <activity android:name=".activity.devicelocation.PathActivity" />
-        <activity android:name=".activity.UserInfoActivity"></activity>
+        <activity android:name=".activity.UserInfoActivity" />
         <activity android:name=".activity.welcome.SplashActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -73,6 +71,7 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+        <activity android:name=".activity.CheckUpdateActivity"></activity>
     </application>
 
 </manifest>

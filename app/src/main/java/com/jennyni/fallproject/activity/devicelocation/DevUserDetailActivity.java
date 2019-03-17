@@ -67,7 +67,7 @@ public class DevUserDetailActivity extends BaseMapActivity implements GeocodeSea
     private RelativeLayout rl_title_bar;
     //内容控件
     private TextView tv_dev_user, tv_address, tv_dev_num, tv_idcard, tv_alert, tv_state;
-    private ImageView iv_select_time,iv_rssi, iv_power;
+    private ImageView iv_path,iv_rssi, iv_power;
     public static final int MSG_DevUser_OK = 1; //加载设备，获取数据
     public static final int MSG_FALLINFO_OK = 2;    //获取跌倒设备数据
     private Circle circle;
@@ -80,7 +80,7 @@ public class DevUserDetailActivity extends BaseMapActivity implements GeocodeSea
 
 
     /**
-     * 跳转到选择时间界面，将解析数据传值
+     * 跳转界面，将解析数据传值
      *
      * @param context
      */
@@ -126,8 +126,6 @@ public class DevUserDetailActivity extends BaseMapActivity implements GeocodeSea
         tv_back.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {            //返回按钮
-//                Intent intent = new Intent( DevUserDetailActivity.this,HomeFragment.class);
-//                startActivityForResult(intent, 1);
                 finish();
             }
         });
@@ -153,12 +151,13 @@ public class DevUserDetailActivity extends BaseMapActivity implements GeocodeSea
         tv_idcard = findViewById(R.id.tv_idcard);           //设备用户身份证
         tv_alert = findViewById(R.id.tv_alert);             //设备围栏范围（安全范围）
         tv_state = findViewById(R.id.tv_state);             //设备状态（跌倒报警，围栏）
-        iv_select_time = findViewById(R.id.iv_select_time); //选择时间（查看轨迹）
-        iv_select_time.setOnClickListener(new View.OnClickListener() {
+        iv_path = findViewById(R.id.iv_select_time);        //查看轨迹按钮
+        iv_path.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-             //跳转到选择时间界面，将解析数据传值
-             SelectTimeActivity.startActivity(DevUserDetailActivity.this,devicebean.getCard_id());
+
+                //跳转到设备轨迹界面
+                PathActivity.startActivity(DevUserDetailActivity.this,devicebean.getCard_id());
             }
         });
 
@@ -233,8 +232,8 @@ public class DevUserDetailActivity extends BaseMapActivity implements GeocodeSea
 
 //        tv_alert.setText(String.valueOf(fallbean.getAlert()));
 //        tv_state.setText(String.valueOf(fallbean.getFall()));
-        //显示安全范围。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。待修改
-        if (fallbean.getAlert() == 1){
+        //显示安全范围。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。待修改 fence
+        if (fallbean.getFence() == 1){
            tv_alert.setText("超出范围！");
            tv_alert.setTextColor(Color.RED);
         }else {
@@ -252,7 +251,6 @@ public class DevUserDetailActivity extends BaseMapActivity implements GeocodeSea
            tv_state.setText("正常");
            tv_state.setTextColor(Color.GREEN);
        }
-
 
 
         //显示设备的定位，geopoints为设备定位，latlng(geocenter)为围栏中心点

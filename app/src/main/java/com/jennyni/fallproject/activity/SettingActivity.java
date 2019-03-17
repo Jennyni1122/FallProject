@@ -10,6 +10,7 @@ import android.widget.Toast;
 
 import com.jennyni.fallproject.FallProjectApplication;
 import com.jennyni.fallproject.R;
+import com.jennyni.fallproject.activity.welcome.LoginActivity;
 import com.jennyni.fallproject.utils.UtilsHelper;
 
 /**
@@ -61,10 +62,9 @@ public class SettingActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 Toast.makeText(SettingActivity.this, "暂未开放", Toast.LENGTH_SHORT).show();
-//                //跳转到设置密保界面
-//                Intent intent = new Intent(SettingActivity.this, FindPswActivity.class);
-//                intent.putExtra("from", "security");
-//                startActivity(intent);
+                //跳转到检查更新界面
+                Intent intent = new Intent(SettingActivity.this, CheckUpdateActivity.class);
+                startActivity(intent);
             }
         });
         //退出登录的点击事件
@@ -76,12 +76,13 @@ public class SettingActivity extends AppCompatActivity {
                 //清除登录状态和登录时的用户名
                 UtilsHelper.clearLoginStatus(SettingActivity.this);
                 //退出登录成功后把退出成功的状态传递到MainActivity中
-                Intent data = new Intent();
-                data.putExtra("isLogin", false);
-                setResult(RESULT_OK, data);
-                FallProjectApplication.destroyActivity("mainActivity");
+//                Intent data = new Intent();
+//                data.putExtra("isLogin", false);
+//                setResult(RESULT_OK, data);
+//                FallProjectApplication.destroyActivity("mainActivity");
+                Intent intent = new Intent(SettingActivity.this,LoginActivity.class);
+                startActivity(intent);
                 finish();
-
             }
         });
 

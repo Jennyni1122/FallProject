@@ -68,10 +68,26 @@ public class WarningAdapter extends RecyclerView.Adapter<WarningAdapter.
         String time = sdf.format(new Date(bean.getTime()));   // 时间戳转换成时间
         holder.tv_time.setText(time);
 
+        //报警类型判断：
+        if (bean.getFall() == 1){
+            holder.tv_type.setText("跌倒报警");
+        }else if (bean.getFall() == 2){
+            holder.tv_type.setText("手动报警");
+        }else if (bean.getFence() == 1){
+            holder.tv_type.setText("围栏报警");
+        }else if (bean.getFence() == 1 && bean.getFall() == 1){
+            holder.tv_type.setText("跌倒&围栏报警");
+        }else if (bean.getFall() == 2 && bean.getFall() == 1){
+            holder.tv_type.setText("手动&围栏报警");
+        } else {
+            holder.tv_type.setText("未报警");
+        }
+
         Glide.with(mContext)
                 .load(R.drawable.fall_icon)
                 .error(R.mipmap.ic_launcher)
                 .into((holder).iv_img);
+
         //设置内容布局的宽为屏幕宽度
         holder.layout_content.getLayoutParams().width = UtilsHelper.getScreenWidth(mContext);
         //内容的点击事件

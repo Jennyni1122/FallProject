@@ -49,7 +49,7 @@ import okhttp3.Response;
 import static android.app.Activity.RESULT_OK;
 
 /**
- * ..............长按解绑
+ *
  * HomeFragment 用户列表 显示添加设备功能，解绑设备，点击列表项进入设备定位
  */
 
@@ -128,10 +128,6 @@ public class HomeFragment extends Fragment {    //implements DeviceListAdapter.L
         adapter.setOnItemClickListener(new DeviceListAdapter.OnItemClickListener() {
             @Override
             public void onItemClick(View view, int position) {          //点击列表项进入设备定位界面
-//                Intent intent = new Intent(getActivity(),DevUserDetailActivity.class);
-//                intent.putExtra("id", devicelist.get(position).getId());
-////                getActivity().setResult(RESULT_OK, intent);
-//                startActivity(intent);
                 UserUpdateBean.ResultBean resultBean = devicelist.get(position);
                 DevUserDetailActivity.startActivity(getActivity(), resultBean);
             }

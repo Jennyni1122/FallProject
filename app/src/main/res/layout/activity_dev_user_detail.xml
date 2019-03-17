@@ -42,7 +42,7 @@
                     <ImageView
                         android:layout_width="18dp"
                         android:layout_height="18dp"
-                        android:src="@drawable/ic_online"/>
+                        android:src="@drawable/location_marker"/>
                     <TextView
                         android:id="@+id/tv_dev_user"
                         style="@style/normal_black"
@@ -79,7 +79,7 @@
                             android:textSize="16sp"
                             android:text="" />
                         <ImageView
-                            android:id="@+id/iv_select_time"
+                            android:id="@+id/iv_path"
                             android:layout_width="35dp"
                             android:layout_height="35dp"
                             android:layout_alignParentRight="true"
