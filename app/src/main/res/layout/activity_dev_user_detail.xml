@@ -88,7 +88,7 @@
                             android:src="@drawable/ic_positioningtrack" />
                         <View
                             style="@style/item_line"
-                            android:layout_below="@+id/iv_select_time"
+                            android:layout_below="@+id/iv_path"
                             android:layout_marginTop="7dp" />
 
                     </RelativeLayout>

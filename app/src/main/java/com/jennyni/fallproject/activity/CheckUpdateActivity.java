@@ -18,7 +18,7 @@ public class CheckUpdateActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_check_update);
+        setContentView(R.layout.activity_add_device_user_info);
 
         initView();
     }

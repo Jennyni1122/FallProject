@@ -151,7 +151,7 @@ public class DevUserDetailActivity extends BaseMapActivity implements GeocodeSea
         tv_idcard = findViewById(R.id.tv_idcard);           //设备用户身份证
         tv_alert = findViewById(R.id.tv_alert);             //设备围栏范围（安全范围）
         tv_state = findViewById(R.id.tv_state);             //设备状态（跌倒报警，围栏）
-        iv_path = findViewById(R.id.iv_select_time);        //查看轨迹按钮
+        iv_path = findViewById(R.id.iv_path);        //查看轨迹按钮
         iv_path.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {

@@ -41,7 +41,6 @@ import okhttp3.Request;
 import okhttp3.Response;
 
 /**
- *
  * 针对所有用户的跌倒报警信息：
  * 注意：这里使用的url：手机端刷新设备信息
  * 侧滑每条信息会出现红色删除按钮，实现下拉刷新或实时自动刷新，发出报警提示声音
@@ -60,9 +59,10 @@ public class FindFragment extends Fragment implements WarningAdapter.IonSlidingV
     List<AskAllFallInfoBean.ResultBean> list;
     private String account;     //手机登录账户
 
-    public FindFragment(){
+    public FindFragment() {
 
     }
+
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
@@ -86,7 +86,7 @@ public class FindFragment extends Fragment implements WarningAdapter.IonSlidingV
         //列表
         recycleView = (RecyclerView) view.findViewById(R.id.recycler_view);
         recycleView.setLayoutManager(new LinearLayoutManager(getContext()));
-        adapter = new WarningAdapter(getActivity(),this);
+        adapter = new WarningAdapter(getActivity(), this);
         recycleView.setAdapter(adapter);
         //下拉刷新
         mPullToRefreshView = (PullToRefreshView) view.findViewById(R.id.
@@ -113,21 +113,28 @@ public class FindFragment extends Fragment implements WarningAdapter.IonSlidingV
      * 事件捕获
      */
     @SuppressLint("HandlerLeak")
-    private Handler handler = new Handler(){
+    private Handler handler = new Handler() {
         @Override
         public void handleMessage(Message msg) {
             super.handleMessage(msg);
-            switch (msg.what){
+            switch (msg.what) {
                 case MSG_ALLFALL_OK:
-                    if (msg.obj != null){
+                    if (msg.obj != null) {
                         //获取数据
-                        String result = (String)msg.obj;
-                        Log.e(TAG,"handleMessage:"+ result);
+                        String result = (String) msg.obj;
+                        Log.e(TAG, "handleMessage:" + result);
                         list = JsonParse.getInstance().getAskAllFallInfo(result);
-                        if (list != null){
-                            if (list.size() > 0){
+                        if (list != null) {
+                            if (list.size() > 0) {
+                                for (int i = 0; i < list.size(); i++) {
+                                    AskAllFallInfoBean.ResultBean bean = list.get(i);
+                                    if (bean.getFall() != 2 && bean.getFall() != 1 && bean.getFence() != 1) { //过滤
+                                        list.remove(bean);
+                                        i--;
+                                    }
+                                }
                                 adapter.setData(list);
-                            }else {
+                            } else {
                                 //无数据显示"暂无报警信息~"
                                 tv_none.setVisibility(View.VISIBLE);
                             }
@@ -146,7 +153,7 @@ public class FindFragment extends Fragment implements WarningAdapter.IonSlidingV
     private void sendrequest_allfallData() {
 
         String account = UtilsHelper.readLoginUserName(getActivity());
-       String url = Constant.BASE_WEBSITE+Constant.REQUEST_ASKALLFALLINFO_DEVICE_URL+"/account/" + account;
+        String url = Constant.BASE_WEBSITE + Constant.REQUEST_ASKALLFALLINFO_DEVICE_URL + "/account/" + account;
         OkHttpClient okHttpClient = new OkHttpClient();
         final Request request = new Request.Builder().url(url).build();
         Call call = okHttpClient.newCall(request);
@@ -155,7 +162,7 @@ public class FindFragment extends Fragment implements WarningAdapter.IonSlidingV
             @Override
             public void onFailure(Call call, IOException e) {
                 //联网失败
-                Log.e(TAG,"请求失败：" + e.getMessage());
+                Log.e(TAG, "请求失败：" + e.getMessage());
             }
 
             @Override
@@ -173,7 +180,6 @@ public class FindFragment extends Fragment implements WarningAdapter.IonSlidingV
     }
 
 
-
     //点击事件
     @Override
     public void onItemClick(View view, int position) {
@@ -181,19 +187,19 @@ public class FindFragment extends Fragment implements WarningAdapter.IonSlidingV
         Intent intent = new Intent(context, DevUserDetailActivity.class);
         intent.putExtra("askfallinfo", (Serializable) list.get(position));
         intent.putExtra("position", position + "");
-        startActivityForResult(intent,1);
+        startActivityForResult(intent, 1);
     }
 
     @Override
     public void onDeleteBtnCilck(View view, int position) {
-        adapter.removeData(position,tv_none,account);
+        adapter.removeData(position, tv_none, account);
     }
 
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
-        if (data != null){
+        if (data != null) {
             String position = data.getStringExtra("position");
-            adapter.removeData(Integer.parseInt(position),tv_none,account);
+            adapter.removeData(Integer.parseInt(position), tv_none, account);
         }
 
     }
