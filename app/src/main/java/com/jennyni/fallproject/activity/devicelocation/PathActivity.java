@@ -124,41 +124,40 @@ public class PathActivity extends BaseMapActivity {
                             showToast("无轨迹或无绑定关系");
                         } else {
                             List<LatLng> list = new ArrayList<>();
-                            showToast("有数据");
-                        }
+                            if (modelist.size() == 1) {
+                                AskTrackBetweenBean.ResultBean pathMode = modelist.get(0);
+                                LatLng latLng = new LatLng(Double.valueOf(pathMode.getLat()), Double.valueOf(pathMode.getLng()));
+                                addMarker(latLng, BitmapFactory.decodeResource(getResources(), R.drawable.trace_1));
+                                return;
+                            }
 
-//                        if (modelist.size() == 1) {
-//                            PathMode pathMode = pahModes.get(0);
-//                            LatLng latLng = new LatLng(Double.valueOf(pathMode.getX()), Double.valueOf(pathMode.getY()));
-//                            addMarker(latLng, BitmapFactory.decodeResource(getResources(), R.drawable.ic_trajectory));
-//                            return;
-//                        }
-//
-//                        for (int i = 0; i < pahModes.size(); i++) {
-//                            PathMode pathMode = pahModes.get(i);
-//                            LatLng latLng = new LatLng(Double.valueOf(pathMode.getX()), Double.valueOf(pathMode.getY()));
-//                            if (i == 0) {//起点
-//                                moveToPoint(latLng);
-//                                addMarker(latLng, BitmapFactory.decodeResource(getResources(), R.drawable.trace1));
-//                            } else if (i == pahModes.size() - 1) {//终点
-//                                addMarker(latLng, BitmapFactory.decodeResource(getResources(), R.drawable.trace2));
-//                            }
-//                            list.add(latLng);
-//                        }
+                            for (int i = 0; i < modelist.size(); i++) {
+                                AskTrackBetweenBean.ResultBean pathMode = modelist.get(i);
+                                LatLng latLng = new LatLng(Double.valueOf(pathMode.getLat()), Double.valueOf(pathMode.getLng()));
+                                if (i == 0) {//起点
+                                    moveToPoint(latLng);
+                                    addMarker(latLng, BitmapFactory.decodeResource(getResources(), R.drawable.trace_1));
+                                } else if (i == modelist.size() - 1) {//终点
+                                    addMarker(latLng, BitmapFactory.decodeResource(getResources(), R.drawable.trace_2));
+                                } else {
+                                    addMarker(latLng, BitmapFactory.decodeResource(getResources(), R.drawable.location_marker));
+                                }
+                                list.add(latLng);
+                            }
 //                        //轨迹线
-//                        addLinePath(list, getResources().getColor(R.color.trace_green));
+                            addLinePath(list, getResources().getColor(R.color.grassgreen));
+                        }
+                        break;
                     }
-                    break;
             }
+
         }
     };
-
-
-
 
     /**
      * 请求网络，查询设备定位
      */
+
     private void sendrequest_askTrace() {
         //12.请求查询历史设备运动轨迹： (d1>d2)
         //String url12 = "http://www.phyth.cn/index/fall/askTrackBetween/account/"+account+"/cardid/"+cardid+"/d1/"+ cardpass+"/d2/0";
