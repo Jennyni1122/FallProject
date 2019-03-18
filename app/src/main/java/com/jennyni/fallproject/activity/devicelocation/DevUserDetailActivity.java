@@ -245,11 +245,11 @@ public class DevUserDetailActivity extends BaseMapActivity implements GeocodeSea
        if (fallbean.getFall() == 1){
           tv_state.setText("发生跌倒！");
           tv_state.setTextColor(Color.RED);
-          sendFallNotifycation();       //发生通知
+         // sendFallNotifycation();       //发生通知
        }else if(fallbean.getFence() == 2){
            tv_state.setText("手动报警！");
            tv_state.setTextColor(Color.RED);
-           sendFallNotifycation();       //发生通知
+           //sendFallNotifycation();       //发生通知
        }else {
            tv_state.setText("正常");
            tv_state.setTextColor(Color.GREEN);
@@ -285,19 +285,19 @@ public class DevUserDetailActivity extends BaseMapActivity implements GeocodeSea
             //若设备定位marker1为空，则添加设备定位
             if (marker1 == null) {
                 //设置定位信息来源： 1GPS, 0基站
-                marker1 = addMarker(geopoints, BitmapFactory.decodeResource(getResources(), R.drawable.location_marker));
+                marker1 = addMarker(geopoints, BitmapFactory.decodeResource(getResources(), R.drawable.location_marker1));
             }
-            //如果设备定位距离大于围栏半径长度
 
-            if (length > Double.valueOf(devicebean.getGeoradius())) {
-                sendFenceNotifycation();     //发送通知
-                marker1.setIcon(BitmapDescriptorFactory.fromBitmap(BitmapFactory.decodeResource(getResources(), R.drawable.location_marker)));
+            //设备在围栏内不报警，超出围栏就报警
+            if (length < Double.valueOf(devicebean.getGeoradius())) {
+               // sendFenceNotifycation();     //发送通知
+                marker1.setIcon(BitmapDescriptorFactory.fromBitmap(BitmapFactory.decodeResource(getResources(), R.drawable.location_marker1)));
                 marker1.setPosition(geopoints);
 
                 tv_alert.setText("超出范围！");
                 tv_alert.setTextColor(Color.RED);
             } else {
-                marker1.setIcon(BitmapDescriptorFactory.fromBitmap(BitmapFactory.decodeResource(getResources(), R.drawable.location_marker)));
+                marker1.setIcon(BitmapDescriptorFactory.fromBitmap(BitmapFactory.decodeResource(getResources(), R.drawable.location_marker1)));
                 marker1.setPosition(geopoints);
 
                 tv_alert.setText("<"+devicebean.getGeoradius()+"米（半径）");
@@ -310,117 +310,117 @@ public class DevUserDetailActivity extends BaseMapActivity implements GeocodeSea
 
     }
 
-    /**通话1
-     * 发出通知，跌倒通知
-     */
-    private void sendFallNotifycation() {
-        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.O) {
-            /**
-             *  创建通知栏管理工具
-             */
-            NotificationManager notificationManager = (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
-            /**
-             *  实例化通知栏构造器
-             */
-            NotificationCompat.Builder mBuilder = new NotificationCompat.Builder(this);
-            /**
-             *  设置Builder
-             */
-            //设置标题
-            mBuilder.setContentTitle("跌倒守护")
-                    //设置内容
-                    .setContentText(fallbean.getDname()+"发生跌倒，请注意！")
-                    //设置大图标
-                    .setLargeIcon(BitmapFactory.decodeResource(getResources(), R.drawable.icon_fall))
-                    //设置小图标
-                    .setSmallIcon(R.drawable.icon_fall)
-                    //设置通知时间
-                    .setWhen(System.currentTimeMillis())
-                    //首次进入时显示效果
-                    .setTicker(fallbean.getDname()+"发生跌倒，请注意！")
-                    //设置通知方式，声音，震动，呼吸灯等效果，这里通知方式为声音
-                    .setDefaults(Notification.DEFAULT_SOUND);
-            //发送通知请求
-            notificationManager.notify(new Random().nextInt(Integer.MAX_VALUE), mBuilder.build());
-        } else {
-
-            int notificationId = new Random().nextInt(Integer.MAX_VALUE);
-            Notification.Builder builder = new Notification.Builder(this, "1"); //与channelId对应
-            //icon title text必须包含，不然影响桌面图标小红点的展示
-            builder.setSmallIcon(android.R.drawable.stat_notify_chat)
-                    .setContentTitle("跌倒守护")
-                    .setContentText(fallbean.getDname()+"发生跌倒，请注意！")
-                    .setNumber(3); //久按桌面图标时允许的此条通知的数量
-            NotificationManager notificationManager = (NotificationManager) this.getSystemService(Context.NOTIFICATION_SERVICE);
-
-
-            NotificationChannel channel = new NotificationChannel("1",
-                    "Channel1", NotificationManager.IMPORTANCE_DEFAULT);
-            channel.enableLights(true); //是否在桌面icon右上角展示小红点
-            channel.setLightColor(Color.GREEN); //小红点颜色
-            channel.setShowBadge(true); //是否在久按桌面图标时显示此渠道的通知
-            notificationManager.createNotificationChannel(channel);
-            notificationManager.notify(notificationId, builder.build());
-
-        }
-    }
-
-
-    /**通知2
-     * 发出通知，围栏通知
-     */
-    private void sendFenceNotifycation() {
-        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.O) {
-            /**
-             *  创建通知栏管理工具
-             */
-            NotificationManager notificationManager = (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
-            /**
-             *  实例化通知栏构造器
-             */
-            NotificationCompat.Builder mBuilder = new NotificationCompat.Builder(this);
-            /**
-             *  设置Builder
-             */
-            //设置标题
-            mBuilder.setContentTitle("跌倒守护")
-                    //设置内容
-                    .setContentText(fallbean.getDname()+"超出设定的安全范围，请注意！")
-                    //设置大图标
-                    .setLargeIcon(BitmapFactory.decodeResource(getResources(), R.drawable.icon_fall))
-                    //设置小图标
-                    .setSmallIcon(R.drawable.icon_fall)
-                    //设置通知时间
-                    .setWhen(System.currentTimeMillis())
-                    //首次进入时显示效果
-                    .setTicker(fallbean.getDname()+"超出设定的围栏范围，请注意！")
-                    //设置通知方式，声音，震动，呼吸灯等效果，这里通知方式为声音
-                    .setDefaults(Notification.DEFAULT_SOUND);
-            //发送通知请求
-            notificationManager.notify(new Random().nextInt(Integer.MAX_VALUE), mBuilder.build());
-        } else {
-
-            int notificationId = new Random().nextInt(Integer.MAX_VALUE);
-            Notification.Builder builder = new Notification.Builder(this, "1"); //与channelId对应
-            //icon title text必须包含，不然影响桌面图标小红点的展示
-            builder.setSmallIcon(android.R.drawable.stat_notify_chat)
-                    .setContentTitle("跌倒守护")
-                    .setContentText(fallbean.getDname()+"超出设定的围栏范围，请注意！")
-                    .setNumber(3); //久按桌面图标时允许的此条通知的数量
-            NotificationManager notificationManager = (NotificationManager) this.getSystemService(Context.NOTIFICATION_SERVICE);
-
-
-            NotificationChannel channel = new NotificationChannel("1",
-                    "Channel1", NotificationManager.IMPORTANCE_DEFAULT);
-            channel.enableLights(true); //是否在桌面icon右上角展示小红点
-            channel.setLightColor(Color.GREEN); //小红点颜色
-            channel.setShowBadge(true); //是否在久按桌面图标时显示此渠道的通知
-            notificationManager.createNotificationChannel(channel);
-            notificationManager.notify(notificationId, builder.build());
-
-        }
-
-    }
+//    /**通话1
+//     * 发出通知，跌倒通知
+//     */
+//    private void sendFallNotifycation() {
+//        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.O) {
+//            /**
+//             *  创建通知栏管理工具
+//             */
+//            NotificationManager notificationManager = (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
+//            /**
+//             *  实例化通知栏构造器
+//             */
+//            NotificationCompat.Builder mBuilder = new NotificationCompat.Builder(this);
+//            /**
+//             *  设置Builder
+//             */
+//            //设置标题
+//            mBuilder.setContentTitle("跌倒守护")
+//                    //设置内容
+//                    .setContentText(fallbean.getDname()+"发生跌倒，请注意！")
+//                    //设置大图标
+//                    .setLargeIcon(BitmapFactory.decodeResource(getResources(), R.drawable.icon_fall))
+//                    //设置小图标
+//                    .setSmallIcon(R.drawable.icon_fall)
+//                    //设置通知时间
+//                    .setWhen(System.currentTimeMillis())
+//                    //首次进入时显示效果
+//                    .setTicker(fallbean.getDname()+"发生跌倒，请注意！")
+//                    //设置通知方式，声音，震动，呼吸灯等效果，这里通知方式为声音
+//                    .setDefaults(Notification.DEFAULT_SOUND);
+//            //发送通知请求
+//            notificationManager.notify(new Random().nextInt(Integer.MAX_VALUE), mBuilder.build());
+//        } else {
+//
+//            int notificationId = new Random().nextInt(Integer.MAX_VALUE);
+//            Notification.Builder builder = new Notification.Builder(this, "1"); //与channelId对应
+//            //icon title text必须包含，不然影响桌面图标小红点的展示
+//            builder.setSmallIcon(android.R.drawable.stat_notify_chat)
+//                    .setContentTitle("跌倒守护")
+//                    .setContentText(fallbean.getDname()+"发生跌倒，请注意！")
+//                    .setNumber(3); //久按桌面图标时允许的此条通知的数量
+//            NotificationManager notificationManager = (NotificationManager) this.getSystemService(Context.NOTIFICATION_SERVICE);
+//
+//
+//            NotificationChannel channel = new NotificationChannel("1",
+//                    "Channel1", NotificationManager.IMPORTANCE_DEFAULT);
+//            channel.enableLights(true); //是否在桌面icon右上角展示小红点
+//            channel.setLightColor(Color.GREEN); //小红点颜色
+//            channel.setShowBadge(true); //是否在久按桌面图标时显示此渠道的通知
+//            notificationManager.createNotificationChannel(channel);
+//            notificationManager.notify(notificationId, builder.build());
+//
+//        }
+//    }
+//
+//
+//    /**通知2
+//     * 发出通知，围栏通知
+//     */
+//    private void sendFenceNotifycation() {
+//        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.O) {
+//            /**
+//             *  创建通知栏管理工具
+//             */
+//            NotificationManager notificationManager = (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
+//            /**
+//             *  实例化通知栏构造器
+//             */
+//            NotificationCompat.Builder mBuilder = new NotificationCompat.Builder(this);
+//            /**
+//             *  设置Builder
+//             */
+//            //设置标题
+//            mBuilder.setContentTitle("跌倒守护")
+//                    //设置内容
+//                    .setContentText(fallbean.getDname()+"超出设定的安全范围，请注意！")
+//                    //设置大图标
+//                    .setLargeIcon(BitmapFactory.decodeResource(getResources(), R.drawable.icon_fall))
+//                    //设置小图标
+//                    .setSmallIcon(R.drawable.icon_fall)
+//                    //设置通知时间
+//                    .setWhen(System.currentTimeMillis())
+//                    //首次进入时显示效果
+//                    .setTicker(fallbean.getDname()+"超出设定的围栏范围，请注意！")
+//                    //设置通知方式，声音，震动，呼吸灯等效果，这里通知方式为声音
+//                    .setDefaults(Notification.DEFAULT_SOUND);
+//            //发送通知请求
+//            notificationManager.notify(new Random().nextInt(Integer.MAX_VALUE), mBuilder.build());
+//        } else {
+//
+//            int notificationId = new Random().nextInt(Integer.MAX_VALUE);
+//            Notification.Builder builder = new Notification.Builder(this, "1"); //与channelId对应
+//            //icon title text必须包含，不然影响桌面图标小红点的展示
+//            builder.setSmallIcon(android.R.drawable.stat_notify_chat)
+//                    .setContentTitle("跌倒守护")
+//                    .setContentText(fallbean.getDname()+"超出设定的围栏范围，请注意！")
+//                    .setNumber(3); //久按桌面图标时允许的此条通知的数量
+//            NotificationManager notificationManager = (NotificationManager) this.getSystemService(Context.NOTIFICATION_SERVICE);
+//
+//
+//            NotificationChannel channel = new NotificationChannel("1",
+//                    "Channel1", NotificationManager.IMPORTANCE_DEFAULT);
+//            channel.enableLights(true); //是否在桌面icon右上角展示小红点
+//            channel.setLightColor(Color.GREEN); //小红点颜色
+//            channel.setShowBadge(true); //是否在久按桌面图标时显示此渠道的通知
+//            notificationManager.createNotificationChannel(channel);
+//            notificationManager.notify(notificationId, builder.build());
+//
+//        }
+//
+//    }
 
 
 

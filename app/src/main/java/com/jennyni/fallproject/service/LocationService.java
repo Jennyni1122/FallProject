@@ -19,11 +19,13 @@ import android.util.Log;
 
 import com.google.gson.Gson;
 import com.jennyni.fallproject.Bean.AskAllFallInfoBean;
+import com.jennyni.fallproject.Bean.UserUpdateBean;
 import com.jennyni.fallproject.R;
 import com.jennyni.fallproject.utils.Constant;
 import com.jennyni.fallproject.utils.UtilsHelper;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 
@@ -34,9 +36,6 @@ import okhttp3.Request;
 import okhttp3.Response;
 
 
-/**
- * Created by YellowHuang on 2018/10/22.
- */
 
 public class LocationService extends Service {
 
@@ -44,6 +43,7 @@ public class LocationService extends Service {
     private static final String TAG = "LocationService";
     private static final int FALL_STATE = 1;
     private static final int FENCE_STATE = 1; //超出范围
+
 
     public static void startService(Context context) {
         context.startService(new Intent(context, LocationService.class));
@@ -71,7 +71,7 @@ public class LocationService extends Service {
     private Handler handler = new Handler() {
         @Override
         public void handleMessage(Message msg) {
-            sendrequest_initData("");     //查询网络，查询设备最新数据（无围栏坐标点及围栏范围的参数）
+            sendrequest_allFAllInfo("");     //查询网络，查询设备最新数据（无围栏坐标点及围栏范围的参数）
             sendEmptyMessageDelayed(0, 30 * 1000);
 
         }
@@ -80,7 +80,7 @@ public class LocationService extends Service {
     /**
      * 查询网络，查询设备最新数据
      */
-    private void sendrequest_initData(String cardid) {
+    private void sendrequest_allFAllInfo(String cardid) {
 
         //10.请求设备最新数据(跌倒报警与地理围栏报警)
         //String url10 = "http://www.phyth.cn/index/fall/askfallinfo/account/" + account + "/cardid/" + cardid;
@@ -107,11 +107,11 @@ public class LocationService extends Service {
                 String string = response.body().string();
                 AskAllFallInfoBean askFallInfoBean = gson.fromJson(string,  AskAllFallInfoBean.class);
                 if (askFallInfoBean != null && askFallInfoBean.getStatus() == 200) {
-                    List< AskAllFallInfoBean.ResultBean> result = askFallInfoBean.getResult();
-                    if (result.size() == 0) return;
-                    Log.e(TAG, "开始遍历，长度："+result.size() );
-                    for (final  AskAllFallInfoBean.ResultBean bean : result) {
-                        if (isOutOfRadius(bean.getFence())) {
+                    List< AskAllFallInfoBean.ResultBean> list = askFallInfoBean.getResult();
+                    if (list.size() == 0) return;
+                    Log.e(TAG, "开始遍历，长度："+list.size() );
+                    for (final  AskAllFallInfoBean.ResultBean bean : list) {
+                        if (isOutOfRadius(bean)) {
                             handler.post(new Runnable() {
                                 @Override
                                 public void run() {
@@ -121,7 +121,7 @@ public class LocationService extends Service {
                             });
 
                         }
-                        if (isFalled(bean.getFall())) {
+                        if (isFalled(bean)) {
                             handler.post(new Runnable() {
                                 @Override
                                 public void run() {
@@ -138,8 +138,17 @@ public class LocationService extends Service {
         });
     }
 
-    boolean isFalled(int fallState) {
-        return fallState == FALL_STATE;
+    /**
+     * 是否跌倒
+     * @param
+     * @return
+     */
+    boolean isFalled(AskAllFallInfoBean.ResultBean bean) {
+        if (bean.getFall() == 1 && bean.getFall() == 2){
+            return true;
+        }else {
+            return false;
+        }
     }
 
 
@@ -148,9 +157,12 @@ public class LocationService extends Service {
      *
      * @return
      */
-    boolean isOutOfRadius(int fenceState) {
-//        float point2PointLength = BaseMapActivity.getPoint2PointLength();
-        return fenceState == 1;
+    boolean isOutOfRadius(AskAllFallInfoBean.ResultBean bean) {
+        if (bean.getFence() == 1){
+            return true;
+        }else {
+            return false;
+        }
     }
 
     @Override
@@ -162,26 +174,6 @@ public class LocationService extends Service {
     }
 
 
-//    /**
-//     * 事件捕获
-//     */
-//    @SuppressLint("HandlerLeak")
-//    private Handler handler = new Handler() {
-//        @Override
-//        public void handleMessage(Message msg) {
-//            super.handleMessage(msg);
-//            switch (msg.what) {
-//                case MSG_MAPPAGE_OK:
-//                    if (msg.obj != null) {
-//                        //获取数据
-//                        AskFallInfoBean.ResultBean bean = (AskFallInfoBean.ResultBean) msg.obj;
-//                        Log.e("TAG","handleMessage:"+"id:"+ bean.getId() + "设备编号："+ bean.getCard_id());
-//                      //  parseLocation(bean);
-//                    }
-//                    break;
-//            }
-//        }
-//    };
 
 
     @Override
@@ -189,6 +181,8 @@ public class LocationService extends Service {
         handler.removeCallbacksAndMessages(null);
         super.onDestroy();
     }
+
+
 
     void sendNotifycation(String str) {
         if (Build.VERSION.SDK_INT < Build.VERSION_CODES.O) {

@@ -183,26 +183,6 @@ public class RegisterActivity extends AppCompatActivity implements View.OnClickL
                 currentUserphone = et_register_userphone.getText().toString().trim();
                 currentPsw = et_register_psw.getText().toString().trim();
 
-                Pattern p = Pattern.compile("1[0-9]{10,10}");
-                Matcher m = p.matcher(currentUserphone);
-                if(m.matches() ){
-                    //sendRequest_Register();     //向服务器请求数据
-                    compareSMSCode();           //验证验证码
-
-                    Toast.makeText(RegisterActivity.this, "注册成功",
-                            Toast.LENGTH_SHORT).show();
-                    mCountDownTimerUtils.onFinish();
-                    //把用户名和密码保存到SharedPreferences中
-                    saveRegisterInfo(currentUserphone, currentPsw);
-                    //注册成功后把用户名传递到LoginActivity.java中
-                    Intent data = new Intent();
-                    data.putExtra("account", currentUserphone);
-                    setResult(RESULT_OK, data);
-                    RegisterActivity.this.finish();
-                }else{
-                    Toast.makeText(RegisterActivity.this, "请输入合法的手机号码", Toast.LENGTH_SHORT).show();
-                }
-
                 if (TextUtils.isEmpty(currentUserphone)){
                     Toast.makeText(RegisterActivity.this, "请输入手机号码", Toast.LENGTH_SHORT).show();
                     return;
@@ -214,6 +194,16 @@ public class RegisterActivity extends AppCompatActivity implements View.OnClickL
                     Toast.makeText(RegisterActivity.this, "此账户名已经存在",
                             Toast.LENGTH_SHORT).show();
                     return;
+                }
+
+                Pattern p = Pattern.compile("1[0-9]{10,10}");
+                Matcher m = p.matcher(currentUserphone);
+                if(m.matches() ){
+                    sendRequest_register(currentUserphone,currentPsw);     //向服务器请求数据
+                    compareSMSCode();           //验证验证码
+                }else{
+                    btn_register.setClickable(false);
+                    Toast.makeText(RegisterActivity.this, "请输入合法的手机号码", Toast.LENGTH_SHORT).show();
                 }
 
                 break;
@@ -256,7 +246,16 @@ public class RegisterActivity extends AppCompatActivity implements View.OnClickL
                         String list = JsonParse.getInstance().getRegisterInfo(result);
                         if (list != null) {
                             if (list.length() > 0) {
-
+                                Toast.makeText(RegisterActivity.this, "注册成功",
+                                        Toast.LENGTH_SHORT).show();
+                                mCountDownTimerUtils.onFinish();
+                                //把用户名和密码保存到SharedPreferences中
+                                saveRegisterInfo(currentUserphone, currentPsw);
+                                //注册成功后把用户名传递到LoginActivity.java中
+                                Intent data = new Intent();
+                                data.putExtra("account", currentUserphone);
+                                setResult(RESULT_OK, data);
+                                RegisterActivity.this.finish();
                             }
                         }
                     }
@@ -267,18 +266,14 @@ public class RegisterActivity extends AppCompatActivity implements View.OnClickL
     /**
      * 请求网络，进行注册
      */
-    private void sendRequest_register() {
+    private void sendRequest_register(String account,String pass) {
 
-       // http://www.phyth.cn/index/fall/userRegister/account/18860000306/pass/123456/name/zhu
-        String url = Constant.BASE_WEBSITE + Constant.REQUEST_REGISTER_USER_URL ;
+       // http://www.phyth.cn/index/fall/userRegister/account/18860000306/pass/123456
+        String url = Constant.BASE_WEBSITE + Constant.REQUEST_REGISTER_USER_URL +"/acount/"+account+"/pass/"+pass;
         // 1. 获取OkHttpClient对象
         OkHttpClient okHttpClient = new OkHttpClient();
         //POST请求需构造一个RequestBody()对象存放参数
-        final RequestBody requestBody = new FormBody.Builder()
-                .add("account", et_register_userphone.getText().toString())
-                .add("pass", et_register_psw.getText().toString())
-                .add("name","zhu")
-                .build();
+        final RequestBody requestBody = new FormBody.Builder().build();
         // 2. 创建Request对象
         final Request request = new Request.Builder()
                 .url(url)

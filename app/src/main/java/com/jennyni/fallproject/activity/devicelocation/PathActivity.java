@@ -146,7 +146,7 @@ public class PathActivity extends BaseMapActivity {
                         if (todaylist.size() == 1) {
                             AskTodayTrackBean.ResultBean pathMode = todaylist.get(0);
                             LatLng latLng = new LatLng(Double.valueOf(pathMode.getLat()), Double.valueOf(pathMode.getLng()));
-                            addMarker(latLng, BitmapFactory.decodeResource(getResources(), R.drawable.trace_1));
+                            addMarker(latLng, BitmapFactory.decodeResource(getResources(), R.drawable.trace1));
                             return;
                         }
 
@@ -155,11 +155,11 @@ public class PathActivity extends BaseMapActivity {
                             LatLng latLng = new LatLng(Double.valueOf(pathMode.getLat()), Double.valueOf(pathMode.getLng()));
                             if (i == 0) {//起点
                                 moveToPoint(latLng);
-                                addMarker(latLng, BitmapFactory.decodeResource(getResources(), R.drawable.trace_1));
+                                addMarker(latLng, BitmapFactory.decodeResource(getResources(), R.drawable.trace1));
                             } else if (i == todaylist.size() - 1) {//终点
-                                addMarker(latLng, BitmapFactory.decodeResource(getResources(), R.drawable.trace_2));
+                                addMarker(latLng, BitmapFactory.decodeResource(getResources(), R.drawable.trace2));
                             } else {
-                                addMarker(latLng, BitmapFactory.decodeResource(getResources(), R.drawable.location_marker));
+                                addMarker(latLng, BitmapFactory.decodeResource(getResources(), R.drawable.location_marker1));
                             }
                             list.add(latLng);
                         }
@@ -182,7 +182,7 @@ public class PathActivity extends BaseMapActivity {
                             if (modelist.size() == 1) {
                                 AskTrackBetweenBean.ResultBean pathMode = modelist.get(0);
                                 LatLng latLng = new LatLng(Double.valueOf(pathMode.getLat()), Double.valueOf(pathMode.getLng()));
-                                addMarker(latLng, BitmapFactory.decodeResource(getResources(), R.drawable.trace_1));
+                                addMarker(latLng, BitmapFactory.decodeResource(getResources(), R.drawable.trace1));
                                 return;
                             }
 
@@ -191,11 +191,11 @@ public class PathActivity extends BaseMapActivity {
                                 LatLng latLng = new LatLng(Double.valueOf(pathMode.getLat()), Double.valueOf(pathMode.getLng()));
                                 if (i == 0) {//起点
                                     moveToPoint(latLng);
-                                    addMarker(latLng, BitmapFactory.decodeResource(getResources(), R.drawable.trace_1));
+                                    addMarker(latLng, BitmapFactory.decodeResource(getResources(), R.drawable.trace1));
                                 } else if (i == modelist.size() - 1) {//终点
-                                    addMarker(latLng, BitmapFactory.decodeResource(getResources(), R.drawable.trace_2));
+                                    addMarker(latLng, BitmapFactory.decodeResource(getResources(), R.drawable.trace2));
                                 } else {
-                                    addMarker(latLng, BitmapFactory.decodeResource(getResources(), R.drawable.location_marker));
+                                    addMarker(latLng, BitmapFactory.decodeResource(getResources(), R.drawable.location_marker1));
                                 }
                                 list.add(latLng);
                             }
