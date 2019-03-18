@@ -7,6 +7,7 @@ import com.jennyni.fallproject.Bean.AddDeviceBean;
 import com.jennyni.fallproject.Bean.AskAllFallInfoBean;
 import com.jennyni.fallproject.Bean.AskDevInfoBean;
 import com.jennyni.fallproject.Bean.AskFallInfoBean;
+import com.jennyni.fallproject.Bean.AskTodayTrackBean;
 import com.jennyni.fallproject.Bean.AskTrackBetweenBean;
 import com.jennyni.fallproject.Bean.AskonBean;
 import com.jennyni.fallproject.Bean.DelDeviceBean;
@@ -324,6 +325,42 @@ public class JsonParse {
             return body;
         } else {
             //状态码不为200时，返回错误信息:绑定设备不存在
+            return null;
+        }
+    }
+
+
+
+    /**
+     * 12.查询历史设备运动轨迹  (d1>d2)获取的JSON数据
+     * （d1,d2 表示过去 d1 天到过去 d2 天的数据，d1=d2=0 表示今天的数据，d1=d2=1 表示昨天）
+     *
+     * @param response
+     * @return
+     */
+    public List<AskTodayTrackBean.ResultBean> getAskTodayTraceInfo(String response) {
+        //使用gson库解析JSON数据
+        Gson gson = new Gson();
+        AskTodayTrackBean bean = null;
+        try {
+            bean = gson.fromJson(response, AskTodayTrackBean.class);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        if (bean == null) return null;
+        //如果结果码为200，返回查询的设备信息
+        if (200 == bean.getStatus()) {
+            StringBuilder sb = new StringBuilder();
+            List<AskTodayTrackBean.ResultBean> list = bean.getResult();
+            for (AskTodayTrackBean.ResultBean askTodayTraceBean : list) {
+                sb.append("查询历史设备运动轨迹:" + "\n" + askTodayTraceBean.getLng() + "\n" +
+                        askTodayTraceBean.getLat() + "\n" + askTodayTraceBean.getTime() + "\n");
+            }
+            return list;
+        } else if (404 == bean.getStatus()) {
+            //状态码为400时，返回错误信息:绑定关系不存在
+            return null;
+        } else {
             return null;
         }
     }

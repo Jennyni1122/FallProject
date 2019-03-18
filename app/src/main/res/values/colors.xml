@@ -3,7 +3,7 @@
     <color name="colorPrimary">#23C788</color>
     <color name="colorPrimaryDark">#23C788</color>
     <color name="colorAccent">#23C788</color>
-
+    <color name="circle">#7889EAF1</color>
     <color name="trave_green">#23C788</color>
     <color name="rdTextColorNormal">#999999</color>
     <color name="rdTextColorPress">#23C788</color>

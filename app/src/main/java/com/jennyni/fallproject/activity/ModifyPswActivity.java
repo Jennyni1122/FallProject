@@ -48,7 +48,7 @@ public class ModifyPswActivity extends AppCompatActivity{
     private EditText et_original_psw, et_new_psw;
     private String originalPsw, newPsw;
     private String spuserName;
-    private ImageView iv_show_psw;
+    private ImageView iv_show_psw,iv_show_psw1;
     private boolean isShowPsw = false;
     public static final int MSG_ChangePass_OK = 1;
 
@@ -75,6 +75,7 @@ public class ModifyPswActivity extends AppCompatActivity{
         et_original_psw = (EditText) findViewById(R.id.et_original_psw);
         et_new_psw = (EditText) findViewById(R.id.et_new_psw);
         iv_show_psw = (ImageView) findViewById(R.id.iv_show_psw);
+//        iv_show_psw1 = (ImageView) findViewById(R.id.iv_show_psw1);
         btn_save = (Button) findViewById(R.id.btn_save);
         tv_back.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -127,70 +128,71 @@ public class ModifyPswActivity extends AppCompatActivity{
                     return;
                 }
 
-              //  sendRequest_changepass();
+                sendRequest_changepass();       //请求网络，更改密码
             }
         });
     }
 
-//
-//    /**
-//     * 事件捕获
-//     */
-//    @SuppressLint("HandlerLeak")
-//    private Handler handler = new Handler() {
-//        @Override
-//        public void handleMessage(Message msg) {
-//            super.handleMessage(msg);
-//            switch (msg.what) {
-//                case MSG_ChangePass_OK:
-//                    if (msg.obj != null) {
-//                        //获取数据
-//                        UserChangePassBean.ResultBean  bean = (UserChangePassBean.ResultBean ) msg.obj;
-//                        Log.e("TAG","handleMessage:"+ bean.getPhone_password());
-//                        modifyPsw(bean);
-//                    }
-//                    break;
-//            }
-//        }
-//    };
 
-//    /**
-//     * 请求网络，更改密码
-//     */
-//    private void sendRequest_changepass() {
-//        originalPsw = et_original_psw.getText().toString().trim();
-//        newPsw = et_new_psw.getText().toString().trim();
-//        //3.修改密码
-//        //String url3 = "http://www.phyth.cn/index/fall/userChangePass/account/"+ account +"/pass/"+cardid+"/newpass/"+cardpass;
-//        String url = Constant.BASE_WEBSITE+Constant.REQUEST_PSW_USER_URL+"/account/"+ spuserName +"/pass/"+originalPsw+"/newpass/"+newPsw;
-//        OkHttpClient okHttpClient = new OkHttpClient();
-//        final Request request = new Request.Builder().url(url).build();
-//        Call call = okHttpClient.newCall(request);
-//        //开启异步访问网络
-//        call.enqueue(new Callback() {
-//            @Override
-//            public void onFailure(Call call, IOException e) {
-//                //联网失败
-//                Log.e(TAG,"MSG_OK"+"请求失败：" + e.getMessage());
-//            }
-//
-//            @Override
-//            public void onResponse(Call call, Response response) throws IOException {
-//                Log.e(TAG,"MSG_ChangePass_OK"+"请求成功：" + response);
-//                UserChangePassBean.ResultBean resultBean = JsonParse.getInstance().getuserChangePassInfo(response.body().string());
-//                if (resultBean==null){
-//                    Log.e("MSG_ChangePass_OK", "修改密码异常！");
-//                    Toast.makeText(ModifyPswActivity.this, "请求修改密码异常！", Toast.LENGTH_SHORT).show();
-//                    return;
-//                }
-//                Message message = new Message();
-//                message.what = MSG_ChangePass_OK;
-//                message.obj = resultBean;
-//                handler.sendMessage(message);
-//            }
-//        });
-//
-//    }
+    /**
+     * 事件捕获
+     */
+    @SuppressLint("HandlerLeak")
+    private Handler handler = new Handler() {
+        @Override
+        public void handleMessage(Message msg) {
+            super.handleMessage(msg);
+            switch (msg.what) {
+                case MSG_ChangePass_OK:
+                    if (msg.obj != null) {
+                        //获取数据
+                        UserChangePassBean.ResultBean  bean = (UserChangePassBean.ResultBean ) msg.obj;
+                        Log.e("TAG","handleMessage:"+ bean.getPhone_password());
+                        modifyPsw(bean);
+
+                    }
+                    break;
+            }
+        }
+    };
+
+    /**
+     * 请求网络，更改密码
+     */
+    private void sendRequest_changepass() {
+        originalPsw = et_original_psw.getText().toString().trim();
+        newPsw = et_new_psw.getText().toString().trim();
+        //3.修改密码
+        //String url3 = "http://www.phyth.cn/index/fall/userChangePass/account/"+ account +"/pass/"+cardid+"/newpass/"+cardpass;
+        String url = Constant.BASE_WEBSITE+Constant.REQUEST_PSW_USER_URL+"/account/"+ spuserName +"/pass/"+originalPsw+"/newpass/"+newPsw;
+        OkHttpClient okHttpClient = new OkHttpClient();
+        final Request request = new Request.Builder().url(url).build();
+        Call call = okHttpClient.newCall(request);
+        //开启异步访问网络
+        call.enqueue(new Callback() {
+            @Override
+            public void onFailure(Call call, IOException e) {
+                //联网失败
+                Log.e(TAG,"MSG_OK"+"请求失败：" + e.getMessage());
+            }
+
+            @Override
+            public void onResponse(Call call, Response response) throws IOException {
+                Log.e(TAG,"MSG_ChangePass_OK"+"请求成功：" + response);
+                UserChangePassBean.ResultBean resultBean = JsonParse.getInstance().getuserChangePassInfo(response.body().string());
+                if (resultBean==null){
+                    Log.e("MSG_ChangePass_OK", "修改密码异常！");
+                    Toast.makeText(ModifyPswActivity.this, "请求修改密码异常！", Toast.LENGTH_SHORT).show();
+                    return;
+                }
+                Message message = new Message();
+                message.what = MSG_ChangePass_OK;
+                message.obj = resultBean;
+                handler.sendMessage(message);
+            }
+        });
+
+    }
 
     /**
      * 把改密的新密码数据保存sp
@@ -208,12 +210,11 @@ public class ModifyPswActivity extends AppCompatActivity{
             Intent intent = new Intent(ModifyPswActivity.this,
                     LoginActivity.class);
             startActivity(intent);
-            SettingActivity.instance.finish(); //关闭设置界面
-            ModifyPswActivity.this.finish();   //关闭本界面
+//            SettingActivity.instance.finish(); //关闭设置界面
+//            ModifyPswActivity.this.finish();   //关闭本界面
         }else {
             Toast.makeText(ModifyPswActivity.this, "修改密码发生异常~", Toast.LENGTH_SHORT);
         }
-
 
     }
 

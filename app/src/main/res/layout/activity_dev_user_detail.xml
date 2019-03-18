@@ -109,7 +109,7 @@
                         android:orientation="vertical">
                         <TextView
                             android:id="@+id/tv_dev_num"
-                            android:textSize="12sp"
+                            android:textSize="13sp"
                             style="@style/middle_black" />
                         <TextView
                             style="@style/normal_gray"
@@ -167,7 +167,7 @@
                         android:orientation="vertical">
                         <TextView
                             android:id="@+id/tv_idcard"
-                            android:textSize="12sp"
+                            android:textSize="11sp"
                             style="@style/middle_black" />
                         <TextView
                             style="@style/normal_gray"

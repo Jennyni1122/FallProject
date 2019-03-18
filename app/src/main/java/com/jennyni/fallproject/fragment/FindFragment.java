@@ -18,6 +18,7 @@ import android.view.ViewGroup;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
+import android.widget.WrapperListAdapter;
 
 import com.itheima.PullToRefreshView;
 import com.jennyni.fallproject.Bean.AskAllFallInfoBean;
@@ -91,19 +92,20 @@ public class FindFragment extends Fragment implements WarningAdapter.IonSlidingV
         //下拉刷新
         mPullToRefreshView = (PullToRefreshView) view.findViewById(R.id.
                 pull_to_refresh);
-//        mPullToRefreshView.setOnRefreshListener(new PullToRefreshView.
-//                OnRefreshListener() {
-//            @Override
-//            public void onRefresh() {
-//                mPullToRefreshView.postDelayed(new Runnable() {
-//                    @Override
-//                    public void run() {
-//                        mPullToRefreshView.setRefreshing(false);
-//                        sendrequest_allfallData();      //加载设备用户信息列表数据,获取报警信息
-//                    }
-//                }, REFRESH_DELAY);
-//            }
-//        });
+        mPullToRefreshView.setOnRefreshListener(new PullToRefreshView.
+                OnRefreshListener() {
+            @Override
+            public void onRefresh() {
+                mPullToRefreshView.postDelayed(new Runnable() {
+                    @Override
+                    public void run() {
+                        mPullToRefreshView.setRefreshing(false);
+                            sendrequest_allfallData();      //加载设备用户信息列表数据,获取报警信息
+
+                    }
+                }, REFRESH_DELAY);
+            }
+        });
 
         return view;
     }

@@ -21,7 +21,7 @@ import java.io.Serializable;
 import java.util.Calendar;
 
 /**
- * 。。。。。。。。。。。。。。。。。。。。。//传值跳转还没写，还有保存按钮，解析
+ *
  * 选择时间功能，用于查看设备定位轨迹功能
  */
 public class SelectTimeActivity extends AppCompatActivity implements View.OnClickListener, DatePickerDialog.OnDateSetListener, TimePickerDialog.OnTimeSetListener {
@@ -96,8 +96,7 @@ public class SelectTimeActivity extends AppCompatActivity implements View.OnClic
                 break;
             case R.id.tv_save:      //保存按钮
 
-                //。。。。。。。。。。。。。。。。。。。。。。。传值，没写
-             //   PathActivity.startActivity(this, tv_start_time.getText().toString(), tv_end_time.getText().toString(), cardid);
+                PathActivity.startActivity(this, tv_start_time.getText().toString(), tv_end_time.getText().toString(), cardid);
                 break;
             case R.id.ll_starttime:   //选择开始时间按钮
                 isStartTime = true;

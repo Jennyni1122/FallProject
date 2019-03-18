@@ -15,27 +15,16 @@ import android.os.IBinder;
 import android.os.Message;
 import android.support.annotation.Nullable;
 import android.support.v4.app.NotificationCompat;
-import android.support.v4.content.ContextCompat;
 import android.util.Log;
-import android.widget.Toast;
 
-import com.amap.api.maps2d.model.LatLng;
 import com.google.gson.Gson;
-import com.jennyni.fallproject.Bean.AskFallInfoBean;
-import com.jennyni.fallproject.Bean.AskFallInfoLIstBean;
+import com.jennyni.fallproject.Bean.AskAllFallInfoBean;
 import com.jennyni.fallproject.R;
-import com.jennyni.fallproject.activity.devicelocation.BaseMapActivity;
-import com.jennyni.fallproject.activity.devicelocation.DevUserDetailActivity;
 import com.jennyni.fallproject.utils.Constant;
-import com.jennyni.fallproject.utils.JsonParse;
 import com.jennyni.fallproject.utils.UtilsHelper;
 
-import org.json.JSONObject;
-
 import java.io.IOException;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.Random;
 
 import okhttp3.Call;
@@ -52,6 +41,7 @@ import okhttp3.Response;
 public class LocationService extends Service {
 
     private static final String STOP_KEY = "stopservice";
+    private static final String TAG = "LocationService";
     private static final int FALL_STATE = 1;
     private static final int FENCE_STATE = 1; //超出范围
 
@@ -68,7 +58,7 @@ public class LocationService extends Service {
     @Override
     public void onCreate() {
         super.onCreate();
-        handler.sendEmptyMessageDelayed(0, 5 * 1000);
+        handler.sendEmptyMessageDelayed(0, 30 * 1000);
     }
 
     @Nullable
@@ -82,7 +72,7 @@ public class LocationService extends Service {
         @Override
         public void handleMessage(Message msg) {
             sendrequest_initData("");     //查询网络，查询设备最新数据（无围栏坐标点及围栏范围的参数）
-            sendEmptyMessageDelayed(0, 5 * 1000);
+            sendEmptyMessageDelayed(0, 30 * 1000);
 
         }
     };
@@ -115,16 +105,18 @@ public class LocationService extends Service {
                 Log.e("MSG_MAPPAGE_OK", "请求成功：" + response);
                 Gson gson = new Gson();
                 String string = response.body().string();
-                AskFallInfoLIstBean askFallInfoBean = gson.fromJson(string, AskFallInfoLIstBean.class);
+                AskAllFallInfoBean askFallInfoBean = gson.fromJson(string,  AskAllFallInfoBean.class);
                 if (askFallInfoBean != null && askFallInfoBean.getStatus() == 200) {
-                    List<AskFallInfoLIstBean.ResultBean> result = askFallInfoBean.getResult();
+                    List< AskAllFallInfoBean.ResultBean> result = askFallInfoBean.getResult();
                     if (result.size() == 0) return;
-                    for (final AskFallInfoLIstBean.ResultBean bean : result) {
+                    Log.e(TAG, "开始遍历，长度："+result.size() );
+                    for (final  AskAllFallInfoBean.ResultBean bean : result) {
                         if (isOutOfRadius(bean.getFence())) {
                             handler.post(new Runnable() {
                                 @Override
                                 public void run() {
-                                    sendNotifycation(String.format("%s在范围外，请注意!", bean.getDname() == null ? "未知用户" : bean.getDname()));
+                                    Log.e(TAG, String.format("%s在范围外，请注意!", bean.getName() == null ? "未知用户" : bean.getName()));
+                                    sendNotifycation(String.format("%s在范围外，请注意!", bean.getName() == null ? "未知用户" : bean.getName()));
                                 }
                             });
 
@@ -133,7 +125,8 @@ public class LocationService extends Service {
                             handler.post(new Runnable() {
                                 @Override
                                 public void run() {
-                                    sendNotifycation(String.format("%s已跌倒，请注意!", bean.getDname() == null ? "未知用户" : bean.getDname()));
+                                    Log.e(TAG, String.format("%s发生跌倒，请注意!", bean.getName() == null ? "未知用户" : bean.getName()));
+                                    sendNotifycation(String.format("%s发生跌倒，请注意!", bean.getName() == null ? "未知用户" : bean.getName()));
                                 }
                             });
                         }
@@ -141,15 +134,6 @@ public class LocationService extends Service {
 
                     }
                 }
-//                if (bean == null) {
-//                    Log.e("MSG_MAPPAGE_OK", "请求设备定位异常！");
-//                    Toast.makeText(LocationService.this, "请求设备定位异常！", Toast.LENGTH_SHORT).show();
-//                    return;
-//                }
-//                Message message = new Message();
-//                message.what = MSG_MAPPAGE_OK;
-//                message.obj = bean;
-//                handler.sendMessage(message);
             }
         });
     }

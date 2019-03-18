@@ -53,7 +53,6 @@ import okhttp3.Request;
 import okhttp3.Response;
 
 /**
- * .............................性别和围栏设置，点击性别更改头像，男为老爷爷头像，女为老奶奶
  * 添加设备用户信息，绑定设备
  */
 public class AddDeviceUserInfoActivity extends AppCompatActivity implements View.OnClickListener {

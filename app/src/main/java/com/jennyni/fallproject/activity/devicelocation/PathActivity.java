@@ -15,6 +15,7 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.amap.api.maps2d.model.LatLng;
+import com.jennyni.fallproject.Bean.AskTodayTrackBean;
 import com.jennyni.fallproject.Bean.AskTrackBetweenBean;
 import com.jennyni.fallproject.Bean.UserUpdateBean;
 import com.jennyni.fallproject.R;
@@ -39,8 +40,8 @@ import okhttp3.Response;
 public class PathActivity extends BaseMapActivity {
     private TextView tv_main_title, tv_back,tv_select_time;
     private RelativeLayout rl_title_bar;
-
-    private static final int MSG_ASKTRACK_OK = 1;
+    private static  final int MSG_TODAY_OK = 1;
+    private static final int MSG_ASKTRACK_OK = 2;
     private static final String STARTTIME_KEY = "d1";
     private static final String ENDTIME_KEY = "d2";
     private static final String CARDID_KEY = "cardid";
@@ -49,12 +50,31 @@ public class PathActivity extends BaseMapActivity {
     private String startTime, endTime, account, cardid;
 
 
+    /**
+     * 设备定位界面到轨迹界面的参数参数传递
+     * @param context
+     * @param cardid
+     */
     public static void startActivity(Context context, String cardid) {
         Intent intent = new Intent(context, PathActivity.class);
         intent.putExtra(CARDID_KEY, cardid);
         context.startActivity(intent);
     }
 
+    /**
+     * 选择时间界面到轨迹界面的参数传递
+     * @param context
+     * @param startTime
+     * @param endTime
+     * @param cardid
+     */
+    public static void startActivity( Context context, String startTime, String endTime, String cardid) {
+        Intent intent = new Intent(context, PathActivity.class);
+        intent.putExtra(STARTTIME_KEY, startTime);
+        intent.putExtra(ENDTIME_KEY, endTime);
+        intent.putExtra(CARDID_KEY, cardid);
+        context.startActivity(intent);
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -66,9 +86,12 @@ public class PathActivity extends BaseMapActivity {
         endTime = getIntent().getStringExtra(ENDTIME_KEY);
         cardid = getIntent().getStringExtra(CARDID_KEY);
         account = UtilsHelper.readLoginUserName(this);
-        sendrequest_askTrace();
+        sendrequest_askTodayTrace();    //查询今日运动轨迹
+        sendrequest_askTrace(); //查询选择日期之间的运动轨迹
 
     }
+
+
 
     /**
      * 初始化控件
@@ -100,17 +123,6 @@ public class PathActivity extends BaseMapActivity {
         });
     }
 
-//    @Override
-//    public void onResume() {
-//        super.onResume();
-//        if (mode != null) {
-//            LatLng latLng = new LatLng(Double.valueOf(mode.getCentreLocationX()),
-//                    Double.valueOf(mode.getCentreLocationY()));
-//            addcircle(latLng, Double.valueOf(Double.valueOf(mode.getSafetyRadius())), Color.parseColor("#7ffe841e"));
-//            addMarker(latLng, BitmapFactory.decodeResource(getResources(), R.drawable.ic_centrallocation));
-//        }
-//    }
-
 
     /**
      * 事件捕获
@@ -121,6 +133,42 @@ public class PathActivity extends BaseMapActivity {
         public void handleMessage(Message msg) {
             super.handleMessage(msg);
             switch (msg.what) {
+                case MSG_TODAY_OK:
+                if (msg.obj != null){
+                    //获取数据
+                    String result = (String) msg.obj;
+                    Log.e("handleMessage", result);
+                    List<AskTodayTrackBean.ResultBean> todaylist = JsonParse.getInstance().getAskTodayTraceInfo(result);
+                    if (todaylist == null) {
+                        showToast("无轨迹或无绑定关系");
+                    } else {
+                        List<LatLng> list = new ArrayList<>();
+                        if (todaylist.size() == 1) {
+                            AskTodayTrackBean.ResultBean pathMode = todaylist.get(0);
+                            LatLng latLng = new LatLng(Double.valueOf(pathMode.getLat()), Double.valueOf(pathMode.getLng()));
+                            addMarker(latLng, BitmapFactory.decodeResource(getResources(), R.drawable.trace_1));
+                            return;
+                        }
+
+                        for (int i = 0; i < todaylist.size(); i++) {
+                            AskTodayTrackBean.ResultBean pathMode =todaylist.get(i);
+                            LatLng latLng = new LatLng(Double.valueOf(pathMode.getLat()), Double.valueOf(pathMode.getLng()));
+                            if (i == 0) {//起点
+                                moveToPoint(latLng);
+                                addMarker(latLng, BitmapFactory.decodeResource(getResources(), R.drawable.trace_1));
+                            } else if (i == todaylist.size() - 1) {//终点
+                                addMarker(latLng, BitmapFactory.decodeResource(getResources(), R.drawable.trace_2));
+                            } else {
+                                addMarker(latLng, BitmapFactory.decodeResource(getResources(), R.drawable.location_marker));
+                            }
+                            list.add(latLng);
+                        }
+                        //轨迹线
+                        addLinePath(list, getResources().getColor(R.color.grassgreen));
+                    }
+
+                }
+                break;
                 case MSG_ASKTRACK_OK:
                     if (msg.obj != null) {
                         //获取数据
@@ -151,18 +199,52 @@ public class PathActivity extends BaseMapActivity {
                                 }
                                 list.add(latLng);
                             }
-//                        //轨迹线
-                            addLinePath(list, getResources().getColor(R.color.grassgreen));
+                            //轨迹线
+                            addLinePath(list, getResources().getColor(R.color.rdTextColorPress));
                         }
-                        break;
                     }
+                    break;
             }
 
         }
     };
 
+
     /**
-     * 请求网络，查询设备定位
+     * 请求网络，查询今日运动轨迹
+     */
+    private void sendrequest_askTodayTrace() {
+         //11.今日运动轨迹
+        String url = Constant.BASE_WEBSITE+Constant.REQUEST_TODAY_TRACE_URL +"/account/" +account+"/cardid/"+cardid;
+        OkHttpClient okHttpClient = new OkHttpClient();
+        final Request request = new Request.Builder().url(url).build();
+        Call call = okHttpClient.newCall(request);
+        //开启异步访问网络
+        call.enqueue(new Callback() {
+            @Override
+            public void onFailure(Call call, IOException e) {
+                //联网失败
+                Log.e("MSG_TODAY_FAIL", "请求失败：" + e.getMessage());
+            }
+
+            @Override
+            public void onResponse(Call call, Response response) throws IOException {
+                Log.e("MSG_TODAY_OK", "请求成功：" + response);
+                String res = response.body().string();
+                Log.e("MSG_OK", res);
+                Message message = new Message();
+                message.what = MSG_ASKTRACK_OK;
+                message.obj = res;
+                handler.sendMessage(message);
+            }
+        });
+
+
+    }
+
+
+    /**
+     * 请求网络，查询设备定位（两个日期之间）
      */
 
     private void sendrequest_askTrace() {
@@ -194,5 +276,6 @@ public class PathActivity extends BaseMapActivity {
         });
 
     }
+
 
 }

@@ -1,6 +1,7 @@
 package com.jennyni.fallproject.activity;
 
 import android.annotation.SuppressLint;
+import android.content.Context;
 import android.content.Intent;
 import android.os.Handler;
 import android.os.Message;
@@ -23,6 +24,7 @@ import com.jennyni.fallproject.Bean.AskDevInfoBean;
 import com.jennyni.fallproject.Bean.SetUpBean;
 import com.jennyni.fallproject.Bean.UserUpdateBean;
 import com.jennyni.fallproject.R;
+import com.jennyni.fallproject.activity.devicelocation.DevUserDetailActivity;
 import com.jennyni.fallproject.utils.Constant;
 import com.jennyni.fallproject.utils.JsonParse;
 import com.jennyni.fallproject.utils.StringUtil;
@@ -46,12 +48,10 @@ public class EditDevUserActivity extends AppCompatActivity implements View.OnCli
     public static final String TAG = "EditDevice";
     private RelativeLayout rl_title_bar;
     private LinearLayout ll_addressfence;
-    private TextView tv_main_title,tv_back,tv_switch,tv_guardian,tv_geocenter,tv_dev_cardid;
-    private TextView tv_weilandizhi,tv_weilanfanwei,tv_mi,tv_shuoming;
+    private TextView tv_main_title,tv_back,tv_switch,tv_guardian,tv_geocenter;
     private EditText et_device_name,et_idcard,et_georadius;
     private RadioGroup sex_event,set_event;
     private RadioButton male,female,open,close;
-    private Button btn_sure_code;
     private ImageView iv_head_icon;
     private String spUserPhone,cardid;         //定义 获取登录时的用户名
     private String currentDevCode,currentDevPsw;
@@ -59,6 +59,16 @@ public class EditDevUserActivity extends AppCompatActivity implements View.OnCli
     public static final int MSG_EDIT_OK = 2;
     String isgeo,issex,dname,idcard,geocenter,georadius;
     List<UserUpdateBean.ResultBean> devicelist;
+    private static final String CARDID_KEY = "cardid";
+
+    public static void startActivity(Context context, String cardid) {
+
+        Intent intent = new Intent(context,EditDevUserActivity.class);
+        intent.putExtra(CARDID_KEY,cardid);
+        context.startActivity(intent);
+    }
+
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -90,7 +100,6 @@ public class EditDevUserActivity extends AppCompatActivity implements View.OnCli
         et_device_name = findViewById(R.id.et_device_name); //输入设备用户名
         et_idcard = findViewById(R.id.et_idcard);           //输入身份证
         et_georadius = findViewById(R.id.et_georadius);     //输入围栏半径（围栏开启可见）
-        btn_sure_code = findViewById(R.id.btn_sure_code);   //验证绑定关系按钮
         iv_head_icon = findViewById(R.id.iv_head_icon);     //头像根据性别变化
         ll_addressfence = findViewById(R.id.ll_addressfence);//用于设置地理围栏开启之后操作
         //单击按钮：性别，围栏设置
@@ -154,7 +163,7 @@ public class EditDevUserActivity extends AppCompatActivity implements View.OnCli
                 break;
             case R.id.tv_save:      //保存按钮
 
-                sendrequest_saveData();             //请求网络，修改保存用户信息
+               // sendrequest_saveData();             //请求网络，修改保存用户信息
                 break;
             case R.id.tv_geocenter:     //围栏设置
                 Intent intent = new Intent(EditDevUserActivity.this,GetAddressByKeyword.class);
@@ -234,7 +243,7 @@ public class EditDevUserActivity extends AppCompatActivity implements View.OnCli
      */
     private void sendrequest_askDevInfo() {
 
-        cardid = devicelist.get(0).getCard_id();
+        cardid = getIntent().getStringExtra(CARDID_KEY);
         String url = Constant.BASE_WEBSITE+Constant.REQUEST_ASKDEVINFO_DEVICE_URL + "/account/" +spUserPhone +"/cardid/"+ cardid;
         Log.e(TAG, url);
         OkHttpClient okHttpClient = new OkHttpClient();
@@ -332,6 +341,7 @@ public class EditDevUserActivity extends AppCompatActivity implements View.OnCli
         });
 
     }
+
 
 
 }
