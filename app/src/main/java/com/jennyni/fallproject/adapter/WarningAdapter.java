@@ -71,6 +71,7 @@ public class WarningAdapter extends RecyclerView.Adapter<WarningAdapter.
         //报警类型判断：
         if (bean.getFall() == 1){
             holder.tv_type.setText("跌倒报警");
+
         }else if (bean.getFall() == 2){
             holder.tv_type.setText("手动报警");
         }else if (bean.getFence() == 1){

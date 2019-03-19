@@ -26,6 +26,7 @@ import com.jennyni.fallproject.Bean.UserUpdateBean;
 import com.jennyni.fallproject.R;
 import com.jennyni.fallproject.activity.devicelocation.DevUserDetailActivity;
 import com.jennyni.fallproject.adapter.WarningAdapter;
+import com.jennyni.fallproject.service.LocationService;
 import com.jennyni.fallproject.utils.Constant;
 import com.jennyni.fallproject.utils.DBUtils;
 import com.jennyni.fallproject.utils.JsonParse;
@@ -69,8 +70,11 @@ public class FindFragment extends Fragment implements WarningAdapter.IonSlidingV
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View view = initView(inflater, container);
         sendrequest_allfallData();
-
+        startNotifyService();
         return view;
+    }
+    private void startNotifyService() {
+        LocationService.startService(getActivity());
     }
 
     private View initView(LayoutInflater inflater, ViewGroup container) {
@@ -181,15 +185,21 @@ public class FindFragment extends Fragment implements WarningAdapter.IonSlidingV
 
     }
 
+    @Override
+    public void onDestroyView() {
+        LocationService.stopService(getActivity());
+        super.onDestroyView();
+    }
+
 
     //点击事件
     @Override
     public void onItemClick(View view, int position) {
         //(空指针)
-        Intent intent = new Intent(context, DevUserDetailActivity.class);
-        intent.putExtra("askfallinfo", (Serializable) list.get(position));
-        intent.putExtra("position", position + "");
-        startActivityForResult(intent, 1);
+//        Intent intent = new Intent(context, DevUserDetailActivity.class);
+//        intent.putExtra("askfallinfo", (Serializable) list.get(position));
+//        intent.putExtra("position", position + "");
+//        startActivityForResult(intent, 1);
     }
 
     @Override
