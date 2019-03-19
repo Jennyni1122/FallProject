@@ -78,7 +78,7 @@ public class AskAllFallInfoBean {
         private int loctype;
         private int steps;
         private int calor;
-        private int time;
+        private long time;
 
 
 
@@ -187,11 +187,11 @@ public class AskAllFallInfoBean {
             this.calor = calor;
         }
 
-        public int getTime() {
+        public long getTime() {
             return time;
         }
 
-        public void setTime(int time) {
+        public void setTime(long time) {
             this.time = time;
         }
 

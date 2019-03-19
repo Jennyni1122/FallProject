@@ -144,7 +144,7 @@ public class LocationService extends Service {
      * @return
      */
     boolean isFalled(AskAllFallInfoBean.ResultBean bean) {
-        if (bean.getFall() == 1 && bean.getFall() == 2){
+        if (bean.getFall() == 1 || bean.getFall() == 2){
             return true;
         }else {
             return false;

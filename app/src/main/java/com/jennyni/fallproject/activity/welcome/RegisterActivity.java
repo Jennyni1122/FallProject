@@ -9,6 +9,7 @@ import android.os.Message;
 import android.support.annotation.RequiresApi;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.telephony.SmsManager;
 import android.text.TextUtils;
 import android.text.method.HideReturnsTransformationMethod;
 import android.text.method.PasswordTransformationMethod;
@@ -79,6 +80,7 @@ public class RegisterActivity extends AppCompatActivity implements View.OnClickL
         tv_back.setVisibility(View.VISIBLE);
         //注册控件
         btn_register = findViewById(R.id.btn_register);
+        et_code = findViewById(R.id.et_code);
         btn_getSMSCode = findViewById(R.id.btn_getSMSCode);
         et_register_userphone = findViewById(R.id.et_register_userphone);
         et_register_psw = findViewById(R.id.et_register_psw);
@@ -190,7 +192,9 @@ public class RegisterActivity extends AppCompatActivity implements View.OnClickL
                 if (TextUtils.isEmpty(currentPsw)){
                     Toast.makeText(RegisterActivity.this,"请输入密码",Toast.LENGTH_SHORT).show();
                     return;
-                }else if (isExistUserName(currentUserphone)) {
+                }
+
+                if (isExistUserName(currentUserphone)) {
                     Toast.makeText(RegisterActivity.this, "此账户名已经存在",
                             Toast.LENGTH_SHORT).show();
                     return;
@@ -199,7 +203,7 @@ public class RegisterActivity extends AppCompatActivity implements View.OnClickL
                 Pattern p = Pattern.compile("1[0-9]{10,10}");
                 Matcher m = p.matcher(currentUserphone);
                 if(m.matches() ){
-                    sendRequest_register(currentUserphone,currentPsw);     //向服务器请求数据
+//                    sendRequest_register(currentUserphone,currentPsw);     //向服务器请求数据
                     compareSMSCode();           //验证验证码
                 }else{
                     btn_register.setClickable(false);
@@ -342,6 +346,9 @@ public class RegisterActivity extends AppCompatActivity implements View.OnClickL
     }
 
 
-
-
+    @Override
+    protected void onDestroy() {
+        mCountDownTimerUtils.cancel();
+        super.onDestroy();
+    }
 }

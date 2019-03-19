@@ -65,7 +65,7 @@ public class WarningAdapter extends RecyclerView.Adapter<WarningAdapter.
         holder.tv_name.setText(bean.getName());
         //时间戳转换
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-        String time = sdf.format(new Date(bean.getTime()));   // 时间戳转换成时间
+        String time = sdf.format(new Date(bean.getTime()*1000));   // 时间戳转换成时间
         holder.tv_time.setText(time);
 
         //报警类型判断：
