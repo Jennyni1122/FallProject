@@ -20,6 +20,7 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.google.gson.Gson;
 import com.jennyni.fallproject.Bean.AskDevInfoBean;
 import com.jennyni.fallproject.Bean.SetUpBean;
 import com.jennyni.fallproject.Bean.UserUpdateBean;
@@ -48,23 +49,23 @@ public class EditDevUserActivity extends AppCompatActivity implements View.OnCli
     public static final String TAG = "EditDevice";
     private RelativeLayout rl_title_bar;
     private LinearLayout ll_addressfence;
-    private TextView tv_main_title,tv_back,tv_switch,tv_guardian,tv_geocenter;
-    private EditText et_device_name,et_idcard,et_georadius;
-    private RadioGroup sex_event,set_event;
-    private RadioButton male,female,open,close;
+    private TextView tv_main_title, tv_back, tv_switch, tv_guardian, tv_geocenter;
+    private EditText et_device_name, et_idcard, et_georadius;
+    private RadioGroup sex_event, set_event;
+    private RadioButton male, female, open, close;
     private ImageView iv_head_icon;
-    private String spUserPhone,cardid;         //定义 获取登录时的用户名
-    private String currentDevCode,currentDevPsw;
+    private String spUserPhone, cardid;         //定义 获取登录时的用户名
+    private String currentDevCode, currentDevPsw;
     public static final int MSG_SHOW_OK = 1;
     public static final int MSG_EDIT_OK = 2;
-    String isgeo,issex,dname,idcard,geocenter,georadius;
+    String isgeo, issex, dname, idcard, geocenter, georadius;
     List<UserUpdateBean.ResultBean> devicelist;
     private static final String CARDID_KEY = "cardid";
 
     public static void startActivity(Context context, String cardid) {
 
-        Intent intent = new Intent(context,EditDevUserActivity.class);
-        intent.putExtra(CARDID_KEY,cardid);
+        Intent intent = new Intent(context, EditDevUserActivity.class);
+        intent.putExtra(CARDID_KEY, cardid);
         context.startActivity(intent);
     }
 
@@ -81,16 +82,14 @@ public class EditDevUserActivity extends AppCompatActivity implements View.OnCli
     }
 
 
-
-
     private void initView() {
         //标题栏
-        rl_title_bar= findViewById(R.id.title_bar);
+        rl_title_bar = findViewById(R.id.title_bar);
         rl_title_bar.setBackgroundColor(getResources().getColor(R.color.rdTextColorPress));
-        tv_main_title= findViewById(R.id.tv_main_title);
+        tv_main_title = findViewById(R.id.tv_main_title);
         tv_main_title.setText("编辑用户信息");
-        tv_back =  findViewById(R.id.tv_back);
-        tv_switch =  findViewById(R.id.tv_save);
+        tv_back = findViewById(R.id.tv_back);
+        tv_switch = findViewById(R.id.tv_save);
         tv_back.setVisibility(View.VISIBLE);
         tv_switch.setVisibility(View.VISIBLE);
         tv_switch.setText("保存");
@@ -103,10 +102,10 @@ public class EditDevUserActivity extends AppCompatActivity implements View.OnCli
         iv_head_icon = findViewById(R.id.iv_head_icon);     //头像根据性别变化
         ll_addressfence = findViewById(R.id.ll_addressfence);//用于设置地理围栏开启之后操作
         //单击按钮：性别，围栏设置
-        male = (RadioButton)findViewById(R.id.man);
-        female = (RadioButton)findViewById(R.id.woman);
+        male = (RadioButton) findViewById(R.id.man);
+        female = (RadioButton) findViewById(R.id.woman);
         close = (RadioButton) findViewById(R.id.close);
-        open = (RadioButton)findViewById(R.id.open);
+        open = (RadioButton) findViewById(R.id.open);
         sex_event = (RadioGroup) findViewById(R.id.sex_event);           //性别选择
         set_event = (RadioGroup) findViewById(R.id.set_event);           //地理围栏选择
         sex_event.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {
@@ -154,19 +153,18 @@ public class EditDevUserActivity extends AppCompatActivity implements View.OnCli
     }
 
 
-
     @Override
     public void onClick(View v) {
-        switch (v.getId()){
+        switch (v.getId()) {
             case R.id.tv_back:      //返回按钮
                 EditDevUserActivity.this.finish();
                 break;
             case R.id.tv_save:      //保存按钮
 
-               // sendrequest_saveData();             //请求网络，修改保存用户信息
+                // sendrequest_saveData();             //请求网络，修改保存用户信息
                 break;
             case R.id.tv_geocenter:     //围栏设置
-                Intent intent = new Intent(EditDevUserActivity.this,GetAddressByKeyword.class);
+                Intent intent = new Intent(EditDevUserActivity.this, GetAddressByKeyword.class);
                 startActivity(intent);
                 break;
 
@@ -186,42 +184,46 @@ public class EditDevUserActivity extends AppCompatActivity implements View.OnCli
                 case MSG_SHOW_OK:        //查看用户数据
                     if (msg.obj != null) {
                         //获取数据
-                        //    String dev_result = (String) msg.obj;
-                        final AskDevInfoBean.ResultBean devinfobean = (AskDevInfoBean.ResultBean) msg.obj;
-                        Log.e("TAG", "handleMessage:" + devinfobean.getDname());
-                        //显示用户信息数据
-                        et_device_name.setText(devinfobean.getDname()); //设备用户名
-                        et_idcard.setText(devinfobean.getIdcard());     //身份证
-                        tv_guardian.setText(spUserPhone);               //监护人
-                        //性别设置，男，则按钮为男，头像为老爷爷；  女，按钮为女，头像为老奶奶
-                        sex_event.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {
-                            @Override
-                            public void onCheckedChanged(RadioGroup group, int checkedId) {
-                                RadioButton sex = findViewById(checkedId);
-                                if (devinfobean.getDsex().equals(sex.getText().toString())){
-                                    iv_head_icon.setImageResource(R.drawable.icon_male);
-                                }else {
-                                    iv_head_icon.setImageResource(R.drawable.icon_female);
-                                }
-                            }
-                        });
+                        String response = (String) msg.obj;
+                        Gson gson = new Gson();
+                        final AskDevInfoBean askDevInfoBean = gson.fromJson(response, AskDevInfoBean.class);
 
-                        //围栏开启设备，围栏开启：设置围栏内容可见，显示中心点经纬度，显示半径；  围栏关闭：显示不可见
-                        set_event.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {
-                            @Override
-                            public void onCheckedChanged(RadioGroup group, int checkedId) {
-                                RadioButton set = findViewById(checkedId);
-                                if (devinfobean.getIsgeo() == 1){
-                                    set.getText().toString().equals("开启");
-                                    ll_addressfence.setVisibility(View.VISIBLE);
-                                    tv_geocenter.setText(devinfobean.getGeocenter());
-                                    et_georadius.setText(devinfobean.getGeoradius());
-                                }else {
-                                    ll_addressfence.setVisibility(View.INVISIBLE);
+                        if (askDevInfoBean.getStatus()==200){
+                            final AskDevInfoBean.ResultBean devinfobean = askDevInfoBean.getResult();
+                            Log.e("TAG", "handleMessage:" + devinfobean.getDname());
+                            //显示用户信息数据
+                            et_device_name.setText(devinfobean.getDname()); //设备用户名
+                            et_idcard.setText(devinfobean.getIdcard());     //身份证
+                            tv_guardian.setText(spUserPhone);               //监护人
+                            //性别设置，男，则按钮为男，头像为老爷爷；  女，按钮为女，头像为老奶奶
+                            sex_event.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {
+                                @Override
+                                public void onCheckedChanged(RadioGroup group, int checkedId) {
+                                    RadioButton sex = findViewById(checkedId);
+                                    if (devinfobean.getDsex().equals(sex.getText().toString())) {
+                                        iv_head_icon.setImageResource(R.drawable.icon_male);
+                                    } else {
+                                        iv_head_icon.setImageResource(R.drawable.icon_female);
+                                    }
                                 }
-                            }
-                        });
+                            });
 
+                            //围栏开启设备，围栏开启：设置围栏内容可见，显示中心点经纬度，显示半径；  围栏关闭：显示不可见
+                            set_event.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {
+                                @Override
+                                public void onCheckedChanged(RadioGroup group, int checkedId) {
+                                    RadioButton set = findViewById(checkedId);
+                                    if (devinfobean.getIsgeo() == 1) {
+                                        set.getText().toString().equals("开启");
+                                        ll_addressfence.setVisibility(View.VISIBLE);
+                                        tv_geocenter.setText(devinfobean.getGeocenter());
+                                        et_georadius.setText(String.valueOf(devinfobean.getGeoradius()));
+                                    } else {
+                                        ll_addressfence.setVisibility(View.INVISIBLE);
+                                    }
+                                }
+                            });
+                        }
 
                     }
                     break;
@@ -244,7 +246,7 @@ public class EditDevUserActivity extends AppCompatActivity implements View.OnCli
     private void sendrequest_askDevInfo() {
 
         cardid = getIntent().getStringExtra(CARDID_KEY);
-        String url = Constant.BASE_WEBSITE+Constant.REQUEST_ASKDEVINFO_DEVICE_URL + "/account/" +spUserPhone +"/cardid/"+ cardid;
+        String url = Constant.BASE_WEBSITE + Constant.REQUEST_ASKDEVINFO_DEVICE_URL + "/account/" + spUserPhone + "/cardid/" + cardid;
         Log.e(TAG, url);
         OkHttpClient okHttpClient = new OkHttpClient();
         final Request request = new Request.Builder().url(url).build();
@@ -259,11 +261,11 @@ public class EditDevUserActivity extends AppCompatActivity implements View.OnCli
             @Override
             public void onResponse(Call call, Response response) throws IOException {
                 Log.e(TAG, "MSG_SHOW_OK" + "请求成功：" + response);
-                String str = JsonParse.getInstance().getAskDevInfo(response.body().string());
-                Log.e(TAG, "MSG_SHOW_OK" + str);
+//                String str = JsonParse.getInstance().getAskDevInfo();
+//                Log.e(TAG, "MSG_SHOW_OK" + str);
                 Message message = new Message();
                 message.what = MSG_SHOW_OK;
-                message.obj = str;
+                message.obj = response.body().string();
                 handler.sendMessage(message);
 
             }
@@ -341,7 +343,6 @@ public class EditDevUserActivity extends AppCompatActivity implements View.OnCli
         });
 
     }
-
 
 
 }

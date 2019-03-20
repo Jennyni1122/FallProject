@@ -4,6 +4,7 @@ import android.annotation.SuppressLint;
 import android.app.Notification;
 import android.app.NotificationChannel;
 import android.app.NotificationManager;
+import android.app.PendingIntent;
 import android.app.Service;
 import android.content.Context;
 import android.content.Intent;
@@ -21,6 +22,7 @@ import com.google.gson.Gson;
 import com.jennyni.fallproject.Bean.AskAllFallInfoBean;
 import com.jennyni.fallproject.Bean.UserUpdateBean;
 import com.jennyni.fallproject.R;
+import com.jennyni.fallproject.receiver.NotifyReciver;
 import com.jennyni.fallproject.utils.Constant;
 import com.jennyni.fallproject.utils.UtilsHelper;
 
@@ -34,7 +36,6 @@ import okhttp3.Callback;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.Response;
-
 
 
 public class LocationService extends Service {
@@ -105,18 +106,18 @@ public class LocationService extends Service {
                 Log.e("MSG_MAPPAGE_OK", "请求成功：" + response);
                 Gson gson = new Gson();
                 String string = response.body().string();
-                AskAllFallInfoBean askFallInfoBean = gson.fromJson(string,  AskAllFallInfoBean.class);
+                AskAllFallInfoBean askFallInfoBean = gson.fromJson(string, AskAllFallInfoBean.class);
                 if (askFallInfoBean != null && askFallInfoBean.getStatus() == 200) {
-                    List< AskAllFallInfoBean.ResultBean> list = askFallInfoBean.getResult();
+                    List<AskAllFallInfoBean.ResultBean> list = askFallInfoBean.getResult();
                     if (list.size() == 0) return;
-                    Log.e(TAG, "开始遍历，长度："+list.size() );
-                    for (final  AskAllFallInfoBean.ResultBean bean : list) {
+                    Log.e(TAG, "开始遍历，长度：" + list.size());
+                    for (final AskAllFallInfoBean.ResultBean bean : list) {
                         if (isOutOfRadius(bean)) {
                             handler.post(new Runnable() {
                                 @Override
                                 public void run() {
                                     Log.e(TAG, String.format("%s在范围外，请注意!", bean.getName() == null ? "未知用户" : bean.getName()));
-                                    sendNotifycation(String.format("%s在范围外，请注意!", bean.getName() == null ? "未知用户" : bean.getName()));
+                                    sendNotifycation(String.format("%s在范围外，请注意!", bean.getName() == null ? "未知用户" : bean.getName()),bean.getCard_id());
                                 }
                             });
 
@@ -126,7 +127,7 @@ public class LocationService extends Service {
                                 @Override
                                 public void run() {
                                     Log.e(TAG, String.format("%s发生跌倒，请注意!", bean.getName() == null ? "未知用户" : bean.getName()));
-                                    sendNotifycation(String.format("%s发生跌倒，请注意!", bean.getName() == null ? "未知用户" : bean.getName()));
+                                    sendNotifycation(String.format("%s发生跌倒，请注意!", bean.getName() == null ? "未知用户" : bean.getName()),bean.getCard_id());
                                 }
                             });
                         }
@@ -140,13 +141,14 @@ public class LocationService extends Service {
 
     /**
      * 是否跌倒
+     *
      * @param
      * @return
      */
     boolean isFalled(AskAllFallInfoBean.ResultBean bean) {
-        if (bean.getFall() == 1 || bean.getFall() == 2){
+        if (bean.getFall() == 1 || bean.getFall() == 2) {
             return true;
-        }else {
+        } else {
             return false;
         }
     }
@@ -158,22 +160,20 @@ public class LocationService extends Service {
      * @return
      */
     boolean isOutOfRadius(AskAllFallInfoBean.ResultBean bean) {
-        if (bean.getFence() == 1){
+        if (bean.getFence() == 1) {
             return true;
-        }else {
+        } else {
             return false;
         }
     }
 
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
-        if (intent!=null &&intent.getBooleanExtra(STOP_KEY, false)) {
+        if (intent != null && intent.getBooleanExtra(STOP_KEY, false)) {
             stopSelf();
         }
         return super.onStartCommand(intent, flags, startId);
     }
-
-
 
 
     @Override
@@ -183,8 +183,7 @@ public class LocationService extends Service {
     }
 
 
-
-    void sendNotifycation(String str) {
+    void sendNotifycation(String str, String cardid) {
         if (Build.VERSION.SDK_INT < Build.VERSION_CODES.O) {
             /**
              *  创建通知栏管理工具
@@ -199,6 +198,9 @@ public class LocationService extends Service {
 
             NotificationCompat.Builder mBuilder = new NotificationCompat.Builder(this);
 
+            Intent intent = new Intent(this, NotifyReciver.class);
+            intent.putExtra("cardid", cardid);
+            PendingIntent pendingIntent = PendingIntent.getBroadcast(this, new Random().nextInt(1000), intent, PendingIntent.FLAG_UPDATE_CURRENT);
             /**
              *  设置Builder
              */
@@ -213,10 +215,13 @@ public class LocationService extends Service {
                     //设置通知时间
                     .setWhen(System.currentTimeMillis())
                     //首次进入时显示效果
+                    .setContentIntent(pendingIntent)
                     .setTicker(str)
                     //设置通知方式，声音，震动，呼吸灯等效果，这里通知方式为声音
                     .setDefaults(Notification.DEFAULT_SOUND);
             //发送通知请求
+
+
             notificationManager.notify(new Random().nextInt(Integer.MAX_VALUE), mBuilder.build());
         } else {
 

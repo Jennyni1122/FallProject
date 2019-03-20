@@ -47,6 +47,7 @@
         <service android:name=".service.AutoUpdateService" />
 
         <receiver android:name=".receiver.AutoUpdateReceiver" />
+        <receiver android:name=".receiver.NotifyReciver" />
 
         <activity android:name=".activity.devicelocation.DevUserDetailActivity" />
         <activity android:name=".activity.AddDeviceUserInfoActivity"></activity>
