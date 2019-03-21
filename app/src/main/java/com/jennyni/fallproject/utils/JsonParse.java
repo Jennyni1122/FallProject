@@ -13,6 +13,7 @@ import com.jennyni.fallproject.Bean.AskonBean;
 import com.jennyni.fallproject.Bean.DelDeviceBean;
 import com.jennyni.fallproject.Bean.RegisterBean;
 import com.jennyni.fallproject.Bean.SetUpBean;
+import com.jennyni.fallproject.Bean.UploadBean;
 import com.jennyni.fallproject.Bean.UserChangePassBean;
 import com.jennyni.fallproject.Bean.UserLoginBean;
 import com.jennyni.fallproject.Bean.UserUpdateBean;
@@ -424,6 +425,34 @@ public class JsonParse {
             return null;
         }
 
+    }
+
+
+    /**
+     * 14.查询设备最新数据：(跌倒报警与地理围栏报警)获取的JSON数据
+     *
+     * @param response
+     * @return
+     */
+    public UploadBean.ResultBean getUploadInfo(String response) {
+
+        //使用gson库解析JSON数据
+        Gson gson = new Gson();
+        UploadBean bean = gson.fromJson(response, UploadBean.class);
+        //如果结果码为200，返回查询的设备信息
+        UploadBean.ResultBean body = bean.getResult();
+        if (200 == bean.getStatus()) {
+            StringBuilder sb = new StringBuilder();
+            sb.append("数据校验：(跌倒报警与地理围栏报警)" + "\n" + body.getId() + "\n" + body.getCard_id() +
+                    "\n" + body.getLng() + "\n" + body.getLat() + "\n" + body.getRssi() + "\n" +
+                    body.getPower() + "\n" + body.getFall() + "\n" + body.getAlert() + "\n" +
+                    body.getSteps() + "\n" + body.getCalor() + "\n" + body.getTime() + "\n" +
+                    body.getDname() + "\n" + body.getReason() + "\n");
+            return body;
+        } else {
+            //状态码不为200时，返回错误信息:绑定设备不存在
+            return null;
+        }
     }
 
 }

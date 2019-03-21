@@ -317,4 +317,18 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
                 return false;
             }
 
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        if(data!=null){
+            //从注册界面传递过来的用户名
+            String account =data.getStringExtra("account");
+            if(!TextUtils.isEmpty(account)){
+                et_login_userphone.setText(account);
+                //设置光标的位置
+                et_login_userphone.setSelection(account.length());
+            }
+        }
+    }
+
 }

@@ -161,7 +161,7 @@ public class EditDevUserActivity extends AppCompatActivity implements View.OnCli
                 break;
             case R.id.tv_save:      //保存按钮
 
-                // sendrequest_saveData();             //请求网络，修改保存用户信息
+                 sendrequest_saveData();             //请求网络，修改保存用户信息
                 break;
             case R.id.tv_geocenter:     //围栏设置
                 Intent intent = new Intent(EditDevUserActivity.this, GetAddressByKeyword.class);
@@ -295,14 +295,7 @@ public class EditDevUserActivity extends AppCompatActivity implements View.OnCli
             toast("身份证不能为空");
             return;
         }
-        if (StringUtil.isEmpty(currentDevCode)) {
-            toast("设备号不能为空");
-            return;
-        }
-        if (StringUtil.isEmpty(currentDevPsw)) {
-            toast("设备密码不能为空");
-            return;
-        }
+
 
         /**
          * http://www.phyth.cn/index/fall/setup/account/18860900316/cardid/18255180000/

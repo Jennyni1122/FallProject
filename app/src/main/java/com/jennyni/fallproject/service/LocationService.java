@@ -221,17 +221,20 @@ public class LocationService extends Service {
                     .setDefaults(Notification.DEFAULT_SOUND);
             //发送通知请求
 
-
             notificationManager.notify(new Random().nextInt(Integer.MAX_VALUE), mBuilder.build());
         } else {
-
+            Intent intent = new Intent(this, NotifyReciver.class);
+            intent.putExtra("cardid", cardid);
+            PendingIntent pendingIntent = PendingIntent.getBroadcast(this, new Random().nextInt(1000), intent, PendingIntent.FLAG_UPDATE_CURRENT);
             int notificationId = new Random().nextInt(Integer.MAX_VALUE);
             Notification.Builder builder = new Notification.Builder(this, "1"); //与channelId对应
             //icon title text必须包含，不然影响桌面图标小红点的展示
+            builder.setContentIntent(pendingIntent);
             builder.setSmallIcon(android.R.drawable.stat_notify_chat)
                     .setContentTitle(getString(R.string.app_name))
                     .setContentText(str)
-                    .setNumber(3); //久按桌面图标时允许的此条通知的数量
+                    .setNumber(3)
+                    .setDefaults(Notification.DEFAULT_SOUND); //久按桌面图标时允许的此条通知的数量
             NotificationManager notificationManager = (NotificationManager) this.getSystemService(Context.NOTIFICATION_SERVICE);
 
 

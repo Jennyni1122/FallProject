@@ -132,8 +132,9 @@ public class RegisterActivity extends AppCompatActivity implements View.OnClickL
                                 // 处理验证码验证通过的结果
                                 Toast.makeText(RegisterActivity.this, "验证码验证成功", Toast.LENGTH_SHORT).show();
 
-                                Intent intent = new Intent(RegisterActivity.this,LoginActivity.class);
-                                startActivity(intent);
+                                sendRequest_register(currentUserphone,currentPsw);     //向服务器请求数据
+
+
                             } else {
                                 // 处理错误的结果
                                 ((Throwable) data).printStackTrace();
@@ -194,16 +195,16 @@ public class RegisterActivity extends AppCompatActivity implements View.OnClickL
                     return;
                 }
 
-                if (isExistUserName(currentUserphone)) {
-                    Toast.makeText(RegisterActivity.this, "此账户名已经存在",
-                            Toast.LENGTH_SHORT).show();
-                    return;
-                }
+//                if (isExistUserName(currentUserphone)) {
+//                    Toast.makeText(RegisterActivity.this, "此账户名已经存在",
+//                            Toast.LENGTH_SHORT).show();
+//                    return;
+//                }
 
                 Pattern p = Pattern.compile("1[0-9]{10,10}");
                 Matcher m = p.matcher(currentUserphone);
                 if(m.matches() ){
-//                    sendRequest_register(currentUserphone,currentPsw);     //向服务器请求数据
+
                     compareSMSCode();           //验证验证码
                 }else{
                     btn_register.setClickable(false);
@@ -217,23 +218,6 @@ public class RegisterActivity extends AppCompatActivity implements View.OnClickL
     }
 
 
-
-    /**
-     *  从数据库中读取输入的用户名，
-     *  判断是否有此用户名
-     * @param account
-     * @return
-     */
-    private boolean isExistUserName(String account) {
-        boolean has_userName =false;
-        SharedPreferences sp = getSharedPreferences("loginInfo", MODE_PRIVATE);
-        String spPsw = sp.getString(account, "");
-        if (!TextUtils.isEmpty(spPsw)) {
-            has_userName = true;
-        }
-
-        return has_userName;
-    }
 
     /**
      * 事件捕获
@@ -303,17 +287,19 @@ public class RegisterActivity extends AppCompatActivity implements View.OnClickL
         });
 
     }
-    /**
+    /**这里有错误。。。。。。。。。。。
      * 保存用户名和密码到SharedPreferences中
      */
     private void saveRegisterInfo(String pid, String psw) {
-        String md5Psw = MD5Utils.md5(psw);           //把密码用MD5加密
+       // String md5Psw = MD5Utils.md5(psw);           //把密码用MD5加密
         //loginInfo表示文件名
         SharedPreferences sp = getSharedPreferences("loginInfo", MODE_PRIVATE);
         SharedPreferences.Editor editor = sp.edit();//获取编辑器
         //以用户名为key,密码为value保存到SharedPreferences中
-        editor.putString(pid, md5Psw);
+        editor.putString("account",pid);
+        editor.putString("pass", psw);
         editor.commit();//提交修改
+
     }
 
     /**

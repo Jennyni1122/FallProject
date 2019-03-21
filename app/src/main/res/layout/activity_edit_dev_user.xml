@@ -14,22 +14,22 @@
 
         <include layout="@layout/main_title_bar" />
 
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_centerVertical="true"
-            android:layout_gravity="center"
-            android:singleLine="true"
-            android:layout_marginTop="20dp"
-            android:layout_marginBottom="8dp"
-            android:text="设备用户信息"
-            android:background="@drawable/register_edittext_bottom_radius"
-            android:textColor="@color/colorPrimary"
-            android:textSize="22sp" />
-        <View
-            android:layout_width="fill_parent"
-            android:layout_height="1dp"
-            android:background="#E4E4E4" />
+        <!--<TextView-->
+            <!--android:layout_width="wrap_content"-->
+            <!--android:layout_height="wrap_content"-->
+            <!--android:layout_centerVertical="true"-->
+            <!--android:layout_gravity="center"-->
+            <!--android:singleLine="true"-->
+            <!--android:layout_marginTop="20dp"-->
+            <!--android:layout_marginBottom="8dp"-->
+            <!--android:text="设备用户信息"-->
+            <!--android:background="@drawable/register_edittext_bottom_radius"-->
+            <!--android:textColor="@color/colorPrimary"-->
+            <!--android:textSize="22sp" />-->
+        <!--<View-->
+            <!--android:layout_width="fill_parent"-->
+            <!--android:layout_height="1dp"-->
+            <!--android:background="#E4E4E4" />-->
 
         <!--用户头像-->
         <LinearLayout
@@ -337,6 +337,6 @@
             android:layout_gravity="center_horizontal"
             android:layout_marginTop="8dp"
             android:layout_marginBottom="60dp"
-            android:textSize="16sp"/>
+            android:textSize="14sp"/>
     </LinearLayout>
 </ScrollView>

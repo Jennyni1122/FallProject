@@ -70,7 +70,6 @@ public class FindFragment extends Fragment implements WarningAdapter.IonSlidingV
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View view = initView(inflater, container);
         sendrequest_allfallData();
-        startNotifyService();
         return view;
     }
     private void startNotifyService() {
@@ -185,11 +184,6 @@ public class FindFragment extends Fragment implements WarningAdapter.IonSlidingV
 
     }
 
-    @Override
-    public void onDestroyView() {
-        LocationService.stopService(getActivity());
-        super.onDestroyView();
-    }
 
 
     //点击事件
@@ -205,6 +199,7 @@ public class FindFragment extends Fragment implements WarningAdapter.IonSlidingV
     @Override
     public void onDeleteBtnCilck(View view, int position) {
         adapter.removeData(position, tv_none, account);
+
     }
 
     @Override

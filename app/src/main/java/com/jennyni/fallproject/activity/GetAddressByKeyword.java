@@ -85,7 +85,7 @@ public class GetAddressByKeyword extends AppCompatActivity implements GeocodeSea
 
     public void search(View view) {
         // 第一个参数:地址，第二个参数:查询城市
-        GeocodeQuery query = new GeocodeQuery(et_address.getText().toString(), "苏州");
+        GeocodeQuery query = new GeocodeQuery(et_address.getText().toString(), "");
         geocoderSearch.getFromLocationNameAsyn(query);// 设置同步地理编码请求
 
     }

@@ -48,6 +48,8 @@ import com.jennyni.fallproject.utils.LocationServiceUtils;
 import com.jennyni.fallproject.utils.UtilsHelper;
 
 import java.io.IOException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.List;
 import java.util.Random;
 
@@ -137,11 +139,8 @@ public class DevUserDetailActivity extends BaseMapActivity implements GeocodeSea
         tv_edit_device.setOnClickListener(new View.OnClickListener() {       //跳转到编辑设备界面
             @Override
             public void onClick(View view) {            //进入编辑设备界面
-//                Intent intent = new Intent(DevUserDetailActivity.this, EditDevUserActivity.class);
-//                // startActivityForResult(intent, 1);
-//                startActivity(intent);
-//                finish();
-                EditDevUserActivity.startActivity(DevUserDetailActivity.this,cardid);
+
+                EditDevUserActivity.startActivity(DevUserDetailActivity.this,fallbean.getCard_id());
             }
         });
 
@@ -193,6 +192,7 @@ public class DevUserDetailActivity extends BaseMapActivity implements GeocodeSea
                         fallbean = (AskFallInfoBean.ResultBean) msg.obj;
                         Log.e("TAG", "handleMessage:" + "id:" + fallbean.getId() + "设备编号：" + fallbean.getCard_id());
                         setData();
+
                     }
                     break;
             }
@@ -310,6 +310,8 @@ public class DevUserDetailActivity extends BaseMapActivity implements GeocodeSea
         }
 
     }
+
+
 
 //    /**通话1
 //     * 发出通知，跌倒通知
