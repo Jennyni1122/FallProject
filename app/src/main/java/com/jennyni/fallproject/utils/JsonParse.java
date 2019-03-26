@@ -1,5 +1,7 @@
 package com.jennyni.fallproject.utils;
 
+import android.util.Log;
+
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 import com.jennyni.fallproject.Bean.AddDeviceBean;
@@ -53,24 +55,23 @@ public class JsonParse {
      * @return
      */
     public String getuserRegisterInfo(String response) {
-        try{
+        try {
             //使用gson库解析JSON数据
             Gson gson = new Gson();
-            UserRegisterBean bean = gson.fromJson(response,UserRegisterBean.class);
+            UserRegisterBean bean = gson.fromJson(response, UserRegisterBean.class);
             //如果结果码为200，返回查询的设备信息
             UserRegisterBean.ResultBean body = bean.getResult();
-            if (200==bean.getStatus()){
+            if (200 == bean.getStatus()) {
                 StringBuilder sb = new StringBuilder();
-                sb.append("用户注册:"+"\n"+body.getAccount()+"\n"+body.getName());
+                sb.append("用户注册:" + "\n" + body.getAccount() + "\n" + body.getName());
                 return sb.toString();
-            }else{
+            } else {
                 //状态码不为200时，返回错误信息:账户或者密码错误
-                return "用户注册:"+"\n"+ body.getReason();
+                return "用户注册:" + "\n" + body.getReason();
             }
-        }catch (Exception e){
+        } catch (Exception e) {
             return null;
         }
-
 
 
     }
@@ -84,7 +85,7 @@ public class JsonParse {
      */
     public UserLoginBean.ResultBean getuserLoginInfo(String response) {
 
-        try{
+        try {
             //使用gson库解析JSON数据
             Gson gson = new Gson();
             UserLoginBean bean = gson.fromJson(response, UserLoginBean.class);
@@ -98,7 +99,7 @@ public class JsonParse {
                 //状态码不为200时，返回错误信息:账户或者密码错误
                 return null;
             }
-        }catch (Exception e){
+        } catch (Exception e) {
             return null;
         }
 
@@ -112,7 +113,7 @@ public class JsonParse {
      * @return
      */
     public UserChangePassBean.ResultBean getuserChangePassInfo(String response) {
-        try{
+        try {
             //使用gson库解析JSON数据
             Gson gson = new Gson();
             UserChangePassBean bean = gson.fromJson(response, UserChangePassBean.class);
@@ -126,7 +127,7 @@ public class JsonParse {
                 //状态码不为200时，返回错误信息:账户或者密码错误
                 return null;
             }
-        }catch (Exception e){
+        } catch (Exception e) {
             return null;
         }
 
@@ -189,7 +190,7 @@ public class JsonParse {
             } else {
                 return null;
             }
-        }catch (Exception e){
+        } catch (Exception e) {
             return null;
         }
 
@@ -203,7 +204,7 @@ public class JsonParse {
      * @return
      */
     public String getAddDeviceInfo(String response) {
-        try{
+        try {
             //使用gson库解析JSON数据
             Gson gson = new Gson();
             AddDeviceBean bean = gson.fromJson(response, AddDeviceBean.class);
@@ -217,7 +218,7 @@ public class JsonParse {
                 //状态码不为200时，返回错误信息:绑定设备不存在或已添加
                 return "添加设备:" + "\n" + body.getReason();
             }
-        }catch (Exception e){
+        } catch (Exception e) {
             return null;
         }
 
@@ -231,7 +232,7 @@ public class JsonParse {
      * @return
      */
     public String getDelDeviceInfo(String response) {
-        try{
+        try {
             //使用gson库解析JSON数据
             Gson gson = new Gson();
             DelDeviceBean bean = gson.fromJson(response, DelDeviceBean.class);
@@ -245,7 +246,7 @@ public class JsonParse {
                 //状态码不为200时，返回错误信息:绑定设备不存在
                 return "解绑删除设备:" + "\n" + String.valueOf(body.getReason());
             }
-        }catch (Exception e){
+        } catch (Exception e) {
             return null;
         }
     }
@@ -257,9 +258,9 @@ public class JsonParse {
      * @param response
      * @return
      */
-    public String getSetupInfo(String response) {
+    public SetUpBean.ResultBean getSetupInfo(String response) {
 
-        try{
+        try {
             //使用gson库解析JSON数据
             Gson gson = new Gson();
             SetUpBean bean = gson.fromJson(response, SetUpBean.class);
@@ -271,12 +272,13 @@ public class JsonParse {
                         body.getDev_idcard() + "\n" + body.getDev_phone() + "\n" + body.getAddress() + "\n" + body.getCasehistory() + "\n" +
                         body.getGuardian() + "\n" + body.getPilltime1() + "\n" + body.getIsgeo() + "\n" + body.getGeocenter() + "\n" +
                         body.getGeoradius() + "\n" + body.getUpdate_time() + "\n");
-                return sb.toString();
+                return body;
             } else {
                 //状态码不为200时，返回错误信息
-                return "查询设备信息:" + "\n" + body.getReason();
+                Log.e("getSetupInfo: ", "查询设备信息:" + "\n" + body.getReason());
+                return null;
             }
-        }catch (Exception e){
+        } catch (Exception e) {
             return null;
         }
 
@@ -290,7 +292,7 @@ public class JsonParse {
      */
     public String getAskDevInfo(String response) {
 
-        try{
+        try {
             //使用gson库解析JSON数据
             Gson gson = new Gson();
             AskDevInfoBean bean = gson.fromJson(response, AskDevInfoBean.class);
@@ -307,7 +309,7 @@ public class JsonParse {
                 //状态码不为200时，返回错误信息
                 return "查询设备信息:" + "\n" + body.getReason();
             }
-        }catch (Exception e){
+        } catch (Exception e) {
             return null;
         }
 
@@ -321,7 +323,7 @@ public class JsonParse {
      */
     public String getAskonInfo(String response) {
 
-        try{
+        try {
             //使用gson库解析JSON数据
             Gson gson = new Gson();
             AskonBean bean = gson.fromJson(response, AskonBean.class);
@@ -335,7 +337,7 @@ public class JsonParse {
                 //状态码不为200时，返回错误信息:绑定设备不存在
                 return "查询设备最新时间:" + "\n" + body.getReason();
             }
-        }catch (Exception e){
+        } catch (Exception e) {
             return null;
         }
 
@@ -350,7 +352,7 @@ public class JsonParse {
      */
     public AskFallInfoBean.ResultBean getAskFallInfo(String response) {
 
-        try{
+        try {
             //使用gson库解析JSON数据
             Gson gson = new Gson();
             AskFallInfoBean bean = gson.fromJson(response, AskFallInfoBean.class);
@@ -368,12 +370,11 @@ public class JsonParse {
                 //状态码不为200时，返回错误信息:绑定设备不存在
                 return null;
             }
-        }catch (Exception e){
+        } catch (Exception e) {
             return null;
         }
 
     }
-
 
 
     /**
@@ -385,7 +386,7 @@ public class JsonParse {
      */
     public List<AskTodayTrackBean.ResultBean> getAskTodayTraceInfo(String response) {
 
-        try{
+        try {
 //使用gson库解析JSON数据
             Gson gson = new Gson();
             AskTodayTrackBean bean = null;
@@ -410,7 +411,7 @@ public class JsonParse {
             } else {
                 return null;
             }
-        }catch (Exception e){
+        } catch (Exception e) {
             return null;
         }
 
@@ -425,7 +426,7 @@ public class JsonParse {
      */
     public List<AskTrackBetweenBean.ResultBean> getAskTraceBetweenInfo(String response) {
 
-        try{
+        try {
 //使用gson库解析JSON数据
             Gson gson = new Gson();
             AskTrackBetweenBean bean = null;
@@ -449,7 +450,7 @@ public class JsonParse {
             } else {
                 return null;
             }
-        }catch (Exception e){
+        } catch (Exception e) {
             return null;
         }
 
@@ -462,7 +463,7 @@ public class JsonParse {
      * @return
      */
     public List<AskAllFallInfoBean.ResultBean> getAskAllFallInfo(String response) {
-        try{
+        try {
             try {
                 //使用gson库解析JSON数据
                 Gson gson = new Gson();
@@ -483,13 +484,12 @@ public class JsonParse {
                     return null;
                 }
 
-            }catch (Exception e){
+            } catch (Exception e) {
                 return null;
             }
-        }catch (Exception e){
+        } catch (Exception e) {
             return null;
         }
-
 
 
     }
@@ -502,7 +502,7 @@ public class JsonParse {
      * @return
      */
     public UploadBean.ResultBean getUploadInfo(String response) {
-        try{
+        try {
             //使用gson库解析JSON数据
             Gson gson = new Gson();
             UploadBean bean = gson.fromJson(response, UploadBean.class);
@@ -520,7 +520,7 @@ public class JsonParse {
                 //状态码不为200时，返回错误信息:绑定设备不存在
                 return null;
             }
-        }catch (Exception e){
+        } catch (Exception e) {
             return null;
         }
 

@@ -118,7 +118,7 @@ public class AddDeviceUserInfoActivity extends AppCompatActivity implements View
             @Override
             public void onCheckedChanged(RadioGroup group, int checkedId) {
                 RadioButton sex = findViewById(checkedId);
-        //        Toast.makeText(AddDeviceUserInfoActivity.this, "您选择了：" + sex.getText().toString(), Toast.LENGTH_SHORT).show();
+                //        Toast.makeText(AddDeviceUserInfoActivity.this, "您选择了：" + sex.getText().toString(), Toast.LENGTH_SHORT).show();
                 if (checkedId == R.id.man) {
                     issex = "男";
                     //头像根据性别变化
@@ -133,7 +133,7 @@ public class AddDeviceUserInfoActivity extends AppCompatActivity implements View
             @Override
             public void onCheckedChanged(RadioGroup group, int checkedId) {
                 RadioButton set = findViewById(checkedId);
-            //    Toast.makeText(AddDeviceUserInfoActivity.this, "您选择了：" + set.getText().toString(), Toast.LENGTH_SHORT).show();
+                //    Toast.makeText(AddDeviceUserInfoActivity.this, "您选择了：" + set.getText().toString(), Toast.LENGTH_SHORT).show();
                 if (set.getText().toString().equals("开启")) {
                     isgeo = "1";
                     ll_addressfence.setVisibility(View.VISIBLE);
@@ -284,11 +284,11 @@ public class AddDeviceUserInfoActivity extends AppCompatActivity implements View
             @Override
             public void onResponse(Call call, Response response) throws IOException {
                 Log.e(TAG, "MSG_ADDUSER_OK" + "请求成功：" + response);
-                String str = JsonParse.getInstance().getSetupInfo(response.body().string());
-                Log.e(TAG, "MSG_ADDUSER_OK" + str);
+                SetUpBean.ResultBean setupInfo = JsonParse.getInstance().getSetupInfo(response.body().string());
+//                Log.e(TAG, "MSG_ADDUSER_OK" + str);
                 Message message = new Message();
                 message.what = MSG_ADDUSER_OK;
-                message.obj = str;
+                message.obj = setupInfo;
                 handler.sendMessage(message);
             }
         });
@@ -338,15 +338,19 @@ public class AddDeviceUserInfoActivity extends AppCompatActivity implements View
                 case MSG_ADDUSER_OK:        //用户数据保存
                     if (msg.obj != null) {
                         //获取数据
-                        SetUpBean.ResultBean setupbean = (SetUpBean.ResultBean) msg.obj;
-                        Log.e("TAG", "handleMessage:" + setupbean.getDev_name());
-                        Toast.makeText(AddDeviceUserInfoActivity.this, "保存成功", Toast.LENGTH_SHORT).show();
+                        if (msg.obj != null) {
+                            SetUpBean.ResultBean setupbean = (SetUpBean.ResultBean) msg.obj;
+                            Log.e("TAG", "handleMessage:" + setupbean.getDev_name());
+                            Toast.makeText(AddDeviceUserInfoActivity.this, "保存成功", Toast.LENGTH_SHORT).show();
 //                        Intent intent = new Intent(AddDeviceUserInfoActivity.this, MeFragment.class);
 //                        startActivity(intent);
-                        Intent data = new Intent();
-                        data.putExtra("dname", setupbean.getDev_name());
-                        setResult(RESULT_OK, data);
-                        finish();
+                            Intent data = new Intent();
+                            data.putExtra("dname", setupbean.getDev_name());
+                            setResult(RESULT_OK, data);
+                            finish();
+                        }else {
+                            Toast.makeText(AddDeviceUserInfoActivity.this, "保存遇到问题了，log看下原因= =", Toast.LENGTH_SHORT).show();
+                        }
                     }
                     break;
                 case MSG_BINDDEV_OK:        //验证设备绑定关系
@@ -375,7 +379,7 @@ public class AddDeviceUserInfoActivity extends AppCompatActivity implements View
             if (requestCode == REQUEST_CODE) {
                 LatLonPoint geocenter = data.getParcelableExtra("geocenter");
                 if (geocenter != null) {
-                    tv_geocenter.setText(geocenter.getLongitude()+","+geocenter.getLatitude());    //获取经纬度
+                    tv_geocenter.setText(geocenter.getLongitude() + "," + geocenter.getLatitude());    //获取经纬度
                 }
             }
         }

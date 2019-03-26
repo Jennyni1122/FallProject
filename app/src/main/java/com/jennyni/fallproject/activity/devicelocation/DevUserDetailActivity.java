@@ -34,6 +34,8 @@ import com.amap.api.services.geocoder.GeocodeResult;
 import com.amap.api.services.geocoder.GeocodeSearch;
 import com.amap.api.services.geocoder.RegeocodeAddress;
 import com.amap.api.services.geocoder.RegeocodeResult;
+import com.google.gson.Gson;
+import com.jennyni.fallproject.Bean.AskDevInfoBean;
 import com.jennyni.fallproject.Bean.AskFallInfoBean;
 import com.jennyni.fallproject.Bean.UserUpdateBean;
 import com.jennyni.fallproject.FallProjectApplication;
@@ -71,15 +73,16 @@ public class DevUserDetailActivity extends BaseMapActivity implements GeocodeSea
     private RelativeLayout rl_title_bar;
     //内容控件
     private TextView tv_dev_user, tv_address, tv_dev_num, tv_idcard, tv_alert, tv_state;
-    private ImageView iv_path,iv_rssi, iv_power;
+    private ImageView iv_path, iv_rssi, iv_power;
     public static final int MSG_DevUser_OK = 1; //加载设备，获取数据
     public static final int MSG_FALLINFO_OK = 2;    //获取跌倒设备数据
+    public static final int MSG_SHOW_OK = 3;    //获取跌倒设备数据
     private Circle circle;
     private Marker marker;
     private Marker marker1;
     private LocationBroadcastReceiver broadcastReceiver;
     private AskFallInfoBean.ResultBean fallbean;
-    private UserUpdateBean.ResultBean devicebean;
+    private AskDevInfoBean.ResultBean devicebean;
     private String account, cardid, dname;
 
 
@@ -88,9 +91,9 @@ public class DevUserDetailActivity extends BaseMapActivity implements GeocodeSea
      *
      * @param context
      */
-    public static void startActivity(Context context, UserUpdateBean.ResultBean devicebean) {
+    public static void startActivity(Context context, String cardid) {
         Intent intent = new Intent(context, DevUserDetailActivity.class);
-        intent.putExtra(DEVICEBEAN_KEY, devicebean);
+        intent.putExtra(DEVICEBEAN_KEY, cardid);
         context.startActivity(intent);
     }
 
@@ -110,11 +113,9 @@ public class DevUserDetailActivity extends BaseMapActivity implements GeocodeSea
 
         Intent intent = getIntent();
 
-        devicebean = (UserUpdateBean.ResultBean) intent.getSerializableExtra(DEVICEBEAN_KEY);
-        cardid = devicebean.getCard_id();
+        cardid = intent.getStringExtra(DEVICEBEAN_KEY);
 //        sendrequest_userUpdateData();
-        sendrequest_fallData();     //请求网络，查询跌倒最新数据
-
+        sendrequest_askDevInfo();       //请求网络，加载设备用户信息
     }
 
 
@@ -140,7 +141,7 @@ public class DevUserDetailActivity extends BaseMapActivity implements GeocodeSea
             @Override
             public void onClick(View view) {            //进入编辑设备界面
 
-                EditDevUserActivity.startActivity(DevUserDetailActivity.this,fallbean.getCard_id());
+                EditDevUserActivity.startActivity(DevUserDetailActivity.this, fallbean.getCard_id());
             }
         });
 
@@ -158,8 +159,8 @@ public class DevUserDetailActivity extends BaseMapActivity implements GeocodeSea
         iv_path.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-           //跳转到设备轨迹界面
-          PathActivity.startActivity(DevUserDetailActivity.this,devicebean.getCard_id());
+                //跳转到设备轨迹界面
+                PathActivity.startActivity(DevUserDetailActivity.this, cardid);
             }
         });
     }
@@ -195,40 +196,51 @@ public class DevUserDetailActivity extends BaseMapActivity implements GeocodeSea
 
                     }
                     break;
+                case MSG_SHOW_OK:
+                    String response = (String) msg.obj;
+                    Gson gson = new Gson();
+                    final AskDevInfoBean askDevInfoBean = gson.fromJson(response, AskDevInfoBean.class);
+
+                    if (askDevInfoBean.getStatus() == 200) {
+                        devicebean = askDevInfoBean.getResult();
+                        sendrequest_fallData();     //请求网络，查询跌倒最新数据
+                    } else {
+                        Toast.makeText(DevUserDetailActivity.this, "请求设备数据遇到问题", Toast.LENGTH_SHORT).show();
+                    }
+                    break;
             }
         }
     };
 
 
     /**
-     *
      * 将设备参数及定位的数据显示出来()
      */
     private void setData() {
         tv_dev_user.setText(fallbean.getDname());   //显示设备用户名
         tv_dev_num.setText(fallbean.getCard_id());  //显示设备编号
-        tv_idcard.setText(devicebean.getDev_idcard());   //显示身份证
+        tv_idcard.setText(devicebean.getIdcard());   //显示身份证
 
         //显示信号
-        if (String.valueOf(fallbean.getRssi()).equals("2")){
+        if (String.valueOf(fallbean.getRssi()).equals("2")) {
             iv_rssi.setImageResource(R.drawable.rssi2);
-        }else if (String.valueOf(fallbean.getRssi()).equals("3")){
+        } else if (String.valueOf(fallbean.getRssi()).equals("3")) {
             iv_rssi.setImageResource(R.drawable.rssi3);
-        }else if (String.valueOf(fallbean.getRssi()).equals("4")){
+        } else if (String.valueOf(fallbean.getRssi()).equals("4")) {
             iv_rssi.setImageResource(R.drawable.rssi4);
-        }else {
+        } else {
             iv_rssi.setImageResource(R.drawable.rssi0);
         }
         //显示电量
-        if (String.valueOf(fallbean.getPower()).equals("1")){
+        if (String.valueOf(fallbean.getPower()).equals("1")) {
             iv_power.setImageResource(R.drawable.power1);
-        }else if (String.valueOf(fallbean.getPower()).equals("2")){
+        } else if (String.valueOf(fallbean.getPower()).equals("2")) {
             iv_power.setImageResource(R.drawable.power2);
-        }else if (String.valueOf(fallbean.getPower()).equals("3")){
+        } else if (String.valueOf(fallbean.getPower()).equals("3")) {
             iv_power.setImageResource(R.drawable.power3);
-        }else if (String.valueOf(fallbean.getPower()).equals("4")){
+        } else if (String.valueOf(fallbean.getPower()).equals("4")) {
             iv_power.setImageResource(R.drawable.power4);
-        }else {
+        } else {
             iv_power.setImageResource(R.drawable.power0);
         }
 
@@ -243,18 +255,18 @@ public class DevUserDetailActivity extends BaseMapActivity implements GeocodeSea
 //        }
 
         //显示跌倒 (地图显示报警跳动)
-       if (fallbean.getFall() == 1){
-          tv_state.setText("发生跌倒！");
-          tv_state.setTextColor(Color.RED);
-         // sendFallNotifycation();       //发生通知
-       }else if(fallbean.getFence() == 2){
-           tv_state.setText("手动报警！");
-           tv_state.setTextColor(Color.RED);
-           //sendFallNotifycation();       //发生通知
-       }else {
-           tv_state.setText("正常");
-           tv_state.setTextColor(Color.GREEN);
-       }
+        if (fallbean.getFall() == 1) {
+            tv_state.setText("发生跌倒！");
+            tv_state.setTextColor(Color.RED);
+            // sendFallNotifycation();       //发生通知
+        } else if (fallbean.getFence() == 2) {
+            tv_state.setText("手动报警！");
+            tv_state.setTextColor(Color.RED);
+            //sendFallNotifycation();       //发生通知
+        } else {
+            tv_state.setText("正常");
+            tv_state.setTextColor(Color.GREEN);
+        }
 
 
         //显示设备的定位，geopoints为设备定位，latlng(geocenter)为围栏中心点
@@ -270,7 +282,7 @@ public class DevUserDetailActivity extends BaseMapActivity implements GeocodeSea
             }
             LatLng lnglat = new LatLng(lng, lat);
             moveToPoint(lnglat);        //围栏中心点
-            if (geopoints!=null){
+            if (geopoints != null) {
                 moveToPoint(geopoints);//设备定位点
             }
             //围栏部分,marker为围栏中心点，marker1为设备定位
@@ -281,7 +293,7 @@ public class DevUserDetailActivity extends BaseMapActivity implements GeocodeSea
                 circle.setCenter(lnglat);
                 marker.setPosition(lnglat);
             }
-            float length = getPoint2PointLength(lnglat, new LatLng(Double.valueOf(fallbean.getLng()),Double.valueOf(fallbean.getLat())));
+            float length = getPoint2PointLength(lnglat, new LatLng(Double.valueOf(fallbean.getLng()), Double.valueOf(fallbean.getLat())));
             getAddressByLatlng(geopoints);
             //若设备定位marker1为空，则添加设备定位
             if (marker1 == null) {
@@ -291,7 +303,7 @@ public class DevUserDetailActivity extends BaseMapActivity implements GeocodeSea
 
             //设备在围栏内不报警，超出围栏就报警
             if (length < Double.valueOf(devicebean.getGeoradius())) {
-               // sendFenceNotifycation();     //发送通知
+                // sendFenceNotifycation();     //发送通知
                 marker1.setIcon(BitmapDescriptorFactory.fromBitmap(BitmapFactory.decodeResource(getResources(), R.drawable.location_marker1)));
                 marker1.setPosition(geopoints);
 
@@ -301,7 +313,7 @@ public class DevUserDetailActivity extends BaseMapActivity implements GeocodeSea
                 marker1.setIcon(BitmapDescriptorFactory.fromBitmap(BitmapFactory.decodeResource(getResources(), R.drawable.location_marker1)));
                 marker1.setPosition(geopoints);
 
-                tv_alert.setText("<"+devicebean.getGeoradius()+"米（半径）");
+                tv_alert.setText("<" + devicebean.getGeoradius() + "米（半径）");
                 tv_alert.setTextColor(Color.GREEN);
             }
 
@@ -310,8 +322,6 @@ public class DevUserDetailActivity extends BaseMapActivity implements GeocodeSea
         }
 
     }
-
-
 
 //    /**通话1
 //     * 发出通知，跌倒通知
@@ -425,6 +435,37 @@ public class DevUserDetailActivity extends BaseMapActivity implements GeocodeSea
 //
 //    }
 
+
+    /**
+     * 请求网络，显示设备用户信息
+     */
+    private void sendrequest_askDevInfo() {
+        String url = Constant.BASE_WEBSITE + Constant.REQUEST_ASKDEVINFO_DEVICE_URL + "/account/" + UtilsHelper.readLoginUserName(this) + "/cardid/" + cardid;
+        Log.e(TAG, url);
+        OkHttpClient okHttpClient = new OkHttpClient();
+        final Request request = new Request.Builder().url(url).build();
+        Call call = okHttpClient.newCall(request);
+        //开启异步访问网络
+        call.enqueue(new Callback() {
+            @Override
+            public void onFailure(Call call, IOException e) {
+                Log.e(TAG, "MSG_SHOW_FAIL" + "请求失败：" + e.getMessage());
+            }
+
+            @Override
+            public void onResponse(Call call, Response response) throws IOException {
+                Log.e(TAG, "MSG_SHOW_OK" + "请求成功：" + response);
+//                String str = JsonParse.getInstance().getAskDevInfo();
+//                Log.e(TAG, "MSG_SHOW_OK" + str);
+                Message message = new Message();
+                message.what = MSG_SHOW_OK;
+                message.obj = response.body().string();
+                handler.sendMessage(message);
+
+            }
+        });
+
+    }
 
 
     /**

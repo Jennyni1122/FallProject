@@ -129,7 +129,7 @@ public class HomeFragment extends Fragment {    //implements DeviceListAdapter.L
             @Override
             public void onItemClick(View view, int position) {          //点击列表项进入设备定位界面
                 UserUpdateBean.ResultBean resultBean = devicelist.get(position);
-                DevUserDetailActivity.startActivity(getActivity(), resultBean);
+                DevUserDetailActivity.startActivity(getActivity(), resultBean.getCard_id());
             }
 
 

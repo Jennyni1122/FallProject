@@ -109,7 +109,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center_vertical"
-                android:checkedButton = "@+id/man">
+               >
 
                 <RadioButton
                     android:id = "@+id/man"
@@ -229,7 +229,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center_vertical"
-                android:checkedButton = "@+id/close">
+                >
 
                 <RadioButton
                     android:id = "@+id/close"
