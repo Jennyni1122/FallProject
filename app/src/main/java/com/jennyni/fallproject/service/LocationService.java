@@ -117,7 +117,7 @@ public class LocationService extends Service {
                                 @Override
                                 public void run() {
                                     Log.e(TAG, String.format("%s在范围外，请注意!", bean.getName() == null ? "未知用户" : bean.getName()));
-                                    sendNotifycation(String.format("%s在范围外，请注意!", bean.getName() == null ? "未知用户" : bean.getName()),bean.getCard_id());
+                                    sendNotifycation(String.format("%s在范围外，请注意!", bean.getName() == null ? "未知用户" : bean.getName()), bean.getCard_id());
                                 }
                             });
 
@@ -127,7 +127,7 @@ public class LocationService extends Service {
                                 @Override
                                 public void run() {
                                     Log.e(TAG, String.format("%s发生跌倒，请注意!", bean.getName() == null ? "未知用户" : bean.getName()));
-                                    sendNotifycation(String.format("%s发生跌倒，请注意!", bean.getName() == null ? "未知用户" : bean.getName()),bean.getCard_id());
+                                    sendNotifycation(String.format("%s发生跌倒，请注意!", bean.getName() == null ? "未知用户" : bean.getName()), bean.getCard_id());
                                 }
                             });
                         }
@@ -221,12 +221,13 @@ public class LocationService extends Service {
                     .setDefaults(Notification.DEFAULT_SOUND);
             //发送通知请求
 
-            notificationManager.notify(new Random().nextInt(Integer.MAX_VALUE), mBuilder.build());
+            notificationManager.notify(0x13, mBuilder.build());
         } else {
             Intent intent = new Intent(this, NotifyReciver.class);
             intent.putExtra("cardid", cardid);
             PendingIntent pendingIntent = PendingIntent.getBroadcast(this, new Random().nextInt(1000), intent, PendingIntent.FLAG_UPDATE_CURRENT);
-            int notificationId = new Random().nextInt(Integer.MAX_VALUE);
+//            int notificationId = new Random().nextInt(Integer.MAX_VALUE);
+            int notificationId = 0x12;
             Notification.Builder builder = new Notification.Builder(this, "1"); //与channelId对应
             //icon title text必须包含，不然影响桌面图标小红点的展示
             builder.setContentIntent(pendingIntent);
