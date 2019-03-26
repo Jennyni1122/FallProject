@@ -97,6 +97,13 @@ public class DevUserDetailActivity extends BaseMapActivity implements GeocodeSea
         context.startActivity(intent);
     }
 
+    public static void startActivityNotify(Context context, String cardid) {
+        Intent intent = new Intent(context, DevUserDetailActivity.class);
+        intent.putExtra(DEVICEBEAN_KEY, cardid);
+        intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+        context.startActivity(intent);
+    }
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);

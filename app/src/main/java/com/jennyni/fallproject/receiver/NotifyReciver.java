@@ -17,6 +17,7 @@ public class NotifyReciver extends BroadcastReceiver {
     public void onReceive(Context context, Intent intent) {
         Toast.makeText(context, "通知发送成功", Toast.LENGTH_SHORT).show();
         String cardid = intent.getStringExtra("cardid");
-        DevUserDetailActivity.startActivity(context, cardid);
+        DevUserDetailActivity.startActivityNotify(context, cardid);
+
     }
 }
