@@ -188,6 +188,9 @@ public class HomeFragment extends Fragment {    //implements DeviceListAdapter.L
                                 tv_none.setVisibility(View.VISIBLE);
                             }
                         }
+                    } else {
+                        //无数据显示"暂无设备信息~"
+                        tv_none.setVisibility(View.VISIBLE);
                     }
                     break;
                 case MSG_DelDev_OK:         //解绑设备

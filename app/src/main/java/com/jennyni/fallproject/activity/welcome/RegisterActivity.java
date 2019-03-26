@@ -1,7 +1,6 @@
 package com.jennyni.fallproject.activity.welcome;
 
 import android.content.Intent;
-import android.content.SharedPreferences;
 import android.os.Build;
 import android.os.Handler;
 import android.os.Looper;
@@ -9,7 +8,6 @@ import android.os.Message;
 import android.support.annotation.RequiresApi;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
-import android.telephony.SmsManager;
 import android.text.TextUtils;
 import android.text.method.HideReturnsTransformationMethod;
 import android.text.method.PasswordTransformationMethod;
@@ -22,11 +20,11 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.jennyni.fallproject.Bean.UserRegisterBean;
 import com.jennyni.fallproject.R;
 import com.jennyni.fallproject.utils.Constant;
 import com.jennyni.fallproject.utils.CountDownTimerUtils;
 import com.jennyni.fallproject.utils.JsonParse;
-import com.jennyni.fallproject.utils.MD5Utils;
 
 import java.io.IOException;
 import java.util.regex.Matcher;
@@ -195,12 +193,6 @@ public class RegisterActivity extends AppCompatActivity implements View.OnClickL
                     return;
                 }
 
-//                if (isExistUserName(currentUserphone)) {
-//                    Toast.makeText(RegisterActivity.this, "此账户名已经存在",
-//                            Toast.LENGTH_SHORT).show();
-//                    return;
-//                }
-
                 Pattern p = Pattern.compile("1[0-9]{10,10}");
                 Matcher m = p.matcher(currentUserphone);
                 if(m.matches() ){
@@ -229,22 +221,24 @@ public class RegisterActivity extends AppCompatActivity implements View.OnClickL
             switch (msg.what) {
                 case MSG_REGISTER_OK:
                     if (msg.obj != null) {
-                        String result = (String) msg.obj;
-                        Log.e("dispatchMessage",result);
-                        String list = JsonParse.getInstance().getRegisterInfo(result);
-                        if (list != null) {
-                            if (list.length() > 0) {
-                                Toast.makeText(RegisterActivity.this, "注册成功",
-                                        Toast.LENGTH_SHORT).show();
-                                mCountDownTimerUtils.onFinish();
-                                //把用户名和密码保存到SharedPreferences中
-                                saveRegisterInfo(currentUserphone, currentPsw);
-                                //注册成功后把用户名传递到LoginActivity.java中
-                                Intent data = new Intent();
-                                data.putExtra("account", currentUserphone);
-                                setResult(RESULT_OK, data);
-                                RegisterActivity.this.finish();
-                            }
+                        UserRegisterBean.ResultBean bean = (UserRegisterBean.ResultBean) msg.obj;
+                        Log.e("TAG","handleMessage:"+ bean.getAccount());
+                        //判断用户是否已存在
+                        if (isExistUserName(bean)) {
+                            Toast.makeText(RegisterActivity.this, "此账户名已经存在",
+                                    Toast.LENGTH_SHORT).show();
+                            return;
+                        }else {
+                            Toast.makeText(RegisterActivity.this, "注册成功",
+                                    Toast.LENGTH_SHORT).show();
+                            mCountDownTimerUtils.onFinish();
+                            //把用户名和密码保存到SharedPreferences中
+                            //saveRegisterInfo(currentUserphone, currentPsw);
+                            //注册成功后把用户名传递到LoginActivity.java中
+                            Intent data = new Intent();
+                            data.putExtra("account", bean.getAccount());
+                            setResult(RESULT_OK, data);
+                            RegisterActivity.this.finish();
                         }
                     }
                     break;
@@ -258,16 +252,8 @@ public class RegisterActivity extends AppCompatActivity implements View.OnClickL
 
        // http://www.phyth.cn/index/fall/userRegister/account/18860000306/pass/123456
         String url = Constant.BASE_WEBSITE + Constant.REQUEST_REGISTER_USER_URL +"/acount/"+account+"/pass/"+pass;
-        // 1. 获取OkHttpClient对象
         OkHttpClient okHttpClient = new OkHttpClient();
-        //POST请求需构造一个RequestBody()对象存放参数
-        final RequestBody requestBody = new FormBody.Builder().build();
-        // 2. 创建Request对象
-        final Request request = new Request.Builder()
-                .url(url)
-                .post(requestBody)
-                .build();
-
+        final Request request = new Request.Builder().url(url).build();
         Call call = okHttpClient.newCall(request);
         //开启异步线程访问网络
         call.enqueue(new Callback() {
@@ -278,29 +264,43 @@ public class RegisterActivity extends AppCompatActivity implements View.OnClickL
 
             @Override
             public void onResponse(Call call, Response response) throws IOException {
-                String result = response.body().string();
+                Log.e("MSG_RESGISTER_OK", "请求成功：" + response);
+                String str =JsonParse.getInstance().getuserRegisterInfo(response.body().string());
                 Message message = new Message();
                 message.what = MSG_REGISTER_OK;
-                message.obj = result;  // 将服务器返回的结果存放到Message中 message.obj = response;
+                message.obj = str;  // 将服务器返回的结果存放到Message中 message.obj = response;
                 mHandler.sendMessage(message);
             }
         });
 
     }
-    /**这里有错误。。。。。。。。。。。
-     * 保存用户名和密码到SharedPreferences中
-     */
-    private void saveRegisterInfo(String pid, String psw) {
-       // String md5Psw = MD5Utils.md5(psw);           //把密码用MD5加密
-        //loginInfo表示文件名
-        SharedPreferences sp = getSharedPreferences("loginInfo", MODE_PRIVATE);
-        SharedPreferences.Editor editor = sp.edit();//获取编辑器
-        //以用户名为key,密码为value保存到SharedPreferences中
-        editor.putString("account",pid);
-        editor.putString("pass", psw);
-        editor.commit();//提交修改
 
+
+    /**
+     * 从服务器中读取输入的用户名，判断是否有此用户名
+     */
+    private boolean isExistUserName(UserRegisterBean.ResultBean bean) {
+        boolean has_userName = false;
+        if (!TextUtils.isEmpty(bean.getAccount())) {
+            has_userName = true;
+        }
+        return has_userName;
     }
+
+//    /**
+//     * 保存用户名和密码到SharedPreferences中
+//     */
+//    private void saveRegisterInfo(String pid, String psw) {
+//       // String md5Psw = MD5Utils.md5(psw);           //把密码用MD5加密
+//        //loginInfo表示文件名
+//        SharedPreferences sp = getSharedPreferences("loginInfo", MODE_PRIVATE);
+//        SharedPreferences.Editor editor = sp.edit();//获取编辑器
+//        //以用户名为key,密码为value保存到SharedPreferences中
+//        editor.putString("account",pid);
+//        editor.putString("pass", psw);
+//        editor.commit();//提交修改
+//
+//    }
 
     /**
      * 获取验证码

@@ -203,6 +203,7 @@ public class EditDevUserActivity extends AppCompatActivity implements View.OnCli
                                     if (devinfobean.getDsex().equals(sex.getText().toString())) {
                                         iv_head_icon.setImageResource(R.drawable.icon_male);
                                     } else {
+                                        //checkedId = R.id.woman;
                                         iv_head_icon.setImageResource(R.drawable.icon_female);
                                     }
                                 }
@@ -214,11 +215,13 @@ public class EditDevUserActivity extends AppCompatActivity implements View.OnCli
                                 public void onCheckedChanged(RadioGroup group, int checkedId) {
                                     RadioButton set = findViewById(checkedId);
                                     if (devinfobean.getIsgeo() == 1) {
+
                                         set.getText().toString().equals("开启");
                                         ll_addressfence.setVisibility(View.VISIBLE);
                                         tv_geocenter.setText(devinfobean.getGeocenter());
                                         et_georadius.setText(String.valueOf(devinfobean.getGeoradius()));
                                     } else {
+
                                         ll_addressfence.setVisibility(View.INVISIBLE);
                                     }
                                 }

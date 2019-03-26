@@ -144,6 +144,9 @@ public class FindFragment extends Fragment implements WarningAdapter.IonSlidingV
                                 tv_none.setVisibility(View.VISIBLE);
                             }
                         }
+                    } else {
+                        //无数据显示"暂无报警信息~"
+                        tv_none.setVisibility(View.VISIBLE);
                     }
                     break;
                 case MSG_ALLFALL_FAIL:

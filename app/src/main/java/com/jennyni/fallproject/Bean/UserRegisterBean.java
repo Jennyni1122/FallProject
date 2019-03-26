@@ -5,7 +5,7 @@ package com.jennyni.fallproject.Bean;
  * Created by Jenny on 2019/2/22.
  */
 
-public class RegisterBean {
+public class UserRegisterBean {
 
     /**
      * status : 200

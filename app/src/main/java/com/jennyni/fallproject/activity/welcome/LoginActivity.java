@@ -229,7 +229,7 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
                 UserLoginBean.ResultBean resultBean = JsonParse.getInstance().getuserLoginInfo(response.body().string());
                 if (resultBean==null){
                     Log.e("MSG_LOGIN_OK", "请求登录异常！");
-                    Toast.makeText(LoginActivity.this, "请求登录异常！", Toast.LENGTH_SHORT).show();
+           //         Toast.makeText(LoginActivity.this, "请求登录异常！", Toast.LENGTH_SHORT).show();
                     return;
                 }
                 Message message = new Message();
