@@ -43,13 +43,13 @@ import okhttp3.Response;
 /**
  * 注册界面
  */
-public class RegisterActivity extends AppCompatActivity implements View.OnClickListener{
+public class RegisterActivity extends AppCompatActivity implements View.OnClickListener {
 
     private TextView tv_main_title, tv_back;
     private RelativeLayout rl_title_bar;
     private ImageView iv_show_psw;
-    private EditText et_register_userphone,et_register_psw,et_code;
-    private Button btn_register,btn_getSMSCode;
+    private EditText et_register_userphone, et_register_psw, et_code;
+    private Button btn_register, btn_getSMSCode;
     private String currentUserphone, currentPsw;
     private boolean isShowPsw = false;
     private MHandler mHandler;
@@ -94,7 +94,7 @@ public class RegisterActivity extends AppCompatActivity implements View.OnClickL
      */
     private void initSMS() {
         //创建倒计时对象
-        mCountDownTimerUtils = new CountDownTimerUtils(btn_getSMSCode,60000,1000);
+        mCountDownTimerUtils = new CountDownTimerUtils(btn_getSMSCode, 60000, 1000);
 
         //初始化短信模块
         EventHandler eventHandler = new EventHandler() {
@@ -128,9 +128,9 @@ public class RegisterActivity extends AppCompatActivity implements View.OnClickL
                             Log.e("handleMessage: ", data == null ? "" : data.toString());
                             if (result == SMSSDK.RESULT_COMPLETE) {
                                 // 处理验证码验证通过的结果
-                                Toast.makeText(RegisterActivity.this, "验证码验证成功", Toast.LENGTH_SHORT).show();
+//                                Toast.makeText(RegisterActivity.this, "验证码验证成功", Toast.LENGTH_SHORT).show();
 
-                                sendRequest_register(currentUserphone,currentPsw);     //向服务器请求数据
+                                sendRequest_register(currentUserphone, currentPsw);     //向服务器请求数据
 
 
                             } else {
@@ -149,33 +149,31 @@ public class RegisterActivity extends AppCompatActivity implements View.OnClickL
     }
 
 
-
     @Override
     public void onClick(View v) {
-        switch (v.getId()){
+        switch (v.getId()) {
             case R.id.tv_back:          //返回键
                 RegisterActivity.this.finish();
-            break;
+                break;
             case R.id.iv_show_psw:      //展示密码
                 currentPsw = et_register_psw.getText().toString();
-                if (isShowPsw){
+                if (isShowPsw) {
                     iv_show_psw.setImageResource(R.drawable.hide_psw_icon);
                     et_register_psw.setTransformationMethod(PasswordTransformationMethod.getInstance());
                     isShowPsw = false;
-                    if (currentPsw != null){
+                    if (currentPsw != null) {
                         et_register_psw.setSelection(currentPsw.length());
                     }
-                }else{
+                } else {
                     iv_show_psw.setImageResource(R.drawable.show_psw_icon);
                     et_register_psw.setTransformationMethod(HideReturnsTransformationMethod.getInstance());//显示密码
                     isShowPsw = true;
-                    if (currentPsw != null){
+                    if (currentPsw != null) {
                         et_register_psw.setSelection(currentPsw.length());
                     }
                 }
-            break;
+                break;
             case R.id.btn_getSMSCode:   //获取验证码
-
                 getSMSCode();
                 break;
             case R.id.btn_register:     //注册
@@ -184,21 +182,21 @@ public class RegisterActivity extends AppCompatActivity implements View.OnClickL
                 currentUserphone = et_register_userphone.getText().toString().trim();
                 currentPsw = et_register_psw.getText().toString().trim();
 
-                if (TextUtils.isEmpty(currentUserphone)){
+
+                if (TextUtils.isEmpty(currentUserphone)) {
                     Toast.makeText(RegisterActivity.this, "请输入手机号码", Toast.LENGTH_SHORT).show();
                     return;
                 }
-                if (TextUtils.isEmpty(currentPsw)){
-                    Toast.makeText(RegisterActivity.this,"请输入密码",Toast.LENGTH_SHORT).show();
+                if (TextUtils.isEmpty(currentPsw)) {
+                    Toast.makeText(RegisterActivity.this, "请输入密码", Toast.LENGTH_SHORT).show();
                     return;
                 }
 
                 Pattern p = Pattern.compile("1[0-9]{10,10}");
                 Matcher m = p.matcher(currentUserphone);
-                if(m.matches() ){
-
+                if (m.matches()) {
                     compareSMSCode();           //验证验证码
-                }else{
+                } else {
                     btn_register.setClickable(false);
                     Toast.makeText(RegisterActivity.this, "请输入合法的手机号码", Toast.LENGTH_SHORT).show();
                 }
@@ -208,7 +206,6 @@ public class RegisterActivity extends AppCompatActivity implements View.OnClickL
         }
 
     }
-
 
 
     /**
@@ -222,36 +219,46 @@ public class RegisterActivity extends AppCompatActivity implements View.OnClickL
                 case MSG_REGISTER_OK:
                     if (msg.obj != null) {
                         UserRegisterBean.ResultBean bean = (UserRegisterBean.ResultBean) msg.obj;
-                        Log.e("TAG","handleMessage:"+ bean.getAccount());
+                        Log.e("TAG", "handleMessage:" + bean.getAccount());
+                        Toast.makeText(RegisterActivity.this, "注册成功",
+                                Toast.LENGTH_SHORT).show();
+                        mCountDownTimerUtils.onFinish();
+                        //把用户名和密码保存到SharedPreferences中
+                        //saveRegisterInfo(currentUserphone, currentPsw);
+                        //注册成功后把用户名传递到LoginActivity.java中
+                        Intent data = new Intent();
+                        data.putExtra("account", bean.getAccount());
+                        setResult(RESULT_OK, data);
+                        RegisterActivity.this.finish();
                         //判断用户是否已存在
-                        if (isExistUserName(bean)) {
-                            Toast.makeText(RegisterActivity.this, "此账户名已经存在",
-                                    Toast.LENGTH_SHORT).show();
-                            return;
-                        }else {
-                            Toast.makeText(RegisterActivity.this, "注册成功",
-                                    Toast.LENGTH_SHORT).show();
-                            mCountDownTimerUtils.onFinish();
-                            //把用户名和密码保存到SharedPreferences中
-                            //saveRegisterInfo(currentUserphone, currentPsw);
-                            //注册成功后把用户名传递到LoginActivity.java中
-                            Intent data = new Intent();
-                            data.putExtra("account", bean.getAccount());
-                            setResult(RESULT_OK, data);
-                            RegisterActivity.this.finish();
-                        }
+//                        if (isExistUserName(bean)) {
+//                            Toast.makeText(RegisterActivity.this, "此账户名已经存在",
+//                                    Toast.LENGTH_SHORT).show();
+//                            return;
+//                        }else {
+//                            Toast.makeText(RegisterActivity.this, "注册成功",
+//                                    Toast.LENGTH_SHORT).show();
+//                            mCountDownTimerUtils.onFinish();
+//                            //把用户名和密码保存到SharedPreferences中
+//                            //saveRegisterInfo(currentUserphone, currentPsw);
+//                            //注册成功后把用户名传递到LoginActivity.java中
+//                            Intent data = new Intent();
+//                            data.putExtra("account", bean.getAccount());
+//                            setResult(RESULT_OK, data);
+//                            RegisterActivity.this.finish();
+//                        }
                     }
                     break;
             }
         }
     }
+
     /**
      * 请求网络，进行注册
      */
-    private void sendRequest_register(String account,String pass) {
-
-       // http://www.phyth.cn/index/fall/userRegister/account/18860000306/pass/123456
-        String url = Constant.BASE_WEBSITE + Constant.REQUEST_REGISTER_USER_URL +"/acount/"+account+"/pass/"+pass;
+    private void sendRequest_register(String account, String pass) {
+        // http://www.phyth.cn/index/fall/userRegister/account/18860000306/pass/123456
+        String url = Constant.BASE_WEBSITE + Constant.REQUEST_REGISTER_USER_URL + "/account/" + account + "/pass/" + pass;
         OkHttpClient okHttpClient = new OkHttpClient();
         final Request request = new Request.Builder().url(url).build();
         Call call = okHttpClient.newCall(request);
@@ -265,10 +272,10 @@ public class RegisterActivity extends AppCompatActivity implements View.OnClickL
             @Override
             public void onResponse(Call call, Response response) throws IOException {
                 Log.e("MSG_RESGISTER_OK", "请求成功：" + response);
-                String str =JsonParse.getInstance().getuserRegisterInfo(response.body().string());
+                UserRegisterBean.ResultBean resultBean = JsonParse.getInstance().getuserRegisterInfo(response.body().string());
                 Message message = new Message();
                 message.what = MSG_REGISTER_OK;
-                message.obj = str;  // 将服务器返回的结果存放到Message中 message.obj = response;
+                message.obj = resultBean;  // 将服务器返回的结果存放到Message中 message.obj = response;
                 mHandler.sendMessage(message);
             }
         });

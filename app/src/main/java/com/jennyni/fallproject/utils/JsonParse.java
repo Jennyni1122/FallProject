@@ -54,7 +54,7 @@ public class JsonParse {
      * @param response
      * @return
      */
-    public String getuserRegisterInfo(String response) {
+    public UserRegisterBean.ResultBean getuserRegisterInfo(String response) {
         try {
             //使用gson库解析JSON数据
             Gson gson = new Gson();
@@ -64,10 +64,12 @@ public class JsonParse {
             if (200 == bean.getStatus()) {
                 StringBuilder sb = new StringBuilder();
                 sb.append("用户注册:" + "\n" + body.getAccount() + "\n" + body.getName());
-                return sb.toString();
+                Log.e("getuserRegisterInfo: ", sb.toString());
+                return body;
             } else {
                 //状态码不为200时，返回错误信息:账户或者密码错误
-                return "用户注册:" + "\n" + body.getReason();
+                Log.e("用户注册", "用户注册:" + "\n" + body.getReason());
+                return null;
             }
         } catch (Exception e) {
             return null;
