@@ -45,7 +45,6 @@ public class LocationService extends Service {
     private static final int FALL_STATE = 1;
     private static final int FENCE_STATE = 1; //超出范围
 
-
     public static void startService(Context context) {
         context.startService(new Intent(context, LocationService.class));
     }

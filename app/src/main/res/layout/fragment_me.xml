@@ -7,30 +7,27 @@
     android:background="@android:color/white"
     android:orientation="vertical"
     tools:context="com.jennyni.fallproject.fragment.MeFragment">
-    <RelativeLayout
+    <FrameLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content">
 
         <ImageView
+            android:src="@drawable/my_bg"
             android:layout_width="match_parent"
             android:layout_height="220dp"
             android:scaleType="centerCrop"
-            android:src="@drawable/my_bg"
             app:layout_collapseMode="parallax"
             app:layout_collapseParallaxMultiplier="0.6"/>
 
-        <!--layout_anchor属性5.0以上需要设置为CollapsingToolbarLayout，不然头像最后会被覆盖 - -->
         <de.hdodenhof.circleimageview.CircleImageView
-        android:id="@+id/iv_avatar"
-        android:src="@drawable/default_head"
-        android:layout_width="70dp"
-        android:layout_height="70dp"
-        android:layout_centerVertical="true"
-        android:layout_centerHorizontal="true"
-        app:border_color="@android:color/white"
-        app:border_width="1dp"
-        app:layout_anchorGravity="center"
-        app:layout_behavior="com.jennyni.fallproject.view.AvatarBehavior" />
+            android:id="@+id/iv_avatar"
+            android:layout_width="80dp"
+            android:layout_height="80dp"
+            android:layout_gravity="center"
+            android:src="@drawable/default_head"
+            app:border_color="@android:color/white"
+            app:border_width="1dp"/>
+        <!--layout_anchor属性5.0以上需要设置为CollapsingToolbarLayout，不然头像最后会被覆盖 - -->
 
         <!--<TextView-->
             <!--android:id="@+id/tv_account"-->
@@ -39,7 +36,7 @@
             <!--android:layout_centerHorizontal="true"-->
             <!--android:layout_below="@id/iv_avatar"-->
             <!--android:text="account"/>-->
-    </RelativeLayout>
+    </FrameLayout>
 
     <android.support.v4.widget.NestedScrollView
         android:layout_width="match_parent"
@@ -47,6 +44,8 @@
         app:layout_behavior="@string/appbar_scrolling_view_behavior">
 
         <include layout="@layout/layout_content_me"/>
+
+
 
     </android.support.v4.widget.NestedScrollView>
 
