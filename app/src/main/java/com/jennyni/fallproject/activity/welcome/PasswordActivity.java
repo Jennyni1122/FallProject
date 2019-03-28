@@ -45,7 +45,7 @@ public class PasswordActivity extends AppCompatActivity implements View.OnClickL
     public static final String TAG = "PasswordActivity";
     private RelativeLayout rl_title_bar;
     private TextView tv_main_title,tv_back;
-    private EditText ed_phone,ed_code,ed_new_psw,et_new_psw,et_psw;
+    private EditText ed_phone,ed_code,et_new_psw,et_psw;
     private Button btn_getSMSCode,btn_psw;
     private ImageView iv_show_psw1,iv_show_psw2;
     private boolean isShowPsw=false;
@@ -143,6 +143,7 @@ public class PasswordActivity extends AppCompatActivity implements View.OnClickL
     private void initView() {
         //标题栏
         tv_main_title = (TextView) findViewById(R.id.tv_main_title);
+        tv_main_title.setText("忘记密码");
         tv_back = (TextView) findViewById(R.id.tv_back);
         tv_back.setVisibility(View.VISIBLE);
         rl_title_bar = (RelativeLayout) findViewById(R.id.title_bar);
@@ -155,13 +156,19 @@ public class PasswordActivity extends AppCompatActivity implements View.OnClickL
         iv_show_psw2 = findViewById(R.id.iv_show_psw2);
         btn_getSMSCode = findViewById(R.id.btn_getSMSCode);
         btn_psw = findViewById(R.id.btn_psw);
+
+        tv_back.setOnClickListener(this);
+        iv_show_psw1.setOnClickListener(this);
+        iv_show_psw2.setOnClickListener(this);
+        btn_psw.setOnClickListener(this);
+        btn_getSMSCode.setOnClickListener(this);
     }
 
     @Override
     public void onClick(View v) {
         switch (v.getId()){
             case R.id.tv_back:          //返回键
-                finish();
+                PasswordActivity.this.finish();
                 break;
             case R.id.iv_show_psw1:      //展示密码
                 currentPsw = et_new_psw.getText().toString();

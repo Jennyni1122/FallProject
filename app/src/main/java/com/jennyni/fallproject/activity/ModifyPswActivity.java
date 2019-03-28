@@ -150,6 +150,14 @@ public class ModifyPswActivity extends AppCompatActivity{
                         Log.e("TAG","handleMessage:"+ bean.getPhone_password());
                         modifyPsw(bean);
 
+                        Toast.makeText(ModifyPswActivity.this, "新密码设置成功",
+                                Toast.LENGTH_SHORT).show();
+
+                        Intent intent = new Intent(ModifyPswActivity.this,
+                                LoginActivity.class);
+                        startActivity(intent);
+         //            SettingActivity.instance.finish(); //关闭设置界面
+         //            ModifyPswActivity.this.finish();   //关闭本界面
                     }
                     break;
             }
@@ -205,14 +213,7 @@ public class ModifyPswActivity extends AppCompatActivity{
             editor.putString("pass", newPsw);             //保存新密码
             editor.commit();                                    //提交修改
 
-            Toast.makeText(ModifyPswActivity.this, "新密码设置成功",
-                    Toast.LENGTH_SHORT).show();
 
-            Intent intent = new Intent(ModifyPswActivity.this,
-                    LoginActivity.class);
-            startActivity(intent);
-//            SettingActivity.instance.finish(); //关闭设置界面
-//            ModifyPswActivity.this.finish();   //关闭本界面
         }else {
             Toast.makeText(ModifyPswActivity.this, "修改密码发生异常~", Toast.LENGTH_SHORT);
         }

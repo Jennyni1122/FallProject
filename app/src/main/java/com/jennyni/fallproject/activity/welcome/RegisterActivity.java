@@ -44,7 +44,6 @@ import okhttp3.Response;
  * 注册界面
  */
 public class RegisterActivity extends AppCompatActivity implements View.OnClickListener {
-
     private TextView tv_main_title, tv_back;
     private RelativeLayout rl_title_bar;
     private ImageView iv_show_psw;
@@ -83,6 +82,7 @@ public class RegisterActivity extends AppCompatActivity implements View.OnClickL
         et_register_userphone = findViewById(R.id.et_register_userphone);
         et_register_psw = findViewById(R.id.et_register_psw);
         iv_show_psw = findViewById(R.id.iv_show_psw);
+
         tv_back.setOnClickListener(this);
         iv_show_psw.setOnClickListener(this);
         btn_register.setOnClickListener(this);
