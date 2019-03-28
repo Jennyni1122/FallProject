@@ -447,7 +447,8 @@ public class DevUserDetailActivity extends BaseMapActivity implements GeocodeSea
      * 请求网络，显示设备用户信息
      */
     private void sendrequest_askDevInfo() {
-        String url = Constant.BASE_WEBSITE + Constant.REQUEST_ASKDEVINFO_DEVICE_URL + "/account/" + UtilsHelper.readLoginUserName(this) + "/cardid/" + cardid;
+        String url = Constant.BASE_WEBSITE + Constant.REQUEST_ASKDEVINFO_DEVICE_URL
+                + "?account=" + UtilsHelper.readLoginUserName(this) + "&cardid=" + cardid;
         Log.e(TAG, url);
         OkHttpClient okHttpClient = new OkHttpClient();
         final Request request = new Request.Builder().url(url).build();
@@ -482,7 +483,8 @@ public class DevUserDetailActivity extends BaseMapActivity implements GeocodeSea
     private void sendrequest_fallData() {
         //10.请求设备最新数据(跌倒报警与地理围栏报警)
         //String url10 = "http://www.phyth.cn/index/fall/askfallinfo/account/" + account + "/cardid/" + cardid;
-        String url = Constant.BASE_WEBSITE + Constant.REQUEST_ASKFALLINFO_DEVICE_URL + "/account/" + account + "/cardid/" + cardid;
+        String url = Constant.BASE_WEBSITE + Constant.REQUEST_ASKFALLINFO_DEVICE_URL
+                + "?account=" + account + "&cardid=" + cardid;
         OkHttpClient okHttpClient = new OkHttpClient();
         final Request request = new Request.Builder().url(url).build();
         Call call = okHttpClient.newCall(request);

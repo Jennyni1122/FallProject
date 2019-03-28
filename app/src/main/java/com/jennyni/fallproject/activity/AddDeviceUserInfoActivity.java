@@ -261,15 +261,15 @@ public class AddDeviceUserInfoActivity extends AppCompatActivity implements View
          */
 
         String url = Constant.BASE_WEBSITE + Constant.REQUEST_SETUP_DEVICE_URL +
-                "/account/" + spUserPhone +
-                "/cardid/" + currentDevCode +
-                "/dname/" + URLEncoder.encode(dname) +
-                "/sex/" + URLEncoder.encode(male.isChecked() ? "男" : "女") +
-                "/idcard/" + idcard +
-                "/guardian/" + spUserPhone +
-                "/isgeo/" + (close.isChecked() ? "0" : "1") +
-                "/geocenter/" + URLEncoder.encode(geocenter) +
-                "/georadius/" + georadius;
+                "?account=" + spUserPhone +
+                "&cardid=" + currentDevCode +
+                "&dname=" + URLEncoder.encode(dname) +
+                "&sex=" + URLEncoder.encode(male.isChecked() ? "男" : "女") +
+                "&idcard=" + idcard +
+                "&guardian=" + spUserPhone +
+                "&isgeo=" + (close.isChecked() ? "0" : "1") +
+                "&geocenter=" + URLEncoder.encode(geocenter) +
+                "&georadius=" + georadius;
         Log.e(TAG, url);
         OkHttpClient okHttpClient = new OkHttpClient();
         final Request request = new Request.Builder().url(url).build();
@@ -301,7 +301,8 @@ public class AddDeviceUserInfoActivity extends AppCompatActivity implements View
     private void sendrequest_recode() {
         currentDevCode = et_dev_cardid.getText().toString();
         currentDevPsw = et_dev_psw.getText().toString();
-        String url = Constant.BASE_WEBSITE + Constant.REQUEST_ADD_DEVICE_URL + "/account/" + spUserPhone + "/cardid/" + currentDevCode + "/cardpass/" + currentDevPsw;
+        String url = Constant.BASE_WEBSITE + Constant.REQUEST_ADD_DEVICE_URL
+                + "?account=" + spUserPhone + "&cardid=" + currentDevCode + "&cardpass=" + currentDevPsw;
         OkHttpClient okHttpClient = new OkHttpClient();
         final Request request = new Request.Builder().url(url).build();
         Call call = okHttpClient.newCall(request);

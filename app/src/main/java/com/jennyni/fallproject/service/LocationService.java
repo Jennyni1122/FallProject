@@ -87,8 +87,7 @@ public class LocationService extends Service {
 
         String account = UtilsHelper.readLoginUserName(this);      //登录的用户名
 
-        String url = Constant.BASE_WEBSITE + Constant.REQUEST_ASKALLFALLINFO_DEVICE_URL +
-                "/account/" + account;
+        String url = Constant.BASE_WEBSITE + Constant.REQUEST_ASKALLFALLINFO_DEVICE_URL + "?account=" + account;
         OkHttpClient okHttpClient = new OkHttpClient();
         final Request request = new Request.Builder().url(url).build();
         Call call = okHttpClient.newCall(request);

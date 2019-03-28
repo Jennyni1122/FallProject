@@ -164,7 +164,8 @@ public class ModifyPswActivity extends AppCompatActivity{
         newPsw = et_new_psw.getText().toString().trim();
         //3.修改密码
         //String url3 = "http://www.phyth.cn/index/fall/userChangePass/account/"+ account +"/pass/"+cardid+"/newpass/"+cardpass;
-        String url = Constant.BASE_WEBSITE+Constant.REQUEST_PSW_USER_URL+"/account/"+ spuserName +"/pass/"+originalPsw+"/newpass/"+newPsw;
+        String url = Constant.BASE_WEBSITE+Constant.REQUEST_PSW_USER_URL
+                +"?account="+ spuserName +"&pass="+originalPsw+"&newpass="+newPsw;
         OkHttpClient okHttpClient = new OkHttpClient();
         final Request request = new Request.Builder().url(url).build();
         Call call = okHttpClient.newCall(request);

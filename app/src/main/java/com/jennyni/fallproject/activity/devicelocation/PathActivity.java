@@ -215,7 +215,7 @@ public class PathActivity extends BaseMapActivity {
      */
     private void sendrequest_askTodayTrace() {
          //11.今日运动轨迹
-        String url = Constant.BASE_WEBSITE+Constant.REQUEST_TODAY_TRACE_URL +"/account/" +account+"/cardid/"+cardid;
+        String url = Constant.BASE_WEBSITE+Constant.REQUEST_TODAY_TRACE_URL +"?account=" +account+"&cardid="+cardid;
         OkHttpClient okHttpClient = new OkHttpClient();
         final Request request = new Request.Builder().url(url).build();
         Call call = okHttpClient.newCall(request);
@@ -251,7 +251,7 @@ public class PathActivity extends BaseMapActivity {
         //12.请求查询历史设备运动轨迹： (d1>d2)
         //String url12 = "http://www.phyth.cn/index/fall/askTrackBetween/account/"+account+"/cardid/"+cardid+"/d1/"+ cardpass+"/d2/0";
         String url = Constant.BASE_WEBSITE + Constant.REQUEST_ASKTRACKBETWEEN_DEVICE_URL +
-                "/account/" + account + "/cardid/" + cardid + "/d1/" + startTime + "/d2/" + endTime;
+                "?account=" + account + "&cardid=" + cardid + "&d1=" + startTime + "&d2=" + endTime;
         OkHttpClient okHttpClient = new OkHttpClient();
         final Request request = new Request.Builder().url(url).build();
         Call call = okHttpClient.newCall(request);

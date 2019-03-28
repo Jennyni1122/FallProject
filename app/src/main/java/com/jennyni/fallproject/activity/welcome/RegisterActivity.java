@@ -29,9 +29,9 @@ import com.jennyni.fallproject.utils.JsonParse;
 import java.io.IOException;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-
 import cn.smssdk.EventHandler;
 import cn.smssdk.SMSSDK;
+
 import okhttp3.Call;
 import okhttp3.Callback;
 import okhttp3.FormBody;
@@ -258,7 +258,7 @@ public class RegisterActivity extends AppCompatActivity implements View.OnClickL
      */
     private void sendRequest_register(String account, String pass) {
         // http://www.phyth.cn/index/fall/userRegister/account/18860000306/pass/123456
-        String url = Constant.BASE_WEBSITE + Constant.REQUEST_REGISTER_USER_URL + "/account/" + account + "/pass/" + pass;
+        String url = Constant.BASE_WEBSITE + Constant.REQUEST_REGISTER_USER_URL + "?account=" + account + "&pass=" + pass;
         OkHttpClient okHttpClient = new OkHttpClient();
         final Request request = new Request.Builder().url(url).build();
         Call call = okHttpClient.newCall(request);

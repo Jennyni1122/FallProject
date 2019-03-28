@@ -161,7 +161,7 @@ public class FindFragment extends Fragment implements WarningAdapter.IonSlidingV
     private void sendrequest_allfallData() {
 
         String account = UtilsHelper.readLoginUserName(getActivity());
-        String url = Constant.BASE_WEBSITE + Constant.REQUEST_ASKALLFALLINFO_DEVICE_URL + "/account/" + account;
+        String url = Constant.BASE_WEBSITE + Constant.REQUEST_ASKALLFALLINFO_DEVICE_URL + "?account=" + account;
         OkHttpClient okHttpClient = new OkHttpClient();
         final Request request = new Request.Builder().url(url).build();
         Call call = okHttpClient.newCall(request);

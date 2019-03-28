@@ -25,13 +25,12 @@ import com.jennyni.fallproject.receiver.UpdateUserInfoReceiver;
 import com.jennyni.fallproject.utils.UtilsHelper;
 import com.jennyni.fallproject.activity.welcome.LoginActivity;
 
-import de.hdodenhof.circleimageview.CircleImageView;
+
 
 
 public class MeFragment extends Fragment implements View.OnClickListener{
 
     private RelativeLayout rl_userinfo,rl_collection,rl_setting;
-    private CircleImageView iv_avatar;
     private View view;
     private UpdateUserInfoReceiver updateUserInfoReceiver;  //暂不用
     private IntentFilter filter;
@@ -50,6 +49,7 @@ public class MeFragment extends Fragment implements View.OnClickListener{
         return view;
     }
 
+
     /**
      * 2.初始化界面控件
      * @param view
@@ -58,14 +58,11 @@ public class MeFragment extends Fragment implements View.OnClickListener{
         rl_userinfo = view.findViewById(R.id.rl_userinfo);
         rl_collection = view.findViewById(R.id.rl_collection);
         rl_setting = view.findViewById(R.id.rl_setting);
-
-        iv_avatar = view.findViewById(R.id.iv_avatar);
-
         isLogin = UtilsHelper.readLoginStatus(getActivity());
 
         setLoginParams(isLogin);    //设置“我”界面的登录成功状态
         setListener();              //单击监听事件
-        receiver();                 //接收广播
+       // receiver();                 //接收广播
 
     }
 
@@ -86,7 +83,7 @@ public class MeFragment extends Fragment implements View.OnClickListener{
                         Bitmap bt = BitmapFactory.decodeFile(head); //加载手机系统中的图片
                         if (bt != null){
                             Drawable drawable = new BitmapDrawable(bt);
-                            iv_avatar.setImageDrawable(drawable);
+                           // iv_avatar.setImageDrawable(drawable);
                         }
                     }
                 }
@@ -100,7 +97,7 @@ public class MeFragment extends Fragment implements View.OnClickListener{
         rl_userinfo.setOnClickListener(this);    //个人资料按钮
         rl_collection.setOnClickListener(this); //使用帮助按钮
         rl_setting.setOnClickListener(this);    //设置按钮
-        iv_avatar.setOnClickListener(this);     //点击头像按钮
+
 
     }
 
@@ -149,7 +146,7 @@ public class MeFragment extends Fragment implements View.OnClickListener{
 
         if (isLogin){
             String userName = UtilsHelper.readLoginUserName(getActivity());
-            iv_avatar.setImageResource(R.drawable.default_head);
+            //iv_avatar.setImageResource(R.drawable.default_head);
         }
     }
 

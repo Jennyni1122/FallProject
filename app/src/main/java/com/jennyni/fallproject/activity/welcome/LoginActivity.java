@@ -206,8 +206,8 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
 
        //2.登录
        // String url2 = "http://www.phyth.cn/index/fall/userlogin/account/"+account+"/pass/"+cardid;
-        String url = Constant.BASE_WEBSITE + Constant.REQUEST_LOGIN_USER_URL+"/account/"+account+"/pass/"+pass;
-        Log.e(TAG, url );
+        String url = Constant.BASE_WEBSITE + Constant.REQUEST_LOGIN_USER_URL+"?account="+account+"&pass="+pass;
+        Log.e(TAG, url);
         // 1. 获取OkHttpClient对象
         OkHttpClient okHttpClient = new OkHttpClient();
         // 2. 创建Request对象

@@ -258,7 +258,8 @@ public class EditDevUserActivity extends AppCompatActivity implements View.OnCli
     private void sendrequest_askDevInfo() {
 
         cardid = getIntent().getStringExtra(CARDID_KEY);
-        String url = Constant.BASE_WEBSITE + Constant.REQUEST_ASKDEVINFO_DEVICE_URL + "/account/" + spUserPhone + "/cardid/" + cardid;
+        String url = Constant.BASE_WEBSITE + Constant.REQUEST_ASKDEVINFO_DEVICE_URL
+                + "?account=" + spUserPhone + "&cardid=" + cardid;
         Log.e(TAG, url);
         OkHttpClient okHttpClient = new OkHttpClient();
         final Request request = new Request.Builder().url(url).build();
@@ -315,15 +316,15 @@ public class EditDevUserActivity extends AppCompatActivity implements View.OnCli
          */
 
         String url = Constant.BASE_WEBSITE + Constant.REQUEST_SETUP_DEVICE_URL +
-                "/account/" + spUserPhone +
-                "/cardid/" + currentDevCode +
-                "/dname/" + URLEncoder.encode(dname) +
-                "/sex/" + URLEncoder.encode(male.isChecked() ? "男" : "女") +
-                "/idcard/" + idcard +
-                "/guardian/" + spUserPhone +
-                "/isgeo/" + (close.isChecked() ? "0" : "1") +
-                "/geocenter/" + URLEncoder.encode(geocenter) +
-                "/georadius/" + georadius;
+                "?account=" + spUserPhone +
+                "&cardid=" + currentDevCode +
+                "&dname=" + URLEncoder.encode(dname) +
+                "&sex=" + URLEncoder.encode(male.isChecked() ? "男" : "女") +
+                "&idcard=" + idcard +
+                "&guardian=" + spUserPhone +
+                "&isgeo=" + (close.isChecked() ? "0" : "1") +
+                "&geocenter=" + URLEncoder.encode(geocenter) +
+                "&georadius=" + georadius;
         Log.e(TAG, url);
         OkHttpClient okHttpClient = new OkHttpClient();
         final Request request = new Request.Builder().url(url).build();

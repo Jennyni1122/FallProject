@@ -212,7 +212,7 @@ public class HomeFragment extends Fragment {    //implements DeviceListAdapter.L
      */
     private void sendrequest_initData() {
         String account = UtilsHelper.readLoginUserName(getActivity());
-        String url = Constant.BASE_WEBSITE + Constant.REQUEST_UPDATE_USER_URL + "/account/" + account;
+        String url = Constant.BASE_WEBSITE + Constant.REQUEST_UPDATE_USER_URL + "?account=" + account;
         Log.e(TAG, "initData: " + url);
         OkHttpClient okHttpClient = new OkHttpClient();
         final Request request = new Request.Builder().url(url).build();
@@ -242,7 +242,8 @@ public class HomeFragment extends Fragment {    //implements DeviceListAdapter.L
     private void sendrequest_delDevice(String cardid) {
         //String url6 = "http://www.phyth.cn/index/fall/delDevice/account/" + account + "/cardid/" + cardid;
         String account = UtilsHelper.readLoginUserName(getActivity());
-        String url = Constant.BASE_WEBSITE + Constant.REQUEST_DEL_DEVICE_URL + "/account/" + account + "/cardid/" + cardid;
+        String url = Constant.BASE_WEBSITE + Constant.REQUEST_DEL_DEVICE_URL
+                + "?account=" + account + "&cardid=" + cardid;
         OkHttpClient okHttpClient = new OkHttpClient();
         final Request request = new Request.Builder().url(url).build();
         Call call = okHttpClient.newCall(request);

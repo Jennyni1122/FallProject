@@ -316,7 +316,8 @@ public class PasswordActivity extends AppCompatActivity implements View.OnClickL
     private void sendRequest_psw(String currentPhone, String currentPsw) {
         //3.修改密码
         //String url3 = "http://www.phyth.cn/index/fall/userChangePass/account/"+ account +"/pass/"+cardid+"/newpass/"+cardpass;
-        String url = Constant.BASE_WEBSITE+Constant.REQUEST_PSW_USER_URL+"/account/"+ currentPhone +"/pass/"+currentPsw+"/newpass/"+currentRePsw;
+        String url = Constant.BASE_WEBSITE+Constant.REQUEST_PSW_USER_URL
+                +"?account="+ currentPhone +"&pass="+currentPsw+"&newpass="+currentRePsw;
         OkHttpClient okHttpClient = new OkHttpClient();
         final Request request = new Request.Builder().url(url).build();
         Call call = okHttpClient.newCall(request);
