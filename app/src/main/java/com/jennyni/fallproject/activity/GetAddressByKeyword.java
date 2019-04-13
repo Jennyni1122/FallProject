@@ -38,7 +38,7 @@ import static com.jennyni.fallproject.activity.EditDevUserActivity.REQUEST_CODE1
  */
 
 public class GetAddressByKeyword extends AppCompatActivity implements GeocodeSearch.OnGeocodeSearchListener, GetAddressAdapter.ItemClickListener {
-    private static final String GEOCENTER = "geocenter";
+
     private RelativeLayout rl_title_bar;
     private TextView tv_main_title, tv_back;
     private GeocodeSearch geocoderSearch;
@@ -47,7 +47,7 @@ public class GetAddressByKeyword extends AppCompatActivity implements GeocodeSea
     private RecyclerView recyclerView;
     private GetAddressAdapter adapter;
     private GeocodeAddress geocodeAddress;
-    private String geocenter;
+
 
 
     @Override
@@ -75,8 +75,8 @@ public class GetAddressByKeyword extends AppCompatActivity implements GeocodeSea
             public void onClick(View v) {
                 Intent data = new Intent();
                 data.putExtra("geocenter", geocodeAddress.getLatLonPoint());
-                setResult(REQUEST_CODE, data);
-                setResult(REQUEST_CODE1,data);
+                setResult(REQUEST_CODE, data);  //传给添加设备
+                setResult(REQUEST_CODE1,data);  //传给编辑设备
                 GetAddressByKeyword.this.finish();
             }
         });

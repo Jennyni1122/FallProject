@@ -17,6 +17,8 @@ public class Constant {
     public static final String REQUEST_LOGIN_USER_URL = "/userlogin/";
     //改密接口：
     public static final String REQUEST_PSW_USER_URL = "/userChangePass/";
+    //忘记密码接口：
+    public static final String REQUEST_FORGET_PSW_USER_URL = "/userLostKey";
 
     //跌倒设备部分：
     public static final String REQUEST_UPDATE_USER_URL = "/userUpdate/";

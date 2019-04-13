@@ -170,7 +170,7 @@ public class EditDevUserActivity extends AppCompatActivity implements View.OnCli
                 break;
             case R.id.tv_geocenter:     //围栏设置
                 Intent intent = new Intent(EditDevUserActivity.this, GetAddressByKeyword.class);
-                startActivityForResult(intent, REQUEST_CODE);
+                startActivityForResult(intent, REQUEST_CODE1);
                 break;
 
         }
@@ -218,22 +218,6 @@ public class EditDevUserActivity extends AppCompatActivity implements View.OnCli
                             close.setChecked(ISGEO_OPEN != devinfobean.getIsgeo());
                             currentDevCode=cardid;
 
-//                            set_event.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {
-//                                @Override
-//                                public void onCheckedChanged(RadioGroup group, int checkedId) {
-//                                    RadioButton set = findViewById(checkedId);
-//                                    if (devinfobean.getIsgeo() == 1) {
-//
-//                                        set.getText().toString().equals("开启");
-//                                        ll_addressfence.setVisibility(View.VISIBLE);
-//                                        tv_geocenter.setText(devinfobean.getGeocenter());
-//                                        et_georadius.setText(String.valueOf(devinfobean.getGeoradius()));
-//                                    } else {
-//
-//                                        ll_addressfence.setVisibility(View.INVISIBLE);
-//                                    }
-//                                }
-//                            });
                         }
 
                     }
@@ -363,7 +347,7 @@ public class EditDevUserActivity extends AppCompatActivity implements View.OnCli
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
-        if (RESULT_OK == resultCode) {
+
             if (requestCode == REQUEST_CODE1) {
                 LatLonPoint geocenter = data.getParcelableExtra("geocenter");
                 if (geocenter != null) {
@@ -371,7 +355,6 @@ public class EditDevUserActivity extends AppCompatActivity implements View.OnCli
                 }
             }
         }
-    }
 
 
 }

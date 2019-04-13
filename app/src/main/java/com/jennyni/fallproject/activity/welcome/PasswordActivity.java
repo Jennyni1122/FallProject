@@ -42,7 +42,7 @@ import okhttp3.Request;
 import okhttp3.Response;
 
 /**
- * 无接口，暂不用
+ * 忘记密码
  */
 public class PasswordActivity extends AppCompatActivity implements View.OnClickListener{
     public static final String TAG = "PasswordActivity";
@@ -52,9 +52,8 @@ public class PasswordActivity extends AppCompatActivity implements View.OnClickL
     private Button btn_getSMSCode,btn_psw;
     private ImageView iv_show_psw1,iv_show_psw2;
     private boolean isShowPsw=false;
-    public static final int MSG_Pass_OK = 1;
-    //from为security时是从设置密保界面跳转过来的，否则就是从登录界面跳转过来的
-    private String from;
+    public static final int MSG_PASS_OK = 1;
+    private MHandler mHandler;
     private String currentPhone,currentCode,currentPsw,currentRePsw;
     private CountDownTimerUtils mCountDownTimerUtils;        //设置倒计时和变量
 
@@ -62,16 +61,42 @@ public class PasswordActivity extends AppCompatActivity implements View.OnClickL
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_password);
-
-        //获取从登录界面和设置界面传递过来的数据
-        from = getIntent().getStringExtra("from");
+        mHandler = new MHandler();
         initView();         //初始化界面
         initSMS();          //初始化短信模块
         //获取输入在相应控件中的字符串
-        currentPhone = ed_phone.getText().toString().trim();
-        currentCode = ed_code.getText().toString().trim();
-        currentPsw = et_new_psw.getText().toString().trim();
-        currentRePsw = et_psw.getText().toString().trim();
+//        currentPhone = ed_phone.getText().toString().trim();
+//        currentCode = ed_code.getText().toString().trim();
+//        currentPsw = et_new_psw.getText().toString().trim();
+//        currentRePsw = et_psw.getText().toString().trim();
+    }
+
+
+    /**
+     * 初始化界面，获取界面控件及处理相应控件的点击事件
+     */
+    private void initView() {
+        //标题栏
+        tv_main_title = (TextView) findViewById(R.id.tv_main_title);
+        tv_main_title.setText("忘记密码");
+        tv_back = (TextView) findViewById(R.id.tv_back);
+        tv_back.setVisibility(View.VISIBLE);
+        rl_title_bar = (RelativeLayout) findViewById(R.id.title_bar);
+        rl_title_bar.setBackgroundColor(getResources().getColor(R.color.rdTextColorPress));
+        ed_phone = findViewById(R.id.ed_phone);
+        ed_code = findViewById(R.id.ed_code);
+        et_new_psw = findViewById(R.id.et_new_psw);
+        et_psw = findViewById(R.id.et_psw);
+        iv_show_psw1 = findViewById(R.id.iv_show_psw1);
+        iv_show_psw2 = findViewById(R.id.iv_show_psw2);
+        btn_getSMSCode = findViewById(R.id.btn_getSMSCode);
+        btn_psw = findViewById(R.id.btn_psw);
+
+        tv_back.setOnClickListener(this);
+        iv_show_psw1.setOnClickListener(this);
+        iv_show_psw2.setOnClickListener(this);
+        btn_psw.setOnClickListener(this);
+        btn_getSMSCode.setOnClickListener(this);
     }
 
     /**
@@ -136,32 +161,6 @@ public class PasswordActivity extends AppCompatActivity implements View.OnClickL
 
 
 
-    /**
-     * 初始化界面，获取界面控件及处理相应控件的点击事件
-     */
-    private void initView() {
-        //标题栏
-        tv_main_title = (TextView) findViewById(R.id.tv_main_title);
-        tv_main_title.setText("忘记密码");
-        tv_back = (TextView) findViewById(R.id.tv_back);
-        tv_back.setVisibility(View.VISIBLE);
-        rl_title_bar = (RelativeLayout) findViewById(R.id.title_bar);
-        rl_title_bar.setBackgroundColor(getResources().getColor(R.color.rdTextColorPress));
-        ed_phone = findViewById(R.id.ed_phone);
-        ed_code = findViewById(R.id.ed_code);
-        et_new_psw = findViewById(R.id.et_new_psw);
-        et_psw = findViewById(R.id.et_psw);
-        iv_show_psw1 = findViewById(R.id.iv_show_psw1);
-        iv_show_psw2 = findViewById(R.id.iv_show_psw2);
-        btn_getSMSCode = findViewById(R.id.btn_getSMSCode);
-        btn_psw = findViewById(R.id.btn_psw);
-
-        tv_back.setOnClickListener(this);
-        iv_show_psw1.setOnClickListener(this);
-        iv_show_psw2.setOnClickListener(this);
-        btn_psw.setOnClickListener(this);
-        btn_getSMSCode.setOnClickListener(this);
-    }
 
     @Override
     public void onClick(View v) {
@@ -211,12 +210,12 @@ public class PasswordActivity extends AppCompatActivity implements View.OnClickL
                 break;
             case R.id.btn_psw:     //改密码
 
+                currentPhone = ed_phone.getText().toString().trim();
+                currentPsw = et_new_psw.getText().toString().trim();
+                currentRePsw = et_psw.getText().toString().trim();
+
                 if (TextUtils.isEmpty(currentPhone)){
                     Toast.makeText(PasswordActivity.this, "请输入手机号码", Toast.LENGTH_SHORT).show();
-                    return;
-                }
-                if (TextUtils.isEmpty(currentCode)){
-                    Toast.makeText(PasswordActivity.this,"请输入验证码",Toast.LENGTH_SHORT).show();
                     return;
                 }
                 if (TextUtils.isEmpty(currentPsw) || TextUtils.isEmpty(currentRePsw)) {
@@ -252,7 +251,7 @@ public class PasswordActivity extends AppCompatActivity implements View.OnClickL
      */
     private void getSMSCode() {
 
-        if (currentPhone.length() == 0 && currentPhone.length() != 11) {
+        if (ed_phone.getText().toString().length() == 0 && ed_phone.getText().toString().length() != 11) {
             Toast.makeText(this, "请输入手机号", Toast.LENGTH_SHORT).show();
             return;
         }else {
@@ -265,7 +264,7 @@ public class PasswordActivity extends AppCompatActivity implements View.OnClickL
      * 验证验证码
      */
     private void compareSMSCode() {
-        if (currentPhone.length() == 0 && currentPhone.length() != 11) {
+        if (ed_phone.getText().toString().length() == 0 && ed_phone.getText().toString().length() != 11) {
             Toast.makeText(this, "请输入合法的手机号码", Toast.LENGTH_SHORT).show();
             return;
         }
@@ -277,12 +276,12 @@ public class PasswordActivity extends AppCompatActivity implements View.OnClickL
      * 事件捕获
      */
     @SuppressLint("HandlerLeak")
-    private Handler handler = new Handler() {
+    class MHandler extends Handler {
         @Override
         public void handleMessage(Message msg) {
             super.handleMessage(msg);
             switch (msg.what) {
-                case MSG_Pass_OK:
+                case MSG_PASS_OK:
                     if (msg.obj != null) {
                         //获取数据
                         UserChangePassBean.ResultBean  bean = (UserChangePassBean.ResultBean ) msg.obj;
@@ -318,10 +317,11 @@ public class PasswordActivity extends AppCompatActivity implements View.OnClickL
      * @param currentPsw
      */
     private void sendRequest_psw(String currentPhone, String currentPsw) {
-        //3.修改密码
-        //String url3 = "http://www.phyth.cn/index/fall/userChangePass/account/"+ account +"/pass/"+cardid+"/newpass/"+cardpass;
-        String url = Constant.BASE_WEBSITE+Constant.REQUEST_PSW_USER_URL
-                +"?account="+ currentPhone +"&pass="+currentPsw+"&newpass="+currentRePsw;
+        //忘记密码
+        //http://www.phyth.cn/index/fall/userLostKey?account=18860000316&pass=123456
+
+        String url = Constant.BASE_WEBSITE+Constant.REQUEST_FORGET_PSW_USER_URL
+                +"?account="+ currentPhone +"&pass="+currentPsw;
         OkHttpClient okHttpClient = new OkHttpClient();
         final Request request = new Request.Builder().url(url).build();
         Call call = okHttpClient.newCall(request);
@@ -343,9 +343,9 @@ public class PasswordActivity extends AppCompatActivity implements View.OnClickL
                     return;
                 }
                 Message message = new Message();
-                message.what = MSG_Pass_OK;
+                message.what = MSG_PASS_OK;
                 message.obj = resultBean;
-                handler.sendMessage(message);
+                mHandler.sendMessage(message);
             }
         });
 

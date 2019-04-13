@@ -213,7 +213,6 @@ public class AddDeviceUserInfoActivity extends AppCompatActivity implements View
             case R.id.tv_geocenter:       //围栏地址选择
                 Intent intent = new Intent(AddDeviceUserInfoActivity.this, GetAddressByKeyword.class);
                 startActivityForResult(intent, REQUEST_CODE);
-    //            GetAddressByKeyword.startAddActivity(AddDeviceUserInfoActivity.this, LatLng);
                 break;
             case R.id.btn_sure_code:    //验证绑定关系按钮
 
@@ -372,14 +371,14 @@ public class AddDeviceUserInfoActivity extends AppCompatActivity implements View
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
-        if (RESULT_OK == resultCode) {
+        //if (RESULT_OK == resultCode) {
             if (requestCode == REQUEST_CODE) {
                 LatLonPoint geocenter = data.getParcelableExtra("geocenter");
                 if (geocenter != null) {
                     tv_geocenter.setText(geocenter.getLongitude() + "," + geocenter.getLatitude());    //获取经纬度
                 }
             }
-        }
+      //  }
     }
 
 
