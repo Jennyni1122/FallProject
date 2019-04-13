@@ -38,7 +38,7 @@
                 android:drawableLeft="@drawable/user_name_icon"
                 android:drawablePadding="10dp"
                 android:gravity="center_vertical"
-                android:text="18896984377"
+                android:text=""
                 android:hint="请输入手机号码"
                 android:paddingLeft="8dp"
                 android:singleLine="true"
@@ -63,7 +63,7 @@
                     android:background="@drawable/register_edittext_bottom_radius"
                     android:drawableLeft="@drawable/psw_icon"
                     android:drawablePadding="10dp"
-                    android:text="123456"
+                    android:text=""
                     android:hint="请输入密码"
                     android:inputType="textPassword"
                     android:paddingLeft="8dp"
@@ -104,7 +104,7 @@
             android:layout_marginLeft="8dp"
             android:text="忘记密码？"
             android:textColor="@color/register_hint_text_color"
-            android:textSize="16sp" />
+            android:textSize="16sp"/>
     </LinearLayout>
 
     <Button

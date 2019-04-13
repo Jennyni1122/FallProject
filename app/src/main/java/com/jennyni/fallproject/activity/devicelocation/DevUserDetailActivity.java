@@ -74,7 +74,6 @@ public class DevUserDetailActivity extends BaseMapActivity implements GeocodeSea
     //内容控件
     private TextView tv_dev_user, tv_address, tv_dev_num, tv_idcard, tv_alert, tv_state;
     private ImageView iv_path, iv_rssi, iv_power;
-    public static final int MSG_DevUser_OK = 1; //加载设备，获取数据
     public static final int MSG_FALLINFO_OK = 2;    //获取跌倒设备数据
     public static final int MSG_SHOW_OK = 3;    //获取跌倒设备数据
     private Circle circle;
@@ -121,7 +120,8 @@ public class DevUserDetailActivity extends BaseMapActivity implements GeocodeSea
         Intent intent = getIntent();
 
         cardid = intent.getStringExtra(DEVICEBEAN_KEY);
-//        sendrequest_userUpdateData();
+
+     //   sendrequest_fallData();     //请求网络，查询跌倒最新数据
         sendrequest_askDevInfo();       //请求网络，加载设备用户信息
     }
 
@@ -147,8 +147,7 @@ public class DevUserDetailActivity extends BaseMapActivity implements GeocodeSea
         tv_edit_device.setOnClickListener(new View.OnClickListener() {       //跳转到编辑设备界面
             @Override
             public void onClick(View view) {            //进入编辑设备界面
-
-                EditDevUserActivity.startActivity(DevUserDetailActivity.this, fallbean.getCard_id());
+             EditDevUserActivity.startActivity(DevUserDetailActivity.this, fallbean.getCard_id());
             }
         });
 
@@ -184,7 +183,6 @@ public class DevUserDetailActivity extends BaseMapActivity implements GeocodeSea
 
     }
 
-
     /**
      * 事件捕获
      */
@@ -194,27 +192,28 @@ public class DevUserDetailActivity extends BaseMapActivity implements GeocodeSea
         public void handleMessage(Message msg) {
             super.handleMessage(msg);
             switch (msg.what) {
+                case MSG_SHOW_OK:   //显示设备用户信息
+                    String response = (String) msg.obj;
+                    Gson gson = new Gson();
+                    final AskDevInfoBean askDevInfoBean = gson.fromJson(response, AskDevInfoBean.class);
+                    if (askDevInfoBean.getStatus() == 200) {
+                        devicebean = askDevInfoBean.getResult();
+
+                        sendrequest_fallData();     //请求网络，查询跌倒最新数据
+                    } else {
+                        Toast.makeText(DevUserDetailActivity.this, "请求设备数据遇到问题", Toast.LENGTH_SHORT).show();
+                    }
+                    break;
+
                 case MSG_FALLINFO_OK:           //设备跌倒报警信息
                     if (msg.obj != null) {
                         //获取数据
                         fallbean = (AskFallInfoBean.ResultBean) msg.obj;
                         Log.e("TAG", "handleMessage:" + "id:" + fallbean.getId() + "设备编号：" + fallbean.getCard_id());
                         setData();
-
                     }
                     break;
-                case MSG_SHOW_OK:
-                    String response = (String) msg.obj;
-                    Gson gson = new Gson();
-                    final AskDevInfoBean askDevInfoBean = gson.fromJson(response, AskDevInfoBean.class);
 
-                    if (askDevInfoBean.getStatus() == 200) {
-                        devicebean = askDevInfoBean.getResult();
-                        sendrequest_fallData();     //请求网络，查询跌倒最新数据
-                    } else {
-                        Toast.makeText(DevUserDetailActivity.this, "请求设备数据遇到问题", Toast.LENGTH_SHORT).show();
-                    }
-                    break;
             }
         }
     };
@@ -251,15 +250,15 @@ public class DevUserDetailActivity extends BaseMapActivity implements GeocodeSea
             iv_power.setImageResource(R.drawable.power0);
         }
 
-//        //显示安全范围
-//        if (fallbean.getFence() == 1){
-//           tv_alert.setText("超出范围！");
-//           tv_alert.setTextColor(Color.RED);
-//
-//        }else {
-//            tv_alert.setText("<"+devicebean.getGeoradius()+"米（半径）");
-//            tv_alert.setTextColor(Color.GREEN);
-//        }
+        //显示安全范围
+        if (fallbean.getFence() == 1){
+           tv_alert.setText("超出范围！");
+           tv_alert.setTextColor(Color.RED);
+
+        }else {
+            tv_alert.setText("<"+devicebean.getGeoradius()+"米（半径）");
+            tv_alert.setTextColor(Color.GREEN);
+        }
 
         //显示跌倒 (地图显示报警跳动)
         if (fallbean.getFall() == 1) {
@@ -275,9 +274,21 @@ public class DevUserDetailActivity extends BaseMapActivity implements GeocodeSea
             tv_state.setTextColor(Color.GREEN);
         }
 
-
         //显示设备的定位，geopoints为设备定位，latlng(geocenter)为围栏中心点
         LatLng geopoints = new LatLng(Double.valueOf(fallbean.getLat()), Double.valueOf(fallbean.getLng()));
+        if (geopoints != null) {
+            moveToPoint(geopoints);//设备定位点
+            getAddressByLatlng(geopoints);
+            //若设备定位marker1为空，则添加设备定位
+            if (marker1 == null) {
+                //设置定位信息来源： 1GPS, 0基站
+                marker1 = addMarker(geopoints, BitmapFactory.decodeResource(getResources(), R.drawable.location_marker1));
+            }
+        }else {
+            Toast.makeText(this, "无法获取设备定位！", Toast.LENGTH_SHORT).show();
+        }
+
+        //围栏判断
         if (devicebean.getIsgeo() == 1) {
             String geocenter = devicebean.getGeocenter();
             if (geocenter != null) {
@@ -289,9 +300,12 @@ public class DevUserDetailActivity extends BaseMapActivity implements GeocodeSea
             }
             LatLng lnglat = new LatLng(lng, lat);
             moveToPoint(lnglat);        //围栏中心点
-            if (geopoints != null) {
-                moveToPoint(geopoints);//设备定位点
-            }
+
+//            if (geopoints != null) {
+//                moveToPoint(geopoints);//设备定位点
+//            }else {
+//                Toast.makeText(this, "无法获取设备定位！", Toast.LENGTH_SHORT).show();
+//            }
             //围栏部分,marker为围栏中心点，marker1为设备定位
             if (circle == null && marker == null) {
                 circle = addcircle(lnglat, Double.valueOf(Double.valueOf(devicebean.getGeoradius())), Color.parseColor("#7f89EAF1"));
@@ -301,25 +315,23 @@ public class DevUserDetailActivity extends BaseMapActivity implements GeocodeSea
                 marker.setPosition(lnglat);
             }
             float length = getPoint2PointLength(lnglat, new LatLng(Double.valueOf(fallbean.getLng()), Double.valueOf(fallbean.getLat())));
-            getAddressByLatlng(geopoints);
-            //若设备定位marker1为空，则添加设备定位
-            if (marker1 == null) {
-                //设置定位信息来源： 1GPS, 0基站
-                marker1 = addMarker(geopoints, BitmapFactory.decodeResource(getResources(), R.drawable.location_marker1));
-            }
+//            getAddressByLatlng(geopoints);
+//            //若设备定位marker1为空，则添加设备定位
+//            if (marker1 == null) {
+//                //设置定位信息来源： 1GPS, 0基站
+//                marker1 = addMarker(geopoints, BitmapFactory.decodeResource(getResources(), R.drawable.location_marker1));
+//            }
 
             //设备在围栏内不报警，超出围栏就报警
             if (length < Double.valueOf(devicebean.getGeoradius())) {
                 // sendFenceNotifycation();     //发送通知
                 marker1.setIcon(BitmapDescriptorFactory.fromBitmap(BitmapFactory.decodeResource(getResources(), R.drawable.location_marker1)));
                 marker1.setPosition(geopoints);
-
                 tv_alert.setText("超出范围！");
                 tv_alert.setTextColor(Color.RED);
             } else {
                 marker1.setIcon(BitmapDescriptorFactory.fromBitmap(BitmapFactory.decodeResource(getResources(), R.drawable.location_marker1)));
                 marker1.setPosition(geopoints);
-
                 tv_alert.setText("<" + devicebean.getGeoradius() + "米（半径）");
                 tv_alert.setTextColor(Color.GREEN);
             }
@@ -329,118 +341,6 @@ public class DevUserDetailActivity extends BaseMapActivity implements GeocodeSea
         }
 
     }
-
-//    /**通话1
-//     * 发出通知，跌倒通知
-//     */
-//    private void sendFallNotifycation() {
-//        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.O) {
-//            /**
-//             *  创建通知栏管理工具
-//             */
-//            NotificationManager notificationManager = (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
-//            /**
-//             *  实例化通知栏构造器
-//             */
-//            NotificationCompat.Builder mBuilder = new NotificationCompat.Builder(this);
-//            /**
-//             *  设置Builder
-//             */
-//            //设置标题
-//            mBuilder.setContentTitle("跌倒守护")
-//                    //设置内容
-//                    .setContentText(fallbean.getDname()+"发生跌倒，请注意！")
-//                    //设置大图标
-//                    .setLargeIcon(BitmapFactory.decodeResource(getResources(), R.drawable.icon_fall))
-//                    //设置小图标
-//                    .setSmallIcon(R.drawable.icon_fall)
-//                    //设置通知时间
-//                    .setWhen(System.currentTimeMillis())
-//                    //首次进入时显示效果
-//                    .setTicker(fallbean.getDname()+"发生跌倒，请注意！")
-//                    //设置通知方式，声音，震动，呼吸灯等效果，这里通知方式为声音
-//                    .setDefaults(Notification.DEFAULT_SOUND);
-//            //发送通知请求
-//            notificationManager.notify(new Random().nextInt(Integer.MAX_VALUE), mBuilder.build());
-//        } else {
-//
-//            int notificationId = new Random().nextInt(Integer.MAX_VALUE);
-//            Notification.Builder builder = new Notification.Builder(this, "1"); //与channelId对应
-//            //icon title text必须包含，不然影响桌面图标小红点的展示
-//            builder.setSmallIcon(android.R.drawable.stat_notify_chat)
-//                    .setContentTitle("跌倒守护")
-//                    .setContentText(fallbean.getDname()+"发生跌倒，请注意！")
-//                    .setNumber(3); //久按桌面图标时允许的此条通知的数量
-//            NotificationManager notificationManager = (NotificationManager) this.getSystemService(Context.NOTIFICATION_SERVICE);
-//
-//
-//            NotificationChannel channel = new NotificationChannel("1",
-//                    "Channel1", NotificationManager.IMPORTANCE_DEFAULT);
-//            channel.enableLights(true); //是否在桌面icon右上角展示小红点
-//            channel.setLightColor(Color.GREEN); //小红点颜色
-//            channel.setShowBadge(true); //是否在久按桌面图标时显示此渠道的通知
-//            notificationManager.createNotificationChannel(channel);
-//            notificationManager.notify(notificationId, builder.build());
-//
-//        }
-//    }
-//
-//
-//    /**通知2
-//     * 发出通知，围栏通知
-//     */
-//    private void sendFenceNotifycation() {
-//        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.O) {
-//            /**
-//             *  创建通知栏管理工具
-//             */
-//            NotificationManager notificationManager = (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
-//            /**
-//             *  实例化通知栏构造器
-//             */
-//            NotificationCompat.Builder mBuilder = new NotificationCompat.Builder(this);
-//            /**
-//             *  设置Builder
-//             */
-//            //设置标题
-//            mBuilder.setContentTitle("跌倒守护")
-//                    //设置内容
-//                    .setContentText(fallbean.getDname()+"超出设定的安全范围，请注意！")
-//                    //设置大图标
-//                    .setLargeIcon(BitmapFactory.decodeResource(getResources(), R.drawable.icon_fall))
-//                    //设置小图标
-//                    .setSmallIcon(R.drawable.icon_fall)
-//                    //设置通知时间
-//                    .setWhen(System.currentTimeMillis())
-//                    //首次进入时显示效果
-//                    .setTicker(fallbean.getDname()+"超出设定的围栏范围，请注意！")
-//                    //设置通知方式，声音，震动，呼吸灯等效果，这里通知方式为声音
-//                    .setDefaults(Notification.DEFAULT_SOUND);
-//            //发送通知请求
-//            notificationManager.notify(new Random().nextInt(Integer.MAX_VALUE), mBuilder.build());
-//        } else {
-//
-//            int notificationId = new Random().nextInt(Integer.MAX_VALUE);
-//            Notification.Builder builder = new Notification.Builder(this, "1"); //与channelId对应
-//            //icon title text必须包含，不然影响桌面图标小红点的展示
-//            builder.setSmallIcon(android.R.drawable.stat_notify_chat)
-//                    .setContentTitle("跌倒守护")
-//                    .setContentText(fallbean.getDname()+"超出设定的围栏范围，请注意！")
-//                    .setNumber(3); //久按桌面图标时允许的此条通知的数量
-//            NotificationManager notificationManager = (NotificationManager) this.getSystemService(Context.NOTIFICATION_SERVICE);
-//
-//
-//            NotificationChannel channel = new NotificationChannel("1",
-//                    "Channel1", NotificationManager.IMPORTANCE_DEFAULT);
-//            channel.enableLights(true); //是否在桌面icon右上角展示小红点
-//            channel.setLightColor(Color.GREEN); //小红点颜色
-//            channel.setShowBadge(true); //是否在久按桌面图标时显示此渠道的通知
-//            notificationManager.createNotificationChannel(channel);
-//            notificationManager.notify(notificationId, builder.build());
-//
-//        }
-//
-//    }
 
 
     /**
@@ -557,6 +457,7 @@ public class DevUserDetailActivity extends BaseMapActivity implements GeocodeSea
         @Override
         public void onReceive(Context context, Intent intent) {
 
+            setData();
 
 //            String responseBody = intent.getStringExtra("responseBody");
 //            parseLocation(responseBody);
@@ -574,8 +475,6 @@ public class DevUserDetailActivity extends BaseMapActivity implements GeocodeSea
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
         if (data != null) {
-            int id = data.getIntExtra("id", 0);
-            UserUpdateBean.ResultBean devicebean = DBUtils.getInstance(DevUserDetailActivity.this).getUpdateDevInfo(id);
             setData();
         }
     }

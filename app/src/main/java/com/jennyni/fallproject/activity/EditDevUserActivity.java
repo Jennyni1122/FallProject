@@ -20,6 +20,7 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.amap.api.services.core.LatLonPoint;
 import com.google.gson.Gson;
 import com.jennyni.fallproject.Bean.AskDevInfoBean;
 import com.jennyni.fallproject.Bean.SetUpBean;
@@ -41,12 +42,15 @@ import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.Response;
 
+import static com.jennyni.fallproject.activity.AddDeviceUserInfoActivity.REQUEST_CODE;
+
 /**
  * 编辑设备用户信息
  */
 public class EditDevUserActivity extends AppCompatActivity implements View.OnClickListener {
 
     public static final String TAG = "EditDevice";
+    public static final int REQUEST_CODE1 = 0x13;
     private static final int ISGEO_OPEN = 1; //围栏开启
     private RelativeLayout rl_title_bar;
     private LinearLayout ll_addressfence;
@@ -166,7 +170,7 @@ public class EditDevUserActivity extends AppCompatActivity implements View.OnCli
                 break;
             case R.id.tv_geocenter:     //围栏设置
                 Intent intent = new Intent(EditDevUserActivity.this, GetAddressByKeyword.class);
-                startActivity(intent);
+                startActivityForResult(intent, REQUEST_CODE);
                 break;
 
         }
@@ -321,7 +325,7 @@ public class EditDevUserActivity extends AppCompatActivity implements View.OnCli
                 "&dname=" + URLEncoder.encode(dname) +
                 "&sex=" + URLEncoder.encode(male.isChecked() ? "男" : "女") +
                 "&idcard=" + idcard +
-                "&guardian=" + spUserPhone +
+              //  "&guardian=" + spUserPhone +
                 "&isgeo=" + (close.isChecked() ? "0" : "1") +
                 "&geocenter=" + URLEncoder.encode(geocenter) +
                 "&georadius=" + georadius;
@@ -347,6 +351,26 @@ public class EditDevUserActivity extends AppCompatActivity implements View.OnCli
             }
         });
 
+    }
+
+    /**
+     * 从选择地址界面回传经纬度到编辑界面
+     *
+     * @param requestCode
+     * @param resultCode
+     * @param data
+     */
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        if (RESULT_OK == resultCode) {
+            if (requestCode == REQUEST_CODE1) {
+                LatLonPoint geocenter = data.getParcelableExtra("geocenter");
+                if (geocenter != null) {
+                    tv_geocenter.setText(geocenter.getLongitude() + "," + geocenter.getLatitude());    //获取经纬度
+                }
+            }
+        }
     }
 
 

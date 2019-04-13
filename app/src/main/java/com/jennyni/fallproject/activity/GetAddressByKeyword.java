@@ -28,13 +28,17 @@ import com.jennyni.fallproject.adapter.GetAddressAdapter;
 import java.util.ArrayList;
 import java.util.List;
 
+import static com.jennyni.fallproject.activity.AddDeviceUserInfoActivity.REQUEST_CODE;
+import static com.jennyni.fallproject.activity.EditDevUserActivity.REQUEST_CODE1;
+
 
 /**
+ *
  * Created by Administrator on 2019/3/11.
  */
 
 public class GetAddressByKeyword extends AppCompatActivity implements GeocodeSearch.OnGeocodeSearchListener, GetAddressAdapter.ItemClickListener {
-
+    private static final String GEOCENTER = "geocenter";
     private RelativeLayout rl_title_bar;
     private TextView tv_main_title, tv_back;
     private GeocodeSearch geocoderSearch;
@@ -43,6 +47,8 @@ public class GetAddressByKeyword extends AppCompatActivity implements GeocodeSea
     private RecyclerView recyclerView;
     private GetAddressAdapter adapter;
     private GeocodeAddress geocodeAddress;
+    private String geocenter;
+
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -50,6 +56,7 @@ public class GetAddressByKeyword extends AppCompatActivity implements GeocodeSea
         setContentView(R.layout.activity_getaddressbykeyword);
         geocoderSearch = new GeocodeSearch(this);
         geocoderSearch.setOnGeocodeSearchListener(this);
+
         initView();
 
     }
@@ -68,7 +75,8 @@ public class GetAddressByKeyword extends AppCompatActivity implements GeocodeSea
             public void onClick(View v) {
                 Intent data = new Intent();
                 data.putExtra("geocenter", geocodeAddress.getLatLonPoint());
-                setResult(RESULT_OK, data);
+                setResult(REQUEST_CODE, data);
+                setResult(REQUEST_CODE1,data);
                 GetAddressByKeyword.this.finish();
             }
         });
@@ -121,4 +129,6 @@ public class GetAddressByKeyword extends AppCompatActivity implements GeocodeSea
                 + geocodeAddress.getFormatAddress());
         tv_latlng.setText(String.format("lng:%s lat:%s ",String.valueOf(latlng.longitude),String.valueOf(latlng.latitude)));
     }
+
+
 }

@@ -42,8 +42,6 @@ public class LocationService extends Service {
 
     private static final String STOP_KEY = "stopservice";
     private static final String TAG = "LocationService";
-    private static final int FALL_STATE = 1;
-    private static final int FENCE_STATE = 1; //超出范围
 
     public static void startService(Context context) {
         context.startService(new Intent(context, LocationService.class));
@@ -218,7 +216,6 @@ public class LocationService extends Service {
                     //设置通知方式，声音，震动，呼吸灯等效果，这里通知方式为声音
                     .setDefaults(Notification.DEFAULT_SOUND);
             //发送通知请求
-
             notificationManager.notify(0x13, mBuilder.build());
         } else {
             Intent intent = new Intent(this, NotifyReciver.class);

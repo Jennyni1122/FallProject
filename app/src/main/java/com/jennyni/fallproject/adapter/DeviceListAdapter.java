@@ -69,9 +69,9 @@ public class DeviceListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHol
         ((ViewHolder) holder).tv_device_username.setText(bean.getDev_name());
         ((ViewHolder) holder).tv_device_name.setText(bean.getCard_id());
         //头像根据性别变化
-        if ( bean.getDev_sex().equals("男")) {
+        if (bean.getDev_sex().equals("男")) {
             ((ViewHolder) holder).iv_img_sex.setImageResource(R.drawable.icon_male);
-        } else {
+        } else{
             ((ViewHolder) holder).iv_img_sex.setImageResource(R.drawable.icon_female);
         }
         //将i保存在itemView的Tag中，以便点击时进行获取

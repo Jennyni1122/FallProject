@@ -220,8 +220,7 @@ public class RegisterActivity extends AppCompatActivity implements View.OnClickL
                     if (msg.obj != null) {
                         UserRegisterBean.ResultBean bean = (UserRegisterBean.ResultBean) msg.obj;
                         Log.e("TAG", "handleMessage:" + bean.getAccount());
-                        Toast.makeText(RegisterActivity.this, "注册成功",
-                                Toast.LENGTH_SHORT).show();
+                        Toast.makeText(RegisterActivity.this, "注册成功", Toast.LENGTH_SHORT).show();
                         mCountDownTimerUtils.onFinish();
                         //把用户名和密码保存到SharedPreferences中
                         //saveRegisterInfo(currentUserphone, currentPsw);
@@ -314,10 +313,11 @@ public class RegisterActivity extends AppCompatActivity implements View.OnClickL
      */
     private void getSMSCode() {
 
-        mCountDownTimerUtils.start();       //开始倒计时操作
         if (et_register_userphone.getText().toString().length() == 0 && et_register_userphone.getText().toString().length() != 11) {
             Toast.makeText(this, "请输入手机号", Toast.LENGTH_SHORT).show();
             return;
+        }else {
+            mCountDownTimerUtils.start();       //开始倒计时操作
         }
         SMSSDK.getVerificationCode("86", et_register_userphone.getText().toString());
     }
@@ -329,10 +329,6 @@ public class RegisterActivity extends AppCompatActivity implements View.OnClickL
     private void compareSMSCode() {
         if (et_register_userphone.getText().toString().length() == 0 && et_register_userphone.getText().toString().length() != 11) {
             Toast.makeText(this, "请输入合法的手机号码", Toast.LENGTH_SHORT).show();
-            return;
-        }
-        if (et_register_userphone.getText().toString().length() == 0) {
-            Toast.makeText(this, "请输入手机号", Toast.LENGTH_SHORT).show();
             return;
         }
         SMSSDK.submitVerificationCode("86", et_register_userphone.getText().toString(), et_code.getText().toString());

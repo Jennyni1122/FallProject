@@ -41,6 +41,9 @@ import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.Response;
 
+/**
+ * 无接口，暂不用
+ */
 public class PasswordActivity extends AppCompatActivity implements View.OnClickListener{
     public static final String TAG = "PasswordActivity";
     private RelativeLayout rl_title_bar;
@@ -55,10 +58,6 @@ public class PasswordActivity extends AppCompatActivity implements View.OnClickL
     private String currentPhone,currentCode,currentPsw,currentRePsw;
     private CountDownTimerUtils mCountDownTimerUtils;        //设置倒计时和变量
 
-    public static final int MSG_Psw_OK = 1;    //获取改密数据
-    public static final int MSG_Psw_NOUSER = 1;
-    public static final int MSG_Psw_HAVEUSER = 2;
-    public static final int MSG_Psw_PASSWORD_FAIL = 3;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -252,10 +251,12 @@ public class PasswordActivity extends AppCompatActivity implements View.OnClickL
      * 获取验证码
      */
     private void getSMSCode() {
-        mCountDownTimerUtils.start();       //开始倒计时操作
-        if (ed_phone.getText().toString().length() == 0 && ed_phone.getText().toString().length() != 11) {
+
+        if (currentPhone.length() == 0 && currentPhone.length() != 11) {
             Toast.makeText(this, "请输入手机号", Toast.LENGTH_SHORT).show();
             return;
+        }else {
+            mCountDownTimerUtils.start();       //开始倒计时操作
         }
         SMSSDK.getVerificationCode("86", ed_phone.getText().toString());
     }
@@ -264,12 +265,8 @@ public class PasswordActivity extends AppCompatActivity implements View.OnClickL
      * 验证验证码
      */
     private void compareSMSCode() {
-        if (ed_phone.getText().toString().length() == 0 && ed_phone.getText().toString().length() != 11) {
+        if (currentPhone.length() == 0 && currentPhone.length() != 11) {
             Toast.makeText(this, "请输入合法的手机号码", Toast.LENGTH_SHORT).show();
-            return;
-        }
-        if (ed_phone.getText().toString().length() == 0) {
-            Toast.makeText(this, "请输入手机号", Toast.LENGTH_SHORT).show();
             return;
         }
         SMSSDK.submitVerificationCode("86", ed_phone.getText().toString(), ed_code.getText().toString());

@@ -26,6 +26,7 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.amap.api.maps2d.model.LatLng;
 import com.amap.api.services.core.LatLonPoint;
 import com.jennyni.fallproject.Bean.SetUpBean;
 import com.jennyni.fallproject.Bean.UserUpdateBean;
@@ -212,6 +213,7 @@ public class AddDeviceUserInfoActivity extends AppCompatActivity implements View
             case R.id.tv_geocenter:       //围栏地址选择
                 Intent intent = new Intent(AddDeviceUserInfoActivity.this, GetAddressByKeyword.class);
                 startActivityForResult(intent, REQUEST_CODE);
+    //            GetAddressByKeyword.startAddActivity(AddDeviceUserInfoActivity.this, LatLng);
                 break;
             case R.id.btn_sure_code:    //验证绑定关系按钮
 
@@ -266,7 +268,7 @@ public class AddDeviceUserInfoActivity extends AppCompatActivity implements View
                 "&dname=" + URLEncoder.encode(dname) +
                 "&sex=" + URLEncoder.encode(male.isChecked() ? "男" : "女") +
                 "&idcard=" + idcard +
-                "&guardian=" + spUserPhone +
+            //    "&guardian=" + spUserPhone +
                 "&isgeo=" + (close.isChecked() ? "0" : "1") +
                 "&geocenter=" + URLEncoder.encode(geocenter) +
                 "&georadius=" + georadius;
@@ -337,22 +339,16 @@ public class AddDeviceUserInfoActivity extends AppCompatActivity implements View
             super.handleMessage(msg);
             switch (msg.what) {
                 case MSG_ADDUSER_OK:        //用户数据保存
-                    if (msg.obj != null) {
                         //获取数据
                         if (msg.obj != null) {
                             SetUpBean.ResultBean setupbean = (SetUpBean.ResultBean) msg.obj;
                             Log.e("TAG", "handleMessage:" + setupbean.getDev_name());
                             Toast.makeText(AddDeviceUserInfoActivity.this, "保存成功", Toast.LENGTH_SHORT).show();
-//                        Intent intent = new Intent(AddDeviceUserInfoActivity.this, MeFragment.class);
-//                        startActivity(intent);
-                            Intent data = new Intent();
-                            data.putExtra("dname", setupbean.getDev_name());
-                            setResult(RESULT_OK, data);
+
                             finish();
                         }else {
                             Toast.makeText(AddDeviceUserInfoActivity.this, "保存遇到问题了，log看下原因= =", Toast.LENGTH_SHORT).show();
                         }
-                    }
                     break;
                 case MSG_BINDDEV_OK:        //验证设备绑定关系
                     if (msg.obj != null) {
