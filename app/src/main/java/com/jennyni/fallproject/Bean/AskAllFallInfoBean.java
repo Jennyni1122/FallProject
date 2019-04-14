@@ -2,6 +2,7 @@ package com.jennyni.fallproject.Bean;
 
 import com.google.gson.annotations.SerializedName;
 
+import java.io.Serializable;
 import java.util.List;
 
 /**
@@ -9,7 +10,7 @@ import java.util.List;
  * Created by Jenny on 2019/3/16.
  */
 
-public class AskAllFallInfoBean {
+public class AskAllFallInfoBean implements Serializable {
 
     /**
      * status : 200
@@ -45,7 +46,7 @@ public class AskAllFallInfoBean {
         this.result = result;
     }
 
-    public static class ResultBean {
+    public static class ResultBean implements Serializable {
         /**
          * id : 2
          * card_id : 18255000000

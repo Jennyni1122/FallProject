@@ -22,6 +22,7 @@ import com.google.gson.Gson;
 import com.jennyni.fallproject.Bean.AskAllFallInfoBean;
 import com.jennyni.fallproject.Bean.UserUpdateBean;
 import com.jennyni.fallproject.R;
+import com.jennyni.fallproject.activity.devicelocation.DevUserDetailActivity;
 import com.jennyni.fallproject.receiver.NotifyReciver;
 import com.jennyni.fallproject.utils.Constant;
 import com.jennyni.fallproject.utils.UtilsHelper;
@@ -42,6 +43,9 @@ public class LocationService extends Service {
 
     private static final String STOP_KEY = "stopservice";
     private static final String TAG = "LocationService";
+    private static final int NOTIFICATION_ID = 0x13;
+    private static final long OVERTIME = 1000 * 60 * 30;
+    private NotificationManager notificationManager;
 
     public static void startService(Context context) {
         context.startService(new Intent(context, LocationService.class));
@@ -103,29 +107,42 @@ public class LocationService extends Service {
                 Gson gson = new Gson();
                 String string = response.body().string();
                 AskAllFallInfoBean askFallInfoBean = gson.fromJson(string, AskAllFallInfoBean.class);
+                DevUserDetailActivity.sendBroadcastReceiver(LocationService.this,
+                        LocationService.this.getPackageName().concat(DevUserDetailActivity.BroadcastReceiver_ACTION),
+                        askFallInfoBean
+                );
                 if (askFallInfoBean != null && askFallInfoBean.getStatus() == 200) {
                     List<AskAllFallInfoBean.ResultBean> list = askFallInfoBean.getResult();
                     if (list.size() == 0) return;
                     Log.e(TAG, "开始遍历，长度：" + list.size());
                     for (final AskAllFallInfoBean.ResultBean bean : list) {
                         if (isOutOfRadius(bean)) {
-                            handler.post(new Runnable() {
-                                @Override
-                                public void run() {
-                                    Log.e(TAG, String.format("%s在范围外，请注意!", bean.getName() == null ? "未知用户" : bean.getName()));
-                                    sendNotifycation(String.format("%s在范围外，请注意!", bean.getName() == null ? "未知用户" : bean.getName()), bean.getCard_id());
-                                }
-                            });
+                            if (!isOverTime(bean.getTime())) {
+                                handler.post(new Runnable() {
+                                    @Override
+                                    public void run() {
+                                        Log.e(TAG, String.format("%s在范围外，请注意!", bean.getName() == null ? "未知用户" : bean.getName()));
+                                        sendNotifycation(String.format("%s在范围外，请注意!", bean.getName() == null ? "未知用户" : bean.getName()), bean.getCard_id());
+                                    }
+                                });
+                            } else {
+                                cancleNotify(NOTIFICATION_ID);
+                            }
 
                         }
                         if (isFalled(bean)) {
-                            handler.post(new Runnable() {
-                                @Override
-                                public void run() {
-                                    Log.e(TAG, String.format("%s发生跌倒，请注意!", bean.getName() == null ? "未知用户" : bean.getName()));
-                                    sendNotifycation(String.format("%s发生跌倒，请注意!", bean.getName() == null ? "未知用户" : bean.getName()), bean.getCard_id());
-                                }
-                            });
+                            if (!isOverTime(bean.getTime())) {
+                                handler.post(new Runnable() {
+                                    @Override
+                                    public void run() {
+                                        Log.e(TAG, String.format("%s发生跌倒，请注意!", bean.getName() == null ? "未知用户" : bean.getName()));
+                                        sendNotifycation(String.format("%s发生跌倒，请注意!", bean.getName() == null ? "未知用户" : bean.getName()), bean.getCard_id());
+                                    }
+                                });
+                            } else {
+                                cancleNotify(NOTIFICATION_ID);
+                            }
+
                         }
 
 
@@ -133,6 +150,16 @@ public class LocationService extends Service {
                 }
             }
         });
+    }
+
+    /**
+     * 是否超时
+     *
+     * @param time
+     * @return
+     */
+    boolean isOverTime(Long time) {
+        return time + OVERTIME < System.currentTimeMillis();
     }
 
     /**
@@ -178,6 +205,12 @@ public class LocationService extends Service {
         super.onDestroy();
     }
 
+    void cancleNotify(int notificationId) {
+        if (notificationManager != null) {
+            notificationManager.cancel(notificationId);
+        }
+    }
+
 
     void sendNotifycation(String str, String cardid) {
         if (Build.VERSION.SDK_INT < Build.VERSION_CODES.O) {
@@ -185,7 +218,7 @@ public class LocationService extends Service {
              *  创建通知栏管理工具
              */
 
-            NotificationManager notificationManager = (NotificationManager) getSystemService
+            notificationManager = (NotificationManager) getSystemService
                     (NOTIFICATION_SERVICE);
 
             /**
@@ -216,13 +249,12 @@ public class LocationService extends Service {
                     //设置通知方式，声音，震动，呼吸灯等效果，这里通知方式为声音
                     .setDefaults(Notification.DEFAULT_SOUND);
             //发送通知请求
-            notificationManager.notify(0x13, mBuilder.build());
+            notificationManager.notify(NOTIFICATION_ID, mBuilder.build());
         } else {
             Intent intent = new Intent(this, NotifyReciver.class);
             intent.putExtra("cardid", cardid);
             PendingIntent pendingIntent = PendingIntent.getBroadcast(this, new Random().nextInt(1000), intent, PendingIntent.FLAG_UPDATE_CURRENT);
 //            int notificationId = new Random().nextInt(Integer.MAX_VALUE);
-            int notificationId = 0x12;
             Notification.Builder builder = new Notification.Builder(this, "1"); //与channelId对应
             //icon title text必须包含，不然影响桌面图标小红点的展示
             builder.setContentIntent(pendingIntent);
@@ -231,7 +263,7 @@ public class LocationService extends Service {
                     .setContentText(str)
                     .setNumber(3)
                     .setDefaults(Notification.DEFAULT_SOUND); //久按桌面图标时允许的此条通知的数量
-            NotificationManager notificationManager = (NotificationManager) this.getSystemService(Context.NOTIFICATION_SERVICE);
+            notificationManager = (NotificationManager) this.getSystemService(Context.NOTIFICATION_SERVICE);
 
 
             NotificationChannel channel = new NotificationChannel("1",
@@ -240,7 +272,7 @@ public class LocationService extends Service {
             channel.setLightColor(Color.GREEN); //小红点颜色
             channel.setShowBadge(true); //是否在久按桌面图标时显示此渠道的通知
             notificationManager.createNotificationChannel(channel);
-            notificationManager.notify(notificationId, builder.build());
+            notificationManager.notify(NOTIFICATION_ID, builder.build());
         }
     }
 

@@ -35,6 +35,7 @@ import com.amap.api.services.geocoder.GeocodeSearch;
 import com.amap.api.services.geocoder.RegeocodeAddress;
 import com.amap.api.services.geocoder.RegeocodeResult;
 import com.google.gson.Gson;
+import com.jennyni.fallproject.Bean.AskAllFallInfoBean;
 import com.jennyni.fallproject.Bean.AskDevInfoBean;
 import com.jennyni.fallproject.Bean.AskFallInfoBean;
 import com.jennyni.fallproject.Bean.UserUpdateBean;
@@ -51,6 +52,7 @@ import com.jennyni.fallproject.utils.UtilsHelper;
 
 import java.io.IOException;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Random;
@@ -67,8 +69,10 @@ import okhttp3.Response;
 public class DevUserDetailActivity extends BaseMapActivity implements GeocodeSearch.OnGeocodeSearchListener, AMap.OnCameraChangeListener {
     //标题栏
     public static final String TAG = "DevUserDetailActivity";
+    public static final String UPDATE_DATA_KEY = "update";
     private static final String CARDID_KEY = "cardid";
     private static final String DEVICEBEAN_KEY = "devicebean";
+    public static final String BroadcastReceiver_ACTION = ".safelocaiton";
     private TextView tv_main_title, tv_back, tv_edit_device;
     private RelativeLayout rl_title_bar;
     //内容控件
@@ -82,7 +86,7 @@ public class DevUserDetailActivity extends BaseMapActivity implements GeocodeSea
     private LocationBroadcastReceiver broadcastReceiver;
     private AskFallInfoBean.ResultBean fallbean;
     private AskDevInfoBean.ResultBean devicebean;
-    private String account, cardid, dname;
+    private String account, cardid;
 
 
     /**
@@ -103,6 +107,12 @@ public class DevUserDetailActivity extends BaseMapActivity implements GeocodeSea
         context.startActivity(intent);
     }
 
+    public static void sendBroadcastReceiver(Context context, String action, AskAllFallInfoBean askFallInfoBean) {
+        Intent intent = new Intent(action);
+        intent.putExtra(UPDATE_DATA_KEY, askFallInfoBean);
+        context.sendBroadcast(intent);
+    }
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -121,7 +131,7 @@ public class DevUserDetailActivity extends BaseMapActivity implements GeocodeSea
 
         cardid = intent.getStringExtra(DEVICEBEAN_KEY);
 
-     //   sendrequest_fallData();     //请求网络，查询跌倒最新数据
+        //   sendrequest_fallData();     //请求网络，查询跌倒最新数据
         sendrequest_askDevInfo();       //请求网络，加载设备用户信息
     }
 
@@ -147,7 +157,7 @@ public class DevUserDetailActivity extends BaseMapActivity implements GeocodeSea
         tv_edit_device.setOnClickListener(new View.OnClickListener() {       //跳转到编辑设备界面
             @Override
             public void onClick(View view) {            //进入编辑设备界面
-             EditDevUserActivity.startActivity(DevUserDetailActivity.this, fallbean.getCard_id());
+                EditDevUserActivity.startActivity(DevUserDetailActivity.this, fallbean.getCard_id());
             }
         });
 
@@ -198,11 +208,10 @@ public class DevUserDetailActivity extends BaseMapActivity implements GeocodeSea
                     final AskDevInfoBean askDevInfoBean = gson.fromJson(response, AskDevInfoBean.class);
                     if (askDevInfoBean.getStatus() == 200) {
                         devicebean = askDevInfoBean.getResult();
-
-                        sendrequest_fallData();     //请求网络，查询跌倒最新数据
                     } else {
                         Toast.makeText(DevUserDetailActivity.this, "请求设备数据遇到问题", Toast.LENGTH_SHORT).show();
                     }
+                    sendrequest_fallData();     //请求网络，查询跌倒最新数据
                     break;
 
                 case MSG_FALLINFO_OK:           //设备跌倒报警信息
@@ -210,7 +219,7 @@ public class DevUserDetailActivity extends BaseMapActivity implements GeocodeSea
                         //获取数据
                         fallbean = (AskFallInfoBean.ResultBean) msg.obj;
                         Log.e("TAG", "handleMessage:" + "id:" + fallbean.getId() + "设备编号：" + fallbean.getCard_id());
-                        setData();
+                        setData(fallbean);
                     }
                     break;
 
@@ -222,10 +231,10 @@ public class DevUserDetailActivity extends BaseMapActivity implements GeocodeSea
     /**
      * 将设备参数及定位的数据显示出来()
      */
-    private void setData() {
+    private void setData(AskFallInfoBean.ResultBean fallbean) {
         tv_dev_user.setText(fallbean.getDname());   //显示设备用户名
         tv_dev_num.setText(fallbean.getCard_id());  //显示设备编号
-        tv_idcard.setText(devicebean.getIdcard());   //显示身份证
+        tv_idcard.setText(devicebean != null ? devicebean.getIdcard() : "");   //显示身份证
 
         //显示信号
         if (String.valueOf(fallbean.getRssi()).equals("2")) {
@@ -251,12 +260,11 @@ public class DevUserDetailActivity extends BaseMapActivity implements GeocodeSea
         }
 
         //显示安全范围
-        if (fallbean.getFence() == 1){
-           tv_alert.setText("超出范围！");
-           tv_alert.setTextColor(Color.RED);
-
-        }else {
-            tv_alert.setText("<"+devicebean.getGeoradius()+"米（半径）");
+        if (fallbean.getFence() == 1) {
+            tv_alert.setText("超出范围！");
+            tv_alert.setTextColor(Color.RED);
+        } else {
+            tv_alert.setText(devicebean != null ? "<" + devicebean.getGeoradius() + "米（半径）" : "位置半径");
             tv_alert.setTextColor(Color.GREEN);
         }
 
@@ -284,12 +292,12 @@ public class DevUserDetailActivity extends BaseMapActivity implements GeocodeSea
                 //设置定位信息来源： 1GPS, 0基站
                 marker1 = addMarker(geopoints, BitmapFactory.decodeResource(getResources(), R.drawable.location_marker1));
             }
-        }else {
+        } else {
             Toast.makeText(this, "无法获取设备定位！", Toast.LENGTH_SHORT).show();
         }
 
         //围栏判断
-        if (devicebean.getIsgeo() == 1) {
+        if (devicebean != null && devicebean.getIsgeo() == 1) {
             String geocenter = devicebean.getGeocenter();
             if (geocenter != null) {
                 String array[] = geocenter.split(",");
@@ -385,6 +393,7 @@ public class DevUserDetailActivity extends BaseMapActivity implements GeocodeSea
         //String url10 = "http://www.phyth.cn/index/fall/askfallinfo/account/" + account + "/cardid/" + cardid;
         String url = Constant.BASE_WEBSITE + Constant.REQUEST_ASKFALLINFO_DEVICE_URL
                 + "?account=" + account + "&cardid=" + cardid;
+        Log.e(TAG, url);
         OkHttpClient okHttpClient = new OkHttpClient();
         final Request request = new Request.Builder().url(url).build();
         Call call = okHttpClient.newCall(request);
@@ -457,10 +466,30 @@ public class DevUserDetailActivity extends BaseMapActivity implements GeocodeSea
         @Override
         public void onReceive(Context context, Intent intent) {
 
-            setData();
+            AskAllFallInfoBean askAllFallInfoBean = (AskAllFallInfoBean) intent.getSerializableExtra(UPDATE_DATA_KEY);
+            List<AskAllFallInfoBean.ResultBean> result = askAllFallInfoBean.getResult();
+            if (result.size() == 0) return;
 
-//            String responseBody = intent.getStringExtra("responseBody");
-//            parseLocation(responseBody);
+            for (AskAllFallInfoBean.ResultBean resultBean : result) {
+                if (resultBean.getCard_id().equals(cardid)) {
+                    AskFallInfoBean.ResultBean bean = new AskFallInfoBean.ResultBean();
+                    bean.setAlert(resultBean.getAlert());
+                    bean.setCalor(resultBean.getCalor());
+                    bean.setCard_id(resultBean.getCard_id());
+                    bean.setDname(resultBean.getName());
+                    bean.setFall(resultBean.getFall());
+                    bean.setFence(resultBean.getFence());
+                    bean.setId(resultBean.getId());
+                    bean.setLat(resultBean.getLat());
+                    bean.setLng(resultBean.getLng());
+                    bean.setLoctype(resultBean.getLoctype());
+                    bean.setPower(resultBean.getPower());
+                    bean.setRssi(resultBean.getRssi());
+                    bean.setSteps(resultBean.getSteps());
+                    bean.setTime(resultBean.getTime() + "");
+                    setData(bean);
+                }
+            }
         }
     }
 
@@ -475,8 +504,9 @@ public class DevUserDetailActivity extends BaseMapActivity implements GeocodeSea
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
         if (data != null) {
-            setData();
+            setData(fallbean);
         }
     }
+
 
 }

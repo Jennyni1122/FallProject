@@ -216,10 +216,16 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
         //开启异步线程访问网络
         call.enqueue(new Callback() {
             @Override
-            public void onFailure(Call call, IOException e) {
+            public void onFailure(Call call, final IOException e) {
                 //请求失败
-                Toast.makeText(LoginActivity.this, "网络错误", Toast.LENGTH_SHORT).show();
-                Log.e("MSG_LOGIN_FAIL", "请求失败：" + e.getMessage());
+                new Handler().post(new Runnable() {
+                    @Override
+                    public void run() {
+                        Toast.makeText(LoginActivity.this, "网络错误", Toast.LENGTH_SHORT).show();
+                        Log.e("MSG_LOGIN_FAIL", "请求失败：" + e.getMessage());
+                    }
+                });
+
             }
 
             @Override
@@ -228,7 +234,13 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
                 Log.e("MSG_LOGIN_OK", "请求成功：" + response);
                 UserLoginBean.ResultBean resultBean = JsonParse.getInstance().getuserLoginInfo(response.body().string());
                 if (resultBean==null){
-                    Log.e("MSG_LOGIN_OK", "请求登录异常！");
+                    Log.e("MSG_LOGIN_OK", "请求登录异常,账户或者密码错误");
+                    new Handler().post(new Runnable() {
+                        @Override
+                        public void run() {
+                            Toast.makeText(LoginActivity.this, "账户或者密码错误", Toast.LENGTH_SHORT).show();
+                        }
+                    });
            //         Toast.makeText(LoginActivity.this, "请求登录异常！", Toast.LENGTH_SHORT).show();
                     return;
                 }
