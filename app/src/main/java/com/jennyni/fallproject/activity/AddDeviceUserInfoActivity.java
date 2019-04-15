@@ -371,14 +371,12 @@ public class AddDeviceUserInfoActivity extends AppCompatActivity implements View
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
-        //if (RESULT_OK == resultCode) {
             if (requestCode == REQUEST_CODE) {
                 LatLonPoint geocenter = data.getParcelableExtra("geocenter");
                 if (geocenter != null) {
                     tv_geocenter.setText(geocenter.getLongitude() + "," + geocenter.getLatitude());    //获取经纬度
                 }
             }
-      //  }
     }
 
 

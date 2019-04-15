@@ -259,14 +259,7 @@ public class DevUserDetailActivity extends BaseMapActivity implements GeocodeSea
             iv_power.setImageResource(R.drawable.power0);
         }
 
-        //显示安全范围
-        if (fallbean.getFence() == 1) {
-            tv_alert.setText("超出范围！");
-            tv_alert.setTextColor(Color.RED);
-        } else {
-            tv_alert.setText(devicebean != null ? "<" + devicebean.getGeoradius() + "米（半径）" : "位置半径");
-            tv_alert.setTextColor(Color.GREEN);
-        }
+
 
         //显示跌倒 (地图显示报警跳动)
         if (fallbean.getFall() == 1) {
@@ -322,7 +315,8 @@ public class DevUserDetailActivity extends BaseMapActivity implements GeocodeSea
                 circle.setCenter(lnglat);
                 marker.setPosition(lnglat);
             }
-            float length = getPoint2PointLength(lnglat, new LatLng(Double.valueOf(fallbean.getLng()), Double.valueOf(fallbean.getLat())));
+//            float length = getPoint2PointLength(lnglat, new LatLng(Double.valueOf(fallbean.getLng()), Double.valueOf(fallbean.getLat())));
+
 //            getAddressByLatlng(geopoints);
 //            //若设备定位marker1为空，则添加设备定位
 //            if (marker1 == null) {
@@ -331,8 +325,22 @@ public class DevUserDetailActivity extends BaseMapActivity implements GeocodeSea
 //            }
 
             //设备在围栏内不报警，超出围栏就报警
-            if (length < Double.valueOf(devicebean.getGeoradius())) {
-                // sendFenceNotifycation();     //发送通知
+//            if (length > Double.valueOf(devicebean.getGeoradius())) {
+//                // sendFenceNotifycation();     //发送通知
+//                marker1.setIcon(BitmapDescriptorFactory.fromBitmap(BitmapFactory.decodeResource(getResources(), R.drawable.location_marker1)));
+//                marker1.setPosition(geopoints);
+//                tv_alert.setText("超出范围！");
+//                tv_alert.setTextColor(Color.RED);
+//            } else
+//                if (length < Double.valueOf(devicebean.getGeoradius())){
+//                marker1.setIcon(BitmapDescriptorFactory.fromBitmap(BitmapFactory.decodeResource(getResources(), R.drawable.location_marker1)));
+//                marker1.setPosition(geopoints);
+//                tv_alert.setText("<" + devicebean.getGeoradius() + "米（半径）");
+//                tv_alert.setTextColor(Color.GREEN);
+//            }
+
+            //显示安全范围
+            if (fallbean.getFence() == 1) {
                 marker1.setIcon(BitmapDescriptorFactory.fromBitmap(BitmapFactory.decodeResource(getResources(), R.drawable.location_marker1)));
                 marker1.setPosition(geopoints);
                 tv_alert.setText("超出范围！");
@@ -340,10 +348,9 @@ public class DevUserDetailActivity extends BaseMapActivity implements GeocodeSea
             } else {
                 marker1.setIcon(BitmapDescriptorFactory.fromBitmap(BitmapFactory.decodeResource(getResources(), R.drawable.location_marker1)));
                 marker1.setPosition(geopoints);
-                tv_alert.setText("<" + devicebean.getGeoradius() + "米（半径）");
+                tv_alert.setText(devicebean != null ? "<" + devicebean.getGeoradius() + "米（半径）" : "位置半径");
                 tv_alert.setTextColor(Color.GREEN);
             }
-
         } else {
             showToast("该设备未启用电子围栏");
         }

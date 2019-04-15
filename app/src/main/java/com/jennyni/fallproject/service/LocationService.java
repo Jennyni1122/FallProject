@@ -28,7 +28,9 @@ import com.jennyni.fallproject.utils.Constant;
 import com.jennyni.fallproject.utils.UtilsHelper;
 
 import java.io.IOException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import java.util.Random;
 
@@ -117,6 +119,14 @@ public class LocationService extends Service {
                     Log.e(TAG, "开始遍历，长度：" + list.size());
                     for (final AskAllFallInfoBean.ResultBean bean : list) {
                         if (isOutOfRadius(bean)) {
+//                             handler.post(new Runnable() {
+//                                    @Override
+//                                    public void run() {
+//                                        Log.e(TAG, String.format("%s在范围外，请注意!", bean.getName() == null ? "未知用户" : bean.getName()));
+//                                        sendNotifycation(String.format("%s在范围外，请注意!", bean.getName() == null ? "未知用户" : bean.getName()), bean.getCard_id());
+//                                    }
+//                                });
+
                             if (!isOverTime(bean.getTime())) {
                                 handler.post(new Runnable() {
                                     @Override
@@ -128,9 +138,17 @@ public class LocationService extends Service {
                             } else {
                                 cancleNotify(NOTIFICATION_ID);
                             }
-
                         }
+
                         if (isFalled(bean)) {
+//                            handler.post(new Runnable() {
+//                                     @Override
+//                                    public void run() {
+//                                         Log.e(TAG, String.format("%s发生跌倒，请注意!", bean.getName() == null ? "未知用户" : bean.getName()));
+//                                         sendNotifycation(String.format("%s发生跌倒，请注意!", bean.getName() == null ? "未知用户" : bean.getName()), bean.getCard_id());
+//                                     }
+//                                 });
+
                             if (!isOverTime(bean.getTime())) {
                                 handler.post(new Runnable() {
                                     @Override
@@ -145,7 +163,6 @@ public class LocationService extends Service {
 
                         }
 
-
                     }
                 }
             }
@@ -159,7 +176,19 @@ public class LocationService extends Service {
      * @return
      */
     boolean isOverTime(Long time) {
-        return time + OVERTIME < System.currentTimeMillis();
+      //  return time*1000 + OVERTIME < System.currentTimeMillis();
+        //超时为true
+        long currentTimeMillis = System.currentTimeMillis();
+        long l = time * 1000 + OVERTIME;
+//        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+//        String fallTime= sdf.format(new Date(currentTimeMillis));
+//        String nowTime= sdf.format(new Date(l));
+        if (l < currentTimeMillis) {
+                return true;
+            }else {
+                return false;
+            }
+
     }
 
     /**
