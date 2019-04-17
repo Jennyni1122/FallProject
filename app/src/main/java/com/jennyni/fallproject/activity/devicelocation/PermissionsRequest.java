@@ -11,7 +11,7 @@ import android.provider.Settings;
 import android.support.annotation.NonNull;
 import android.support.v4.app.ActivityCompat;
 
-import com.jennyni.fallproject.PermissionsChecker;
+import com.jennyni.fallproject.permission.PermissionsChecker;
 
 /**
  * Created by Yellow on 2017/11/2.

@@ -1,4 +1,4 @@
-package com.jennyni.fallproject;
+package com.jennyni.fallproject.permission;
 
 import android.app.AlertDialog;
 import android.content.DialogInterface;

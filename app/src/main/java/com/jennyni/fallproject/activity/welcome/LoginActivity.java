@@ -55,6 +55,7 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
     public static final int MSG_LOGIN_OK = 1;//获取登录数据
     public static final int MSG_LOGIN_FAIL = 2;//获取登录数据
 
+
     String currentUserphone,currentPsw;        //输入的手机号码和密码
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -218,7 +219,7 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
             @Override
             public void onFailure(Call call, final IOException e) {
                 //请求失败
-                new Handler().post(new Runnable() {
+                handler.post(new Runnable() {
                     @Override
                     public void run() {
                         Toast.makeText(LoginActivity.this, "网络错误", Toast.LENGTH_SHORT).show();
@@ -235,7 +236,7 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
                 UserLoginBean.ResultBean resultBean = JsonParse.getInstance().getuserLoginInfo(response.body().string());
                 if (resultBean==null){
                     Log.e("MSG_LOGIN_OK", "请求登录异常,账户或者密码错误");
-                    new Handler().post(new Runnable() {
+                  handler.post(new Runnable() {
                         @Override
                         public void run() {
                             Toast.makeText(LoginActivity.this, "账户或者密码错误", Toast.LENGTH_SHORT).show();

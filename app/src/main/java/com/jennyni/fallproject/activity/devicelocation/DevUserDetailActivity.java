@@ -1,21 +1,15 @@
 package com.jennyni.fallproject.activity.devicelocation;
 
 import android.annotation.SuppressLint;
-import android.app.Notification;
-import android.app.NotificationChannel;
-import android.app.NotificationManager;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.graphics.BitmapFactory;
 import android.graphics.Color;
-import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
-import android.support.v4.app.NotificationCompat;
-import android.support.v4.content.ContextCompat;
 import android.util.Log;
 import android.view.View;
 import android.widget.ImageView;
@@ -38,24 +32,14 @@ import com.google.gson.Gson;
 import com.jennyni.fallproject.Bean.AskAllFallInfoBean;
 import com.jennyni.fallproject.Bean.AskDevInfoBean;
 import com.jennyni.fallproject.Bean.AskFallInfoBean;
-import com.jennyni.fallproject.Bean.UserUpdateBean;
-import com.jennyni.fallproject.FallProjectApplication;
 import com.jennyni.fallproject.R;
 import com.jennyni.fallproject.activity.EditDevUserActivity;
-import com.jennyni.fallproject.fragment.HomeFragment;
-import com.jennyni.fallproject.service.LocationService;
 import com.jennyni.fallproject.utils.Constant;
-import com.jennyni.fallproject.utils.DBUtils;
 import com.jennyni.fallproject.utils.JsonParse;
-import com.jennyni.fallproject.utils.LocationServiceUtils;
 import com.jennyni.fallproject.utils.UtilsHelper;
 
 import java.io.IOException;
-import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
-import java.util.Random;
 
 import okhttp3.Call;
 import okhttp3.Callback;

@@ -4,7 +4,6 @@ import android.annotation.SuppressLint;
 import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
-import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
@@ -20,9 +19,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.itheima.PullToRefreshView;
-import com.jennyni.fallproject.Bean.UserLoginBean;
 import com.jennyni.fallproject.Bean.UserUpdateBean;
-import com.jennyni.fallproject.FallProjectApplication;
 import com.jennyni.fallproject.R;
 import com.jennyni.fallproject.activity.AddDeviceUserInfoActivity;
 import com.jennyni.fallproject.activity.devicelocation.DevUserDetailActivity;
@@ -32,12 +29,7 @@ import com.jennyni.fallproject.utils.JsonParse;
 import com.jennyni.fallproject.utils.UtilsHelper;
 
 
-import org.json.JSONException;
-import org.json.JSONObject;
-import org.w3c.dom.Text;
-
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.List;
 
 import okhttp3.Call;
@@ -45,8 +37,6 @@ import okhttp3.Callback;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.Response;
-
-import static android.app.Activity.RESULT_OK;
 
 /**
  *

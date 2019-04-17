@@ -28,7 +28,6 @@ import com.amap.api.services.core.LatLonPoint;
 import com.amap.api.services.geocoder.GeocodeSearch;
 import com.amap.api.services.geocoder.RegeocodeQuery;
 import com.jennyni.fallproject.BuildConfig;
-import com.jennyni.fallproject.PermissionsActivity;
 import com.jennyni.fallproject.R;
 import com.yingze.gouldmap.utils.LocationUtil;
 

@@ -1,4 +1,4 @@
-package com.jennyni.fallproject;
+package com.jennyni.fallproject.base;
 
 import android.app.Activity;
 import android.app.Application;

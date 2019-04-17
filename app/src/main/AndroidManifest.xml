@@ -29,11 +29,11 @@
     <uses-permission android:name="android.permission.CHANGE_WIFI_STATE" />
 
     <application
-        android:name=".FallProjectApplication"
+        android:name=".base.FallProjectApplication"
         android:allowBackup="true"
-        android:icon="@mipmap/icon_fall"
+        android:icon="@mipmap/icon_final_fall"
         android:label="@string/app_name"
-        android:roundIcon="@mipmap/icon_fall"
+        android:roundIcon="@mipmap/icon_final_fall"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
         <activity android:name=".activity.welcome.LoginActivity" />
@@ -59,7 +59,7 @@
 
         <meta-data
             android:name="com.amap.api.v2.apikey"
-            android:value="4f7f2550ae54e7cd897b72803c650219" />
+            android:value="0e675de28df729a06fd971811eecfb1a" />
 
         <activity android:name=".activity.EditDevUserActivity" />
         <activity android:name=".activity.devicelocation.SelectTimeActivity" />
