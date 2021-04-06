@@ -10,8 +10,6 @@ import android.net.NetworkInfo;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
-import android.support.v7.app.AppCompatActivity;
-import android.text.TextUtils;
 import android.text.method.HideReturnsTransformationMethod;
 import android.text.method.PasswordTransformationMethod;
 import android.util.Log;
@@ -26,37 +24,29 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.amap.api.maps2d.model.LatLng;
 import com.amap.api.services.core.LatLonPoint;
 import com.jennyni.fallproject.Bean.SetUpBean;
-import com.jennyni.fallproject.Bean.UserUpdateBean;
 import com.jennyni.fallproject.R;
-import com.jennyni.fallproject.fragment.MeFragment;
 import com.jennyni.fallproject.net.NetWorkBuilder;
+import com.jennyni.fallproject.utils.ActivityCollectorUtil;
 import com.jennyni.fallproject.utils.Constant;
-import com.jennyni.fallproject.utils.DBUtils;
 import com.jennyni.fallproject.utils.JsonParse;
 import com.jennyni.fallproject.utils.StringUtil;
 import com.jennyni.fallproject.utils.UtilsHelper;
 
 import java.io.IOException;
-import java.net.URI;
-import java.net.URL;
 import java.net.URLEncoder;
-import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import okhttp3.Call;
 import okhttp3.Callback;
-import okhttp3.OkHttpClient;
-import okhttp3.Request;
 import okhttp3.Response;
 
 /**
  * 添加设备用户信息，绑定设备
  */
-public class AddDeviceUserInfoActivity extends AppCompatActivity implements View.OnClickListener {
+public class AddDeviceUserInfoActivity extends ActivityCollectorUtil implements View.OnClickListener {
     public static final String TAG = "AddDevice";
     public static final int REQUEST_CODE = 0x12;
     private RelativeLayout rl_title_bar;
@@ -78,10 +68,18 @@ public class AddDeviceUserInfoActivity extends AppCompatActivity implements View
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        addActivity(this);
         setContentView(R.layout.activity_add_device_user_info);
 
         initView();         //初始化控件
         setListener();      //控件的点击事件
+    }
+
+    @Override
+    protected void onDestroy() {
+        removeActivity(this);
+        super.onDestroy();
+
     }
 
     private void initView() {
@@ -272,11 +270,7 @@ public class AddDeviceUserInfoActivity extends AppCompatActivity implements View
                 "&geocenter=" + URLEncoder.encode(geocenter) +
                 "&georadius=" + georadius;
         Log.e(TAG, url);
-        OkHttpClient okHttpClient = new OkHttpClient();
-        final Request request = new Request.Builder().url(url).build();
-        Call call = okHttpClient.newCall(request);
-        //开启异步访问网络
-        call.enqueue(new Callback() {
+        Callback callback=new Callback() {
             @Override
             public void onFailure(Call call, IOException e) {
                 Log.e(TAG, "MSG_ADDUSER_FAIL" + "请求失败：" + e.getMessage());
@@ -286,13 +280,36 @@ public class AddDeviceUserInfoActivity extends AppCompatActivity implements View
             public void onResponse(Call call, Response response) throws IOException {
                 Log.e(TAG, "MSG_ADDUSER_OK" + "请求成功：" + response);
                 SetUpBean.ResultBean setupInfo = JsonParse.getInstance().getSetupInfo(response.body().string());
-//                Log.e(TAG, "MSG_ADDUSER_OK" + str);
+                //Log.e(TAG, "MSG_ADDUSER_OK" + str);
                 Message message = new Message();
                 message.what = MSG_ADDUSER_OK;
                 message.obj = setupInfo;
                 handler.sendMessage(message);
             }
-        });
+        };
+        NetWorkBuilder.getInstance().getOkHttp(url,callback);
+
+//        OkHttpClient okHttpClient = new OkHttpClient();
+//        final Request request = new Request.Builder().url(url).build();
+//        Call call = okHttpClient.newCall(request);
+//        //开启异步访问网络
+//        call.enqueue(new Callback() {
+//            @Override
+//            public void onFailure(Call call, IOException e) {
+//                Log.e(TAG, "MSG_ADDUSER_FAIL" + "请求失败：" + e.getMessage());
+//            }
+//
+//            @Override
+//            public void onResponse(Call call, Response response) throws IOException {
+//                Log.e(TAG, "MSG_ADDUSER_OK" + "请求成功：" + response);
+//                SetUpBean.ResultBean setupInfo = JsonParse.getInstance().getSetupInfo(response.body().string());
+////                Log.e(TAG, "MSG_ADDUSER_OK" + str);
+//                Message message = new Message();
+//                message.what = MSG_ADDUSER_OK;
+//                message.obj = setupInfo;
+//                handler.sendMessage(message);
+//            }
+//        });
 
     }
 
@@ -304,11 +321,7 @@ public class AddDeviceUserInfoActivity extends AppCompatActivity implements View
         currentDevPsw = et_dev_psw.getText().toString();
         String url = Constant.BASE_WEBSITE + Constant.REQUEST_ADD_DEVICE_URL
                 + "?account=" + spUserPhone + "&cardid=" + currentDevCode + "&cardpass=" + currentDevPsw;
-        OkHttpClient okHttpClient = new OkHttpClient();
-        final Request request = new Request.Builder().url(url).build();
-        Call call = okHttpClient.newCall(request);
-        //开启异步访问网络
-        call.enqueue(new Callback() {
+        Callback callback=new Callback() {
             @Override
             public void onFailure(Call call, IOException e) {
                 //联网失败
@@ -325,8 +338,29 @@ public class AddDeviceUserInfoActivity extends AppCompatActivity implements View
                 message.obj = str;
                 handler.sendMessage(message);
             }
-        });
+        };
+        NetWorkBuilder.getInstance().getOkHttp(url,callback);
     }
+        //开启异步访问网络
+//        call.enqueue(new Callback() {
+//            @Override
+//            public void onFailure(Call call, IOException e) {
+//                //联网失败
+//                Log.e(TAG, "MSG_BIND_FAIL" + "请求失败：" + e.getMessage());
+//            }
+//
+//            @Override
+//            public void onResponse(Call call, Response response) throws IOException {
+//                Log.e(TAG, "MSG_BINDDEV_OK" + "请求成功：" + response);
+//                String str = JsonParse.getInstance().getAddDeviceInfo(response.body().string());
+//                Log.e(TAG, "MSG_BINDDEV_OK" + str);
+//                Message message = new Message();
+//                message.what = MSG_BINDDEV_OK;
+//                message.obj = str;
+//                handler.sendMessage(message);
+//            }
+//        });
+//    }
 
     /**
      * 事件捕获

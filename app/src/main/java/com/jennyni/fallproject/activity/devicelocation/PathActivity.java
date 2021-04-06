@@ -4,11 +4,9 @@ import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.BitmapFactory;
-import android.graphics.Color;
+import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
-import android.support.v7.app.AppCompatActivity;
-import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
 import android.widget.RelativeLayout;
@@ -17,8 +15,8 @@ import android.widget.TextView;
 import com.amap.api.maps2d.model.LatLng;
 import com.jennyni.fallproject.Bean.AskTodayTrackBean;
 import com.jennyni.fallproject.Bean.AskTrackBetweenBean;
-import com.jennyni.fallproject.Bean.UserUpdateBean;
 import com.jennyni.fallproject.R;
+import com.jennyni.fallproject.net.NetWorkBuilder;
 import com.jennyni.fallproject.utils.Constant;
 import com.jennyni.fallproject.utils.JsonParse;
 import com.jennyni.fallproject.utils.UtilsHelper;
@@ -29,8 +27,6 @@ import java.util.List;
 
 import okhttp3.Call;
 import okhttp3.Callback;
-import okhttp3.OkHttpClient;
-import okhttp3.Request;
 import okhttp3.Response;
 
 /**
@@ -216,11 +212,7 @@ public class PathActivity extends BaseMapActivity {
     private void sendrequest_askTodayTrace() {
          //11.今日运动轨迹
         String url = Constant.BASE_WEBSITE+Constant.REQUEST_TODAY_TRACE_URL +"?account=" +account+"&cardid="+cardid;
-        OkHttpClient okHttpClient = new OkHttpClient();
-        final Request request = new Request.Builder().url(url).build();
-        Call call = okHttpClient.newCall(request);
-        //开启异步访问网络
-        call.enqueue(new Callback() {
+        Callback callback=new Callback() {
             @Override
             public void onFailure(Call call, IOException e) {
                 //联网失败
@@ -237,7 +229,9 @@ public class PathActivity extends BaseMapActivity {
                 message.obj = res;
                 handler.sendMessage(message);
             }
-        });
+        };
+        //开启异步访问网络
+        NetWorkBuilder.getInstance().getOkHttp(url,callback);
 
 
     }
@@ -252,11 +246,7 @@ public class PathActivity extends BaseMapActivity {
         //String url12 = "http://www.phyth.cn/index/fall/askTrackBetween/account/"+account+"/cardid/"+cardid+"/d1/"+ cardpass+"/d2/0";
         String url = Constant.BASE_WEBSITE + Constant.REQUEST_ASKTRACKBETWEEN_DEVICE_URL +
                 "?account=" + account + "&cardid=" + cardid + "&d1=" + startTime + "&d2=" + endTime;
-        OkHttpClient okHttpClient = new OkHttpClient();
-        final Request request = new Request.Builder().url(url).build();
-        Call call = okHttpClient.newCall(request);
-        //开启异步访问网络
-        call.enqueue(new Callback() {
+        Callback callback=new Callback() {
             @Override
             public void onFailure(Call call, IOException e) {
                 //联网失败
@@ -273,7 +263,9 @@ public class PathActivity extends BaseMapActivity {
                 message.obj = res;
                 handler.sendMessage(message);
             }
-        });
+        };
+        //开启异步访问网络
+        NetWorkBuilder.getInstance().getOkHttp(url,callback);
 
     }
 

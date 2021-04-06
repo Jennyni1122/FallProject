@@ -34,6 +34,7 @@ import com.jennyni.fallproject.Bean.AskDevInfoBean;
 import com.jennyni.fallproject.Bean.AskFallInfoBean;
 import com.jennyni.fallproject.R;
 import com.jennyni.fallproject.activity.EditDevUserActivity;
+import com.jennyni.fallproject.net.NetWorkBuilder;
 import com.jennyni.fallproject.utils.Constant;
 import com.jennyni.fallproject.utils.JsonParse;
 import com.jennyni.fallproject.utils.UtilsHelper;
@@ -43,8 +44,6 @@ import java.util.List;
 
 import okhttp3.Call;
 import okhttp3.Callback;
-import okhttp3.OkHttpClient;
-import okhttp3.Request;
 import okhttp3.Response;
 
 /**
@@ -349,11 +348,7 @@ public class DevUserDetailActivity extends BaseMapActivity implements GeocodeSea
         String url = Constant.BASE_WEBSITE + Constant.REQUEST_ASKDEVINFO_DEVICE_URL
                 + "?account=" + UtilsHelper.readLoginUserName(this) + "&cardid=" + cardid;
         Log.e(TAG, url);
-        OkHttpClient okHttpClient = new OkHttpClient();
-        final Request request = new Request.Builder().url(url).build();
-        Call call = okHttpClient.newCall(request);
-        //开启异步访问网络
-        call.enqueue(new Callback() {
+        Callback callback=new Callback() {
             @Override
             public void onFailure(Call call, IOException e) {
                 Log.e(TAG, "MSG_SHOW_FAIL" + "请求失败：" + e.getMessage());
@@ -368,9 +363,10 @@ public class DevUserDetailActivity extends BaseMapActivity implements GeocodeSea
                 message.what = MSG_SHOW_OK;
                 message.obj = response.body().string();
                 handler.sendMessage(message);
-
             }
-        });
+        };
+        //开启异步访问网络
+        NetWorkBuilder.getInstance().getOkHttp(url,callback);
 
     }
 
@@ -385,11 +381,7 @@ public class DevUserDetailActivity extends BaseMapActivity implements GeocodeSea
         String url = Constant.BASE_WEBSITE + Constant.REQUEST_ASKFALLINFO_DEVICE_URL
                 + "?account=" + account + "&cardid=" + cardid;
         Log.e(TAG, url);
-        OkHttpClient okHttpClient = new OkHttpClient();
-        final Request request = new Request.Builder().url(url).build();
-        Call call = okHttpClient.newCall(request);
-        //开启异步访问网络
-        call.enqueue(new Callback() {
+        Callback callback=new Callback() {
             @Override
             public void onFailure(Call call, IOException e) {
                 //联网失败
@@ -416,7 +408,9 @@ public class DevUserDetailActivity extends BaseMapActivity implements GeocodeSea
                 message.obj = bean;
                 handler.sendMessage(message);
             }
-        });
+        };
+        //开启异步访问网络
+       NetWorkBuilder.getInstance().getOkHttp(url,callback);
     }
 
 

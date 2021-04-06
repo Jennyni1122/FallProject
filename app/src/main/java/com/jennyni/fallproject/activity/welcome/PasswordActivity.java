@@ -4,12 +4,11 @@ import android.annotation.SuppressLint;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Build;
+import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
 import android.os.Message;
 import android.support.annotation.RequiresApi;
-import android.support.v7.app.AppCompatActivity;
-import android.os.Bundle;
 import android.text.TextUtils;
 import android.text.method.HideReturnsTransformationMethod;
 import android.text.method.PasswordTransformationMethod;
@@ -24,7 +23,8 @@ import android.widget.Toast;
 
 import com.jennyni.fallproject.Bean.UserChangePassBean;
 import com.jennyni.fallproject.R;
-import com.jennyni.fallproject.activity.ModifyPswActivity;
+import com.jennyni.fallproject.net.NetWorkBuilder;
+import com.jennyni.fallproject.utils.ActivityCollectorUtil;
 import com.jennyni.fallproject.utils.Constant;
 import com.jennyni.fallproject.utils.CountDownTimerUtils;
 import com.jennyni.fallproject.utils.JsonParse;
@@ -37,14 +37,12 @@ import cn.smssdk.EventHandler;
 import cn.smssdk.SMSSDK;
 import okhttp3.Call;
 import okhttp3.Callback;
-import okhttp3.OkHttpClient;
-import okhttp3.Request;
 import okhttp3.Response;
 
 /**
  * 忘记密码
  */
-public class PasswordActivity extends AppCompatActivity implements View.OnClickListener{
+public class PasswordActivity extends ActivityCollectorUtil implements View.OnClickListener{
     public static final String TAG = "PasswordActivity";
     private RelativeLayout rl_title_bar;
     private TextView tv_main_title,tv_back;
@@ -60,6 +58,7 @@ public class PasswordActivity extends AppCompatActivity implements View.OnClickL
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        addActivity(this);
         setContentView(R.layout.activity_password);
         mHandler = new MHandler();
         initView();         //初始化界面
@@ -322,11 +321,7 @@ public class PasswordActivity extends AppCompatActivity implements View.OnClickL
 
         String url = Constant.BASE_WEBSITE+Constant.REQUEST_FORGET_PSW_USER_URL
                 +"?account="+ currentPhone +"&pass="+currentPsw;
-        OkHttpClient okHttpClient = new OkHttpClient();
-        final Request request = new Request.Builder().url(url).build();
-        Call call = okHttpClient.newCall(request);
-        //开启异步访问网络
-        call.enqueue(new Callback() {
+        Callback callback= new Callback() {
             @Override
             public void onFailure(Call call, IOException e) {
                 //联网失败
@@ -347,13 +342,17 @@ public class PasswordActivity extends AppCompatActivity implements View.OnClickL
                 message.obj = resultBean;
                 mHandler.sendMessage(message);
             }
-        });
+        };
+        NetWorkBuilder.getInstance().getOkHttp(url,callback);
+        //开启异步访问网络
+
 
     }
 
     @Override
     protected void onDestroy() {
         mCountDownTimerUtils.cancel();
+        removeActivity(this);
         super.onDestroy();
     }
 }

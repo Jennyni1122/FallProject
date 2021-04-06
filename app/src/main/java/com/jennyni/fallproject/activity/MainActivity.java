@@ -7,30 +7,27 @@ import android.content.Intent;
 import android.content.pm.ApplicationInfo;
 import android.net.Uri;
 import android.os.Build;
+import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.view.ViewPager;
-import android.support.v7.app.AppCompatActivity;
-import android.os.Bundle;
 import android.view.KeyEvent;
-import android.view.View;
 import android.widget.RadioGroup;
-import android.widget.RelativeLayout;
-import android.widget.TextView;
 import android.widget.Toast;
 
-import com.jennyni.fallproject.adapter.MyFragmentPagerAdapter;
 import com.jennyni.fallproject.R;
+import com.jennyni.fallproject.adapter.MyFragmentPagerAdapter;
 import com.jennyni.fallproject.fragment.FindFragment;
 import com.jennyni.fallproject.fragment.HomeFragment;
 import com.jennyni.fallproject.fragment.MeFragment;
 import com.jennyni.fallproject.service.LocationService;
+import com.jennyni.fallproject.utils.ActivityCollectorUtil;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.List;
 
-public class MainActivity extends AppCompatActivity {
+public class MainActivity extends ActivityCollectorUtil {
 
     private ViewPager viewPager;
     private RadioGroup radioGroup;
@@ -42,6 +39,7 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+        addActivity(this);
         initView();         //初始化控件
         if (isNotificationEnabled(this)){
             startNotifyService();
@@ -51,6 +49,7 @@ public class MainActivity extends AppCompatActivity {
 
        // startNotifyService();
     }
+
 
     private void showDialog_notify(Context context) {
         Intent localIntent = new Intent();
@@ -162,7 +161,9 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onDestroy() {
         LocationService.stopService(this);
+        removeActivity(this);
         super.onDestroy();
+
     }
 
     @SuppressLint("NewApi")

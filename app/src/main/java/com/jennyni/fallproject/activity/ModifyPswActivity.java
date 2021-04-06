@@ -6,7 +6,6 @@ import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
-import android.support.v7.app.AppCompatActivity;
 import android.text.TextUtils;
 import android.text.method.HideReturnsTransformationMethod;
 import android.text.method.PasswordTransformationMethod;
@@ -22,6 +21,8 @@ import android.widget.Toast;
 import com.jennyni.fallproject.Bean.UserChangePassBean;
 import com.jennyni.fallproject.R;
 import com.jennyni.fallproject.activity.welcome.LoginActivity;
+import com.jennyni.fallproject.net.NetWorkBuilder;
+import com.jennyni.fallproject.utils.ActivityCollectorUtil;
 import com.jennyni.fallproject.utils.Constant;
 import com.jennyni.fallproject.utils.JsonParse;
 import com.jennyni.fallproject.utils.UtilsHelper;
@@ -30,8 +31,6 @@ import java.io.IOException;
 
 import okhttp3.Call;
 import okhttp3.Callback;
-import okhttp3.OkHttpClient;
-import okhttp3.Request;
 import okhttp3.Response;
 
 
@@ -40,7 +39,7 @@ import okhttp3.Response;
  * Created by Jenny on 2019/3/6.
  */
 
-public class ModifyPswActivity extends AppCompatActivity{
+public class ModifyPswActivity extends ActivityCollectorUtil {
     public static final String TAG = "ModifyPswActivity";
     private TextView tv_main_title, tv_back;
     private Button btn_save;
@@ -56,9 +55,16 @@ public class ModifyPswActivity extends AppCompatActivity{
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_modify_psw);
-
+        addActivity(this);
         initView();
         spuserName = UtilsHelper.readLoginUserName(this);     //读取登录账户
+
+    }
+
+    @Override
+    protected void onDestroy() {
+        removeActivity(this);
+        super.onDestroy();
 
     }
 
@@ -174,11 +180,7 @@ public class ModifyPswActivity extends AppCompatActivity{
         //String url3 = "http://www.phyth.cn/index/fall/userChangePass/account/"+ account +"/pass/"+cardid+"/newpass/"+cardpass;
         String url = Constant.BASE_WEBSITE+Constant.REQUEST_PSW_USER_URL
                 +"?account="+ spuserName +"&pass="+originalPsw+"&newpass="+newPsw;
-        OkHttpClient okHttpClient = new OkHttpClient();
-        final Request request = new Request.Builder().url(url).build();
-        Call call = okHttpClient.newCall(request);
-        //开启异步访问网络
-        call.enqueue(new Callback() {
+        Callback callback=new Callback() {
             @Override
             public void onFailure(Call call, IOException e) {
                 //联网失败
@@ -199,7 +201,10 @@ public class ModifyPswActivity extends AppCompatActivity{
                 message.obj = resultBean;
                 handler.sendMessage(message);
             }
-        });
+        };
+        NetWorkBuilder.getInstance().getOkHttp(url,callback);
+        //开启异步访问网络
+
 
     }
 

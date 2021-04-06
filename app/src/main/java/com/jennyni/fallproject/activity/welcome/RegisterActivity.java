@@ -2,12 +2,11 @@ package com.jennyni.fallproject.activity.welcome;
 
 import android.content.Intent;
 import android.os.Build;
+import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
 import android.os.Message;
 import android.support.annotation.RequiresApi;
-import android.support.v7.app.AppCompatActivity;
-import android.os.Bundle;
 import android.text.TextUtils;
 import android.text.method.HideReturnsTransformationMethod;
 import android.text.method.PasswordTransformationMethod;
@@ -22,6 +21,8 @@ import android.widget.Toast;
 
 import com.jennyni.fallproject.Bean.UserRegisterBean;
 import com.jennyni.fallproject.R;
+import com.jennyni.fallproject.net.NetWorkBuilder;
+import com.jennyni.fallproject.utils.ActivityCollectorUtil;
 import com.jennyni.fallproject.utils.Constant;
 import com.jennyni.fallproject.utils.CountDownTimerUtils;
 import com.jennyni.fallproject.utils.JsonParse;
@@ -29,21 +30,17 @@ import com.jennyni.fallproject.utils.JsonParse;
 import java.io.IOException;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+
 import cn.smssdk.EventHandler;
 import cn.smssdk.SMSSDK;
-
 import okhttp3.Call;
 import okhttp3.Callback;
-import okhttp3.FormBody;
-import okhttp3.OkHttpClient;
-import okhttp3.Request;
-import okhttp3.RequestBody;
 import okhttp3.Response;
 
 /**
  * 注册界面
  */
-public class RegisterActivity extends AppCompatActivity implements View.OnClickListener {
+public class RegisterActivity extends ActivityCollectorUtil implements View.OnClickListener {
     private TextView tv_main_title, tv_back;
     private RelativeLayout rl_title_bar;
     private ImageView iv_show_psw;
@@ -58,11 +55,13 @@ public class RegisterActivity extends AppCompatActivity implements View.OnClickL
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        addActivity(this);
         setContentView(R.layout.activity_register);
         mHandler = new MHandler();
         initView();     //初始化界面
         initSMS();      //初始化短信模块
     }
+
 
     /**
      * 初始化界面
@@ -258,11 +257,7 @@ public class RegisterActivity extends AppCompatActivity implements View.OnClickL
     private void sendRequest_register(String account, String pass) {
         // http://www.phyth.cn/index/fall/userRegister/account/18860000306/pass/123456
         String url = Constant.BASE_WEBSITE + Constant.REQUEST_REGISTER_USER_URL + "?account=" + account + "&pass=" + pass;
-        OkHttpClient okHttpClient = new OkHttpClient();
-        final Request request = new Request.Builder().url(url).build();
-        Call call = okHttpClient.newCall(request);
-        //开启异步线程访问网络
-        call.enqueue(new Callback() {
+        Callback callback=new Callback() {
             @Override
             public void onFailure(Call call, IOException e) {
 
@@ -277,8 +272,10 @@ public class RegisterActivity extends AppCompatActivity implements View.OnClickL
                 message.obj = resultBean;  // 将服务器返回的结果存放到Message中 message.obj = response;
                 mHandler.sendMessage(message);
             }
-        });
+        };
 
+        //开启异步线程访问网络
+        NetWorkBuilder.getInstance().getOkHttp(url,callback);
     }
 
 
@@ -338,6 +335,7 @@ public class RegisterActivity extends AppCompatActivity implements View.OnClickL
     @Override
     protected void onDestroy() {
         mCountDownTimerUtils.cancel();
+        removeActivity(this);
         super.onDestroy();
     }
 }

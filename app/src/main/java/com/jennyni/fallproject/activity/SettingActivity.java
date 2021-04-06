@@ -1,7 +1,6 @@
 package com.jennyni.fallproject.activity;
 
 import android.content.Intent;
-import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.RelativeLayout;
@@ -10,12 +9,13 @@ import android.widget.Toast;
 
 import com.jennyni.fallproject.R;
 import com.jennyni.fallproject.activity.welcome.LoginActivity;
+import com.jennyni.fallproject.utils.ActivityCollectorUtil;
 import com.jennyni.fallproject.utils.UtilsHelper;
 
 /**
  * MeFragment的设置功能：改密/退出登录
  */
-public class SettingActivity extends AppCompatActivity {
+public class SettingActivity extends ActivityCollectorUtil {
     private TextView tv_main_title, tv_back;
     private RelativeLayout rl_title_bar;
     private RelativeLayout rl_modify_psw, rl_security_setting, rl_exit_login;
@@ -24,10 +24,17 @@ public class SettingActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        addActivity(this);
         setContentView(R.layout.activity_setting);
 
         instance = this;
         initView();
+    }
+
+    @Override
+    protected void onDestroy() {
+        removeActivity(this);
+        super.onDestroy();
     }
 
     private void initView() {
@@ -81,7 +88,7 @@ public class SettingActivity extends AppCompatActivity {
 //                FallProjectApplication.destroyActivity("mainActivity");
                 Intent intent = new Intent(SettingActivity.this,LoginActivity.class);
                 startActivity(intent);
-                finish();
+                finishAllActivity();
             }
         });
 

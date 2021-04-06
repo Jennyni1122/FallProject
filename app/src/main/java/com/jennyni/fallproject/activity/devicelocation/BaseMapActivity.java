@@ -2,6 +2,7 @@ package com.jennyni.fallproject.activity.devicelocation;
 
 import android.Manifest;
 import android.app.Activity;
+import android.arch.core.BuildConfig;
 import android.graphics.Bitmap;
 import android.graphics.Color;
 import android.os.Bundle;
@@ -27,10 +28,8 @@ import com.amap.api.maps2d.model.PolylineOptions;
 import com.amap.api.services.core.LatLonPoint;
 import com.amap.api.services.geocoder.GeocodeSearch;
 import com.amap.api.services.geocoder.RegeocodeQuery;
-import com.jennyni.fallproject.BuildConfig;
 import com.jennyni.fallproject.R;
 import com.yingze.gouldmap.utils.LocationUtil;
-
 
 import java.util.List;
 

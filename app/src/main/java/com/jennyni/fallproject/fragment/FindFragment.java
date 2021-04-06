@@ -162,11 +162,7 @@ public class FindFragment extends Fragment implements WarningAdapter.IonSlidingV
 
         String account = UtilsHelper.readLoginUserName(getActivity());
         String url = Constant.BASE_WEBSITE + Constant.REQUEST_ASKALLFALLINFO_DEVICE_URL + "?account=" + account;
-        OkHttpClient okHttpClient = new OkHttpClient();
-        final Request request = new Request.Builder().url(url).build();
-        Call call = okHttpClient.newCall(request);
-        //开启异步访问网络
-        call.enqueue(new Callback() {
+        Callback callback=new Callback() {
             @Override
             public void onFailure(Call call, IOException e) {
                 //联网失败
@@ -182,7 +178,9 @@ public class FindFragment extends Fragment implements WarningAdapter.IonSlidingV
                 message.obj = res;
                 handler.sendMessage(message);
             }
-        });
+        };
+        //开启异步访问网络
+
 
 
     }
