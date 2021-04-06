@@ -1,11 +1,8 @@
 package com.jennyni.fallproject.activity;
 
-import android.app.Activity;
-import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
-import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
@@ -14,9 +11,7 @@ import android.widget.EditText;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
-import com.amap.api.maps2d.CameraUpdateFactory;
 import com.amap.api.maps2d.model.LatLng;
-import com.amap.api.services.core.LatLonPoint;
 import com.amap.api.services.geocoder.GeocodeAddress;
 import com.amap.api.services.geocoder.GeocodeQuery;
 import com.amap.api.services.geocoder.GeocodeResult;
@@ -24,6 +19,7 @@ import com.amap.api.services.geocoder.GeocodeSearch;
 import com.amap.api.services.geocoder.RegeocodeResult;
 import com.jennyni.fallproject.R;
 import com.jennyni.fallproject.adapter.GetAddressAdapter;
+import com.jennyni.fallproject.utils.ActivityCollectorUtil;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -37,7 +33,7 @@ import static com.jennyni.fallproject.activity.EditDevUserActivity.REQUEST_CODE1
  * Created by Administrator on 2019/3/11.
  */
 
-public class GetAddressByKeyword extends AppCompatActivity implements GeocodeSearch.OnGeocodeSearchListener, GetAddressAdapter.ItemClickListener {
+public class GetAddressByKeyword extends ActivityCollectorUtil implements GeocodeSearch.OnGeocodeSearchListener, GetAddressAdapter.ItemClickListener {
 
     private RelativeLayout rl_title_bar;
     private TextView tv_main_title, tv_back;
@@ -53,11 +49,19 @@ public class GetAddressByKeyword extends AppCompatActivity implements GeocodeSea
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        addActivity(this);
         setContentView(R.layout.activity_getaddressbykeyword);
         geocoderSearch = new GeocodeSearch(this);
         geocoderSearch.setOnGeocodeSearchListener(this);
 
         initView();
+
+    }
+
+    @Override
+    protected void onDestroy() {
+        removeActivity(this);
+        super.onDestroy();
 
     }
 

@@ -24,6 +24,7 @@ import com.jennyni.fallproject.R;
 import com.jennyni.fallproject.activity.AddDeviceUserInfoActivity;
 import com.jennyni.fallproject.activity.devicelocation.DevUserDetailActivity;
 import com.jennyni.fallproject.adapter.DeviceListAdapter;
+import com.jennyni.fallproject.net.NetWorkBuilder;
 import com.jennyni.fallproject.utils.Constant;
 import com.jennyni.fallproject.utils.JsonParse;
 import com.jennyni.fallproject.utils.UtilsHelper;
@@ -205,11 +206,7 @@ public class HomeFragment extends Fragment {    //implements DeviceListAdapter.L
         String account = UtilsHelper.readLoginUserName(getActivity());
         String url = Constant.BASE_WEBSITE + Constant.REQUEST_UPDATE_USER_URL + "?account=" + account;
         Log.e(TAG, "initData: " + url);
-        OkHttpClient okHttpClient = new OkHttpClient();
-        final Request request = new Request.Builder().url(url).build();
-        Call call = okHttpClient.newCall(request);
-        //开启异步线程访问网络
-        call.enqueue(new Callback() {
+        Callback callback=new Callback() {
             @Override
             public void onFailure(Call call, IOException e) {
                 Log.e(TAG, "MSG_DevUser_FAIL" + "请求失败：" + e.getMessage());
@@ -224,7 +221,9 @@ public class HomeFragment extends Fragment {    //implements DeviceListAdapter.L
                 msg.obj = res;
                 handler.sendMessage(msg);
             }
-        });
+        };
+        //开启异步线程访问网络
+        NetWorkBuilder.getInstance().getOkHttp(url,callback);
     }
 
     /**
@@ -235,11 +234,7 @@ public class HomeFragment extends Fragment {    //implements DeviceListAdapter.L
         String account = UtilsHelper.readLoginUserName(getActivity());
         String url = Constant.BASE_WEBSITE + Constant.REQUEST_DEL_DEVICE_URL
                 + "?account=" + account + "&cardid=" + cardid;
-        OkHttpClient okHttpClient = new OkHttpClient();
-        final Request request = new Request.Builder().url(url).build();
-        Call call = okHttpClient.newCall(request);
-        //开启异步访问网络
-        call.enqueue(new Callback() {
+        Callback callback=new Callback() {
             @Override
             public void onFailure(Call call, IOException e) {
                 //联网失败
@@ -256,7 +251,9 @@ public class HomeFragment extends Fragment {    //implements DeviceListAdapter.L
                 message.obj = str;
                 handler.sendMessage(message);
             }
-        });
+        };
+        //开启异步访问网络
+        NetWorkBuilder.getInstance().getOkHttp(url,callback);
 
     }
 

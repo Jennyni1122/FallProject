@@ -10,7 +10,6 @@ import android.net.NetworkInfo;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
-import android.support.v7.app.AppCompatActivity;
 import android.text.TextUtils;
 import android.text.method.HideReturnsTransformationMethod;
 import android.text.method.PasswordTransformationMethod;
@@ -25,22 +24,20 @@ import android.widget.Toast;
 import com.jennyni.fallproject.Bean.UserLoginBean;
 import com.jennyni.fallproject.R;
 import com.jennyni.fallproject.activity.MainActivity;
+import com.jennyni.fallproject.net.NetWorkBuilder;
+import com.jennyni.fallproject.utils.ActivityCollectorUtil;
 import com.jennyni.fallproject.utils.Constant;
 import com.jennyni.fallproject.utils.JsonParse;
-
 
 import java.io.IOException;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-
 import okhttp3.Call;
 import okhttp3.Callback;
-import okhttp3.OkHttpClient;
-import okhttp3.Request;
 import okhttp3.Response;
 
-public class LoginActivity extends AppCompatActivity implements View.OnClickListener{
+public class LoginActivity extends ActivityCollectorUtil implements View.OnClickListener{
 
     private static final String TAG = "LoginActivity";
 
@@ -60,10 +57,17 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        addActivity(this);
         setContentView(R.layout.activity_login);
 
         initView();     //初始化控件
 
+    }
+
+    @Override
+    protected void onDestroy() {
+        removeActivity(this);
+        super.onDestroy();
     }
 
     /**
@@ -209,13 +213,7 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
        // String url2 = "http://www.phyth.cn/index/fall/userlogin/account/"+account+"/pass/"+cardid;
         String url = Constant.BASE_WEBSITE + Constant.REQUEST_LOGIN_USER_URL+"?account="+account+"&pass="+pass;
         Log.e(TAG, url);
-        // 1. 获取OkHttpClient对象
-        OkHttpClient okHttpClient = new OkHttpClient();
-        // 2. 创建Request对象
-        final Request request = new Request.Builder().url(url).build();
-        Call call = okHttpClient.newCall(request);
-        //开启异步线程访问网络
-        call.enqueue(new Callback() {
+        Callback callback=new Callback() {
             @Override
             public void onFailure(Call call, final IOException e) {
                 //请求失败
@@ -236,13 +234,13 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
                 UserLoginBean.ResultBean resultBean = JsonParse.getInstance().getuserLoginInfo(response.body().string());
                 if (resultBean==null){
                     Log.e("MSG_LOGIN_OK", "请求登录异常,账户或者密码错误");
-                  handler.post(new Runnable() {
+                    handler.post(new Runnable() {
                         @Override
                         public void run() {
                             Toast.makeText(LoginActivity.this, "账户或者密码错误", Toast.LENGTH_SHORT).show();
                         }
                     });
-           //         Toast.makeText(LoginActivity.this, "请求登录异常！", Toast.LENGTH_SHORT).show();
+                    //         Toast.makeText(LoginActivity.this, "请求登录异常！", Toast.LENGTH_SHORT).show();
                     return;
                 }
                 Message message = new Message();
@@ -250,7 +248,45 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
                 message.obj = resultBean;
                 handler.sendMessage(message);
             }
-        });
+        };
+        NetWorkBuilder.getInstance().getOkHttp(url,callback);
+        //开启异步线程访问网络
+//        call.enqueue(new Callback() {
+//            @Override
+//            public void onFailure(Call call, final IOException e) {
+//                //请求失败
+//                handler.post(new Runnable() {
+//                    @Override
+//                    public void run() {
+//                        Toast.makeText(LoginActivity.this, "网络错误", Toast.LENGTH_SHORT).show();
+//                        Log.e("MSG_LOGIN_FAIL", "请求失败：" + e.getMessage());
+//                    }
+//                });
+//
+//            }
+//
+//            @Override
+//            public void onResponse(Call call, Response response) throws IOException {
+//                //请求成功
+//                Log.e("MSG_LOGIN_OK", "请求成功：" + response);
+//                UserLoginBean.ResultBean resultBean = JsonParse.getInstance().getuserLoginInfo(response.body().string());
+//                if (resultBean==null){
+//                    Log.e("MSG_LOGIN_OK", "请求登录异常,账户或者密码错误");
+//                  handler.post(new Runnable() {
+//                        @Override
+//                        public void run() {
+//                            Toast.makeText(LoginActivity.this, "账户或者密码错误", Toast.LENGTH_SHORT).show();
+//                        }
+//                    });
+//           //         Toast.makeText(LoginActivity.this, "请求登录异常！", Toast.LENGTH_SHORT).show();
+//                    return;
+//                }
+//                Message message = new Message();
+//                message.what = MSG_LOGIN_OK;
+//                message.obj = resultBean;
+//                handler.sendMessage(message);
+//            }
+//        });
 
     }
 
