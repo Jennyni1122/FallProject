@@ -14,17 +14,28 @@ android {
 
     signingConfigs {
         release {
-            storeFile file("F:\\Android Studio Projects\\FallProject\\fallproject.jks")
-            storePassword '328328328'
-            keyAlias 'FallProject'
-            keyPassword '328328328'
+            storeFile file('myKey.keystore')
+            storePassword '328328'
+            keyAlias 'apkkey'
+            keyPassword '328328'
+        }
+        debug {
+            storeFile file('debug.keystore')
+            storePassword 'android'
+            keyAlias 'androiddebugkey'
+            keyPassword 'android'
         }
     }
 
     buildTypes {
 
         debug{
-            signingConfig signingConfigs.release
+            minifyEnabled false      //是否开启混淆
+            multiDexEnabled false
+            shrinkResources false    //去除无用的resource文件
+            zipAlignEnabled true
+            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+            signingConfig signingConfigs.debug
         }
         release {
             minifyEnabled true      //是否开启混淆

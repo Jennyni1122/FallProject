@@ -59,7 +59,7 @@
 
         <meta-data
             android:name="com.amap.api.v2.apikey"
-            android:value="0e675de28df729a06fd971811eecfb1a" />
+            android:value="8e9cfd0248d9dc9a3337491e576af721" />
 
         <activity android:name=".activity.EditDevUserActivity" />
         <activity android:name=".activity.devicelocation.SelectTimeActivity" />

@@ -1,17 +1,17 @@
 package com.jennyni.fallproject.activity;
 
-import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.jennyni.fallproject.R;
+import com.jennyni.fallproject.utils.ActivityCollectorUtil;
 
 /**
  * 检测更新界面（目前放图标即可）
  */
-public class CheckUpdateActivity extends AppCompatActivity {
+public class CheckUpdateActivity extends ActivityCollectorUtil {
     private TextView tv_main_title,tv_back;
     private RelativeLayout rl_title_bar;
 
@@ -19,8 +19,15 @@ public class CheckUpdateActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_check_update);
-
+        addActivity(this);
         initView();
+    }
+
+    @Override
+    protected void onDestroy() {
+        removeActivity(this);
+        super.onDestroy();
+
     }
 
     private void initView() {
@@ -39,3 +46,4 @@ public class CheckUpdateActivity extends AppCompatActivity {
         });
     }
 }
+

@@ -3,14 +3,11 @@ package com.jennyni.fallproject.activity;
 import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.Intent;
+import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
-import android.support.v7.app.AppCompatActivity;
-import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
-import android.view.animation.AccelerateDecelerateInterpolator;
-import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
@@ -26,7 +23,8 @@ import com.jennyni.fallproject.Bean.AskDevInfoBean;
 import com.jennyni.fallproject.Bean.SetUpBean;
 import com.jennyni.fallproject.Bean.UserUpdateBean;
 import com.jennyni.fallproject.R;
-import com.jennyni.fallproject.activity.devicelocation.DevUserDetailActivity;
+import com.jennyni.fallproject.net.NetWorkBuilder;
+import com.jennyni.fallproject.utils.ActivityCollectorUtil;
 import com.jennyni.fallproject.utils.Constant;
 import com.jennyni.fallproject.utils.JsonParse;
 import com.jennyni.fallproject.utils.StringUtil;
@@ -38,16 +36,12 @@ import java.util.List;
 
 import okhttp3.Call;
 import okhttp3.Callback;
-import okhttp3.OkHttpClient;
-import okhttp3.Request;
 import okhttp3.Response;
-
-import static com.jennyni.fallproject.activity.AddDeviceUserInfoActivity.REQUEST_CODE;
 
 /**
  * 编辑设备用户信息
  */
-public class EditDevUserActivity extends AppCompatActivity implements View.OnClickListener {
+public class EditDevUserActivity extends ActivityCollectorUtil implements View.OnClickListener {
 
     public static final String TAG = "EditDevice";
     public static final int REQUEST_CODE1 = 0x13;
@@ -78,6 +72,7 @@ public class EditDevUserActivity extends AppCompatActivity implements View.OnCli
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        addActivity(this);
         setContentView(R.layout.activity_edit_dev_user);
 
         initView();         //初始化控件
@@ -86,6 +81,12 @@ public class EditDevUserActivity extends AppCompatActivity implements View.OnCli
         sendrequest_askDevInfo();       //请求网络，加载设备用户信息
     }
 
+    @Override
+    protected void onDestroy() {
+        removeActivity(this);
+        super.onDestroy();
+
+    }
 
     private void initView() {
         //标题栏
@@ -249,11 +250,7 @@ public class EditDevUserActivity extends AppCompatActivity implements View.OnCli
         String url = Constant.BASE_WEBSITE + Constant.REQUEST_ASKDEVINFO_DEVICE_URL
                 + "?account=" + spUserPhone + "&cardid=" + cardid;
         Log.e(TAG, url);
-        OkHttpClient okHttpClient = new OkHttpClient();
-        final Request request = new Request.Builder().url(url).build();
-        Call call = okHttpClient.newCall(request);
-        //开启异步访问网络
-        call.enqueue(new Callback() {
+        Callback callback=new Callback() {
             @Override
             public void onFailure(Call call, IOException e) {
                 Log.e(TAG, "MSG_SHOW_FAIL" + "请求失败：" + e.getMessage());
@@ -268,9 +265,9 @@ public class EditDevUserActivity extends AppCompatActivity implements View.OnCli
                 message.what = MSG_SHOW_OK;
                 message.obj = response.body().string();
                 handler.sendMessage(message);
-
             }
-        });
+        };
+        NetWorkBuilder.getInstance().getOkHttp(url,callback);
 
     }
 
@@ -314,11 +311,7 @@ public class EditDevUserActivity extends AppCompatActivity implements View.OnCli
                 "&geocenter=" + URLEncoder.encode(geocenter) +
                 "&georadius=" + georadius;
         Log.e(TAG, url);
-        OkHttpClient okHttpClient = new OkHttpClient();
-        final Request request = new Request.Builder().url(url).build();
-        Call call = okHttpClient.newCall(request);
-        //开启异步访问网络
-        call.enqueue(new Callback() {
+        Callback callback=new Callback() {
             @Override
             public void onFailure(Call call, IOException e) {
                 Log.e(TAG, "MSG_EDIT_FAIL" + "请求失败：" + e.getMessage());
@@ -333,7 +326,8 @@ public class EditDevUserActivity extends AppCompatActivity implements View.OnCli
                 message.obj = setupInfo;
                 handler.sendMessage(message);
             }
-        });
+        };
+        NetWorkBuilder.getInstance().getOkHttp(url,callback);
 
     }
 

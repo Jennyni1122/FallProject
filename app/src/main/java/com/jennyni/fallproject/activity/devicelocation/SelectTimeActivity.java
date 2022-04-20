@@ -4,7 +4,6 @@ import android.app.DatePickerDialog;
 import android.app.TimePickerDialog;
 import android.content.Context;
 import android.content.Intent;
-import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.DatePicker;
@@ -14,8 +13,8 @@ import android.widget.TextView;
 import android.widget.TimePicker;
 
 import com.jennyni.fallproject.Bean.AskFallInfoBean;
-import com.jennyni.fallproject.Bean.UserUpdateBean;
 import com.jennyni.fallproject.R;
+import com.jennyni.fallproject.utils.ActivityCollectorUtil;
 
 import java.io.Serializable;
 import java.util.Calendar;
@@ -24,7 +23,7 @@ import java.util.Calendar;
  *
  * 选择时间功能，用于查看设备定位轨迹功能
  */
-public class SelectTimeActivity extends AppCompatActivity implements View.OnClickListener, DatePickerDialog.OnDateSetListener, TimePickerDialog.OnTimeSetListener {
+public class SelectTimeActivity extends ActivityCollectorUtil implements View.OnClickListener, DatePickerDialog.OnDateSetListener, TimePickerDialog.OnTimeSetListener {
     private static final String CARDID_KEY = "cardid";
     private TextView tv_main_title, tv_back, tv_switch, tv_date, tv_start_time, tv_end_time;
     private RelativeLayout rl_title_bar;
@@ -44,12 +43,18 @@ public class SelectTimeActivity extends AppCompatActivity implements View.OnClic
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        addActivity(this);
         setContentView(R.layout.activity_select_time);
         cardid = getIntent().getStringExtra(CARDID_KEY);
         initView();         //初始化控件
         setListener();      //控件的点击事件
     }
 
+    @Override
+    protected void onDestroy() {
+        removeActivity(this);
+        super.onDestroy();
+    }
 
     /**
      * 初始化控件

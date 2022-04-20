@@ -20,9 +20,11 @@ import android.util.Log;
 
 import com.google.gson.Gson;
 import com.jennyni.fallproject.Bean.AskAllFallInfoBean;
+import com.jennyni.fallproject.Bean.AskFallInfoBean;
 import com.jennyni.fallproject.Bean.UserUpdateBean;
 import com.jennyni.fallproject.R;
 import com.jennyni.fallproject.activity.devicelocation.DevUserDetailActivity;
+import com.jennyni.fallproject.net.NetWorkBuilder;
 import com.jennyni.fallproject.receiver.NotifyReciver;
 import com.jennyni.fallproject.utils.Constant;
 import com.jennyni.fallproject.utils.UtilsHelper;
@@ -92,11 +94,7 @@ public class LocationService extends Service {
         String account = UtilsHelper.readLoginUserName(this);      //登录的用户名
 
         String url = Constant.BASE_WEBSITE + Constant.REQUEST_ASKALLFALLINFO_DEVICE_URL + "?account=" + account;
-        OkHttpClient okHttpClient = new OkHttpClient();
-        final Request request = new Request.Builder().url(url).build();
-        Call call = okHttpClient.newCall(request);
-        //开启异步访问网络
-        call.enqueue(new Callback() {
+        Callback callback=new Callback() {
             @Override
             public void onFailure(Call call, IOException e) {
                 //联网失败
@@ -108,11 +106,13 @@ public class LocationService extends Service {
                 Log.e("MSG_MAPPAGE_OK", "请求成功：" + response);
                 Gson gson = new Gson();
                 String string = response.body().string();
-                AskAllFallInfoBean askFallInfoBean = gson.fromJson(string, AskAllFallInfoBean.class);
-                DevUserDetailActivity.sendBroadcastReceiver(LocationService.this,
-                        LocationService.this.getPackageName().concat(DevUserDetailActivity.BroadcastReceiver_ACTION),
-                        askFallInfoBean
-                );
+                AskAllFallInfoBean askFallInfoBean =new AskAllFallInfoBean();
+                try {
+                    askFallInfoBean = gson.fromJson(string, AskAllFallInfoBean.class);
+                    DevUserDetailActivity.sendBroadcastReceiver(LocationService.this,
+                            LocationService.this.getPackageName().concat(DevUserDetailActivity.BroadcastReceiver_ACTION),
+                            askFallInfoBean);
+                }catch (Exception e){return;}
                 if (askFallInfoBean != null && askFallInfoBean.getStatus() == 200) {
                     List<AskAllFallInfoBean.ResultBean> list = askFallInfoBean.getResult();
                     if (list.size() == 0) return;
@@ -166,7 +166,9 @@ public class LocationService extends Service {
                     }
                 }
             }
-        });
+        };        //开启异步访问网络
+
+        NetWorkBuilder.getInstance().getOkHttp(url,callback);
     }
 
     /**

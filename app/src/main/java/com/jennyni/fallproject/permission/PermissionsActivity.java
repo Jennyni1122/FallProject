@@ -9,13 +9,13 @@ import android.os.Bundle;
 import android.provider.Settings;
 import android.support.annotation.NonNull;
 import android.support.v4.app.ActivityCompat;
-import android.support.v7.app.AppCompatActivity;
 
 import com.amap.api.location.AMapLocation;
 import com.amap.api.maps2d.LocationSource;
+import com.jennyni.fallproject.utils.ActivityCollectorUtil;
 
 
-public abstract class PermissionsActivity extends AppCompatActivity {
+public abstract class PermissionsActivity extends ActivityCollectorUtil {
 
     private static final int PERMISSION_REQUEST_CODE = 0x114; // 系统权限管理页面的参数
     private static final String PACKAGE_URL_SCHEME = "package:"; // 方案
@@ -27,7 +27,14 @@ public abstract class PermissionsActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        addActivity(this);
         mPermissionsChecker = new PermissionsChecker(this);
+    }
+
+    @Override
+    protected void onDestroy() {
+        removeActivity(this);
+        super.onDestroy();
     }
 
     protected void requestPermission(){
